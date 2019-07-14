@@ -8,6 +8,33 @@
 pip install telegram-click
 ```
 
+```python
+[...]
+from telegram_click import command, generate_command_list
+from telegram_click.argument import Argument
+
+class MyBot:
+
+    [...]
+    
+    @command(name='start', description='Start bot interaction')
+    def _start_command_callback(self, update: Update, context: CallbackContext):
+        # do something
+        pass
+        
+    @command(name='age', description='Set age',
+             arguments=[
+                 Argument(name='age',
+                          description='The new age',
+                          type=int,
+                          converter=lambda x: int(x),
+                          validator=lambda x: x > 0,
+                          example='25')
+             ])
+    def _age_command_callback(self, update: Update, context: CallbackContext, age: int):
+        context.bot.send_message(update.effective_chat.id, "New age: {}".format(age))
+```
+
 # Contributing
 
 GitHub is for social coding: if you want to write code, I encourage contributions through pull requests from forks
