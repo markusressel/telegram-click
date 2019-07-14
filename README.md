@@ -1,6 +1,6 @@
-# telegram-click
+# telegram-click ![https://badge.fury.io/py/telegram-click](https://badge.fury.io/py/telegram-click.svg)
 
-
+Click inspired command interface toolkit for pyton-telegram-bot.
 
 # How to use
 
