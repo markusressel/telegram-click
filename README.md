@@ -11,9 +11,15 @@ Click inspired command interface toolkit for pyton-telegram-bot.
 
 # How to use
 
+Install this library as a dependency to use it in your project.
+
 ```shell
 pip install telegram-click
 ```
+
+Then annotate your command handler functions with the `@command` decorator
+of this library. The information you need to provide is used to generate
+the help messages.
 
 ```python
 [...]
@@ -34,12 +40,29 @@ class MyBot:
                  Argument(name='age',
                           description='The new age',
                           type=int,
-                          converter=lambda x: int(x),
                           validator=lambda x: x > 0,
                           example='25')
              ])
     def _age_command_callback(self, update: Update, context: CallbackContext, age: int):
         context.bot.send_message(update.effective_chat.id, "New age: {}".format(age))
+```
+
+## Custom types
+
+Since all user input initially is of type `str` there needs to be a type
+conversion if the expected type is a different one. For basic types like
+`bool`, `int`, `float` and `str` converters are built in to this library.
+If you want to use other types you have to specify how the sctring input
+can be converted to your type using the `converter` attribute of the 
+`Argument` constructor like so:
+
+```python
+ Argument(name='age',
+          description='The new age',
+          type=MyType,
+          converter=lambda x: MyType(x),
+          validator=lambda x: x > 0,
+          example='25')
 ```
 
 # Contributing
