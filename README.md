@@ -52,7 +52,7 @@ class MyBot:
 Since all user input initially is of type `str` there needs to be a type
 conversion if the expected type is a different one. For basic types like
 `bool`, `int`, `float` and `str` converters are built in to this library.
-If you want to use other types you have to specify how the sctring input
+If you want to use other types you have to specify how the string input
 can be converted to your type using the `converter` attribute of the 
 `Argument` constructor like so:
 
