@@ -77,19 +77,19 @@ def read_requirements_file(file_name: str):
 
 
 setup(
-    name='container_app_conf',
+    name='telegram_click',
     version=VERSION_NAME,
-    description='Convenient configuration of containerized applications',
+    description='Click inspired command interface toolkit for pyton-telegram-bot',
     long_description=readme(),
     long_description_content_type=readme_type(),
     license='GPLv3+',
     author='Markus Ressel',
     author_email='mail@markusressel.de',
-    url='https://github.com/markusressel/container-app-conf',
+    url='https://github.com/markusressel/telegram-click',
     packages=find_packages(),
     classifiers=[
         DEVELOPMENT_STATUS,
-        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',

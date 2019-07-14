@@ -71,7 +71,10 @@ def generate_help_message(name: str, description: str, args: []) -> str:
 
     argument_examples = " ".join(list(map(lambda x: x.example, args)))
 
-    lines = [description]
+    lines = [
+        "/{}".format(escape_for_markdown(name)),
+        description
+    ]
     if len(arguments) > 0:
         lines.append("Arguments: ")
         lines.append(arguments)
@@ -83,7 +86,7 @@ def generate_help_message(name: str, description: str, args: []) -> str:
 
 def generate_command_list() -> str:
     """
-    :return: a list of all available commands
+    :return: a Markdown styled text description of all available commands
     """
     return "\n\n".join([
         "Commands:",
@@ -101,9 +104,7 @@ def command(name: str, description: str = None, arguments: [] = None):
     help_message = generate_help_message(name, description, arguments)
 
     global COMMAND_LIST
-    COMMAND_LIST.append("/{}\n{}".format(
-        escape_for_markdown(name),
-        help_message))
+    COMMAND_LIST.append(help_message)
 
     def decorator(func: callable):
         if not callable(func):
@@ -118,6 +119,9 @@ def command(name: str, description: str = None, arguments: [] = None):
 
             parsed_args = []
             try:
+                if len(arguments) > len(args):
+                    raise ValueError("Too many arguments!")
+
                 for idx, arg in enumerate(arguments):
                     try:
                         string_arg = string_arguments[idx]
@@ -127,7 +131,11 @@ def command(name: str, description: str = None, arguments: [] = None):
                     parsed_args.append(parsed)
             except Exception as ex:
                 LOGGER.error(ex)
-                bot.send_message(chat_id=chat_id, parse_mode=ParseMode.MARKDOWN, text="Usage:\n{}".format(help_message),
+                bot.send_message(chat_id=chat_id, text=str(ex),
+                                 reply_to_message_id=message.message_id)
+
+                bot.send_message(chat_id=chat_id, parse_mode=ParseMode.MARKDOWN,
+                                 text=help_message,
                                  reply_to_message_id=message.message_id)
                 return
 
