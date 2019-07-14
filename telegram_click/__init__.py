@@ -119,7 +119,7 @@ def command(name: str, description: str = None, arguments: [] = None):
 
             parsed_args = []
             try:
-                if len(arguments) > len(args):
+                if len(string_arguments) > len(arguments):
                     raise ValueError("Too many arguments!")
 
                 for idx, arg in enumerate(arguments):
