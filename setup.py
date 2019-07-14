@@ -82,7 +82,7 @@ setup(
     description='Click inspired command interface toolkit for pyton-telegram-bot',
     long_description=readme(),
     long_description_content_type=readme_type(),
-    license='GPLv3+',
+    license='MIT',
     author='Markus Ressel',
     author_email='mail@markusressel.de',
     url='https://github.com/markusressel/telegram-click',
