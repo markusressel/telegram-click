@@ -27,14 +27,19 @@ LOGGER.setLevel(logging.DEBUG)
 
 
 class Argument:
+    """
+    Command argument description
+    """
 
     def __init__(self, name: str, description: str, example: str, type: type = str, converter: callable = None,
-                 default: any = None,
-                 validator: callable = None):
+                 default: any = None, validator: callable = None):
         """
         Creates a command argument object
-        :param name: the name of the command
-        :param converter: an optional converter function to convert the string value to another type
+        :param name: the name of the argument
+        :param description: a short description of the argument
+        :param example: an example (string!) value for this argument
+        :param type: the expected type of the argument
+        :param converter: a converter function to convert the string value to the expected type
         :param default: an optional default value
         :param validator: a validator function
         """
@@ -88,7 +93,13 @@ class Argument:
             message += " (default: {}".format(escape_for_markdown(self.default))
         return message
 
-    def _boolean_converter(self, value: str):
+    @staticmethod
+    def _boolean_converter(value: str) -> bool:
+        """
+        Converts a string to a boolean
+        :param value: string value
+        :return: boolean
+        """
         s = str(value).lower()
         if s in ['y', 'yes', 'true', 't', '1']:
             return True
@@ -105,6 +116,15 @@ class Selection(Argument):
 
     def __init__(self, name: str, description: str, allowed_values: [any], type: type = str, converter: callable = None,
                  default: any = None):
+        """
+
+        :param name: the name of the argument
+        :param description: a short description of the argument
+        :param allowed_values: list of allowed (target type) values
+        :param type: the expected type of the argument
+        :param converter: a converter function to convert the string value to the expected type
+        :param default: an optional default value
+        """
         self.allowed_values = allowed_values
         validator = lambda x: x in self.allowed_values
         super().__init__(name, description, allowed_values[0], type, converter, default, validator)
