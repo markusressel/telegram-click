@@ -43,9 +43,16 @@ class Argument:
         self.example = example
         self.type = type
         if converter is None:
-            if type is not str:
+            if type is str:
+                self.converter = lambda x: x
+            elif type is bool:
+                self.converter = self._boolean_converter
+            elif type is int:
+                self.converter = lambda x: int(x)
+            elif type is float:
+                self.converter = lambda x: float(x)
+            else:
                 raise ValueError("If you want to use a custom type you have to provide a converter function too!")
-            self.converter = lambda x: x
         else:
             self.converter = converter
         self.default = default
@@ -80,6 +87,15 @@ class Argument:
         if self.default is not None:
             message += " (default: {}".format(escape_for_markdown(self.default))
         return message
+
+    def _boolean_converter(self, value: str):
+        s = str(value).lower()
+        if s in ['y', 'yes', 'true', 't', '1']:
+            return True
+        elif s in ['n', 'no', 'false', 'f', '0']:
+            return False
+        else:
+            raise ValueError("Invalid value '{}'".format(value))
 
 
 class Selection(Argument):

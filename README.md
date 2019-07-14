@@ -4,8 +4,8 @@ Click inspired command interface toolkit for pyton-telegram-bot.
 
 # Features
 * [x] Help message generation
-* [x] Argument parsing, type conversion and validation 
-* [x] Error handling 
+* [x] Argument parsing, type conversion and validation
+* [x] Error handling
 
 # How to use
 
