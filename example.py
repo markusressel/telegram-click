@@ -104,7 +104,6 @@ class MyBot:
                  Argument(name='age',
                           description='The new age',
                           type=int,
-                          converter=lambda x: int(x),
                           validator=lambda x: x > 0,
                           example='25')
              ])
