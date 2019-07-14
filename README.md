@@ -65,6 +65,27 @@ can be converted to your type using the `converter` attribute of the
           example='25')
 ```
 
+## Error handling
+
+**telegram-click** automatically handles errors when
+ 
+* an argument can not be parsed correctly
+* an invalid value is passed for an argument
+* too many arguments are passed
+
+In these cases the message of the internal exception is sent to the chat
+along with a help message for the failed command.
+
+**Note:**
+This error handling does not handle errors that occur in your handler 
+function but only command argument related ones.
+
+# Limitations
+
+Currently the decorator expects a `classmethod` meaning the first 
+parameter of it is the `self` parameter. This will probably be supported
+in a future release.
+
 # Contributing
 
 GitHub is for social coding: if you want to write code, I encourage contributions through pull requests from forks
