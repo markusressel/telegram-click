@@ -17,20 +17,7 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
+from telegram_click.permission.groupadmin import GroupAdmin
 
-import logging
-
-LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
-
-COMMAND_LIST = []
-
-
-def generate_command_list() -> str:
-    """
-    :return: a Markdown styled text description of all available commands
-    """
-    return "\n\n".join([
-        "Commands:",
-        *COMMAND_LIST
-    ])
+# Constants for static permissions
+GROUP_ADMIN = GroupAdmin()

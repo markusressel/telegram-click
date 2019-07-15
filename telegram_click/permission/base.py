@@ -18,19 +18,21 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-import logging
+from abc import abstractmethod
 
-LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
-
-COMMAND_LIST = []
+from telegram import Update
+from telegram.ext import CallbackContext
 
 
-def generate_command_list() -> str:
-    """
-    :return: a Markdown styled text description of all available commands
-    """
-    return "\n\n".join([
-        "Commands:",
-        *COMMAND_LIST
-    ])
+class Permission:
+
+    @abstractmethod
+    def evaluate(self, update: Update, context: CallbackContext, command: str) -> bool:
+        """
+        Evaluates if the permission should be granted
+        :param update: the message update
+        :param context: the message context
+        :param command: the executed command
+        :return: True if the permission is granted, False otherwise
+        """
+        raise NotImplementedError()

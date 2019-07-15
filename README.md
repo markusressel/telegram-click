@@ -7,6 +7,7 @@ Click inspired command interface toolkit for pyton-telegram-bot.
 # Features
 * [x] Help message generation
 * [x] Argument parsing, type conversion and validation
+* [x] Permission handling
 * [x] Error handling
 
 # How to use
@@ -57,12 +58,12 @@ can be converted to your type using the `converter` attribute of the
 `Argument` constructor like so:
 
 ```python
- Argument(name='age',
-          description='The new age',
-          type=MyType,
-          converter=lambda x: MyType(x),
-          validator=lambda x: x > 0,
-          example='25')
+Argument(name='age',
+         description='The new age',
+         type=MyType,
+         converter=lambda x: MyType(x),
+         validator=lambda x: x > 0,
+         example='25')
 ```
 
 ## Error handling

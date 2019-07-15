@@ -22,8 +22,17 @@ import os
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, Updater, MessageHandler, CommandHandler, Filters
 
-from telegram_click import command, generate_command_list
+from telegram_click import generate_command_list
 from telegram_click.argument import Argument
+from telegram_click.decorator import command
+from telegram_click.permission import GROUP_ADMIN
+from telegram_click.permission.base import Permission
+
+
+class MyPermission(Permission):
+    def evaluate(self, update: Update, context: CallbackContext, command: str) -> bool:
+        from_user = update.effective_message.from_user
+        return from_user.id in [12345, 32435]
 
 
 class MyBot:
@@ -106,6 +115,10 @@ class MyBot:
                           type=int,
                           validator=lambda x: x > 0,
                           example='25')
+             ],
+             permissions=[
+                 GROUP_ADMIN,
+                 MyPermission()
              ])
     def _age_command_callback(self, update: Update, context: CallbackContext, age: int):
         context.bot.send_message(update.effective_chat.id, "New age: {}".format(age))

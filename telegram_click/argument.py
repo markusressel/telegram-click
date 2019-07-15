@@ -20,7 +20,7 @@
 
 import logging
 
-from telegram_click import escape_for_markdown
+from telegram_click.util import escape_for_markdown
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)

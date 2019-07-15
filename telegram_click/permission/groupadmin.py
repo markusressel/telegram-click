@@ -18,19 +18,22 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-import logging
+from telegram import Update
+from telegram.ext import CallbackContext
 
-LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
-
-COMMAND_LIST = []
+from .base import Permission
 
 
-def generate_command_list() -> str:
-    """
-    :return: a Markdown styled text description of all available commands
-    """
-    return "\n\n".join([
-        "Commands:",
-        *COMMAND_LIST
-    ])
+class GroupAdmin(Permission):
+
+    def evaluate(self, update: Update, context: CallbackContext, command: str) -> bool:
+        bot = context.bot
+        chat_id = update.effective_message.chat_id
+        from_user = update.effective_message.from_user
+        chat_type = update.effective_chat.type
+        member = bot.getChatMember(chat_id, from_user.id)
+
+        if chat_type == 'private':
+            return True
+
+        return member.status == "administrator" or member.status == "creator"
