@@ -24,20 +24,21 @@ from telegram.ext import CallbackContext
 from .base import Permission
 
 
-class GroupAdmin(Permission):
+class _PrivateChat(Permission):
     """
-    Requires the user that executes the command to be the creator or admin of the chat.
-    If the chat is a private chat this is always true.
+    Requires the interaction inside a private chat.
     """
 
     def evaluate(self, update: Update, context: CallbackContext) -> bool:
-        bot = context.bot
-        chat_id = update.effective_message.chat_id
-        from_user = update.effective_message.from_user
         chat_type = update.effective_chat.type
-        member = bot.getChatMember(chat_id, from_user.id)
+        return chat_type == 'private'
 
-        if chat_type == 'private':
-            return True
 
-        return member.status == "administrator" or member.status == "creator"
+class _GroupChat(Permission):
+    """
+    Requires the interaction inside a group chat.
+    """
+
+    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+        chat_type = update.effective_chat.type
+        return chat_type == 'group'

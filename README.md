@@ -91,6 +91,15 @@ Multiple permissions can be combined using `&`, `|` and `~` (not) operators.
 If a user does not have permission to use a command it will not be displayed
 when this user generate a list of commands.
 
+| Name                  | Description                                |
+|-----------------------|--------------------------------------------|
+| `PRIVATE_CHAT`        | Requires command execution inside of a private chat |
+| `GROUP_CHAT`          | Requires command execution inside a group  |
+| `USER_ID`             | Only allow users with a user id specified  |
+| `USER_NAME`           | Only allow users with a username specified |
+| `GROUP_CREATOR`       | Only allow the group creator               |
+| `GROUP_ADMIN`         | Only allow the group admin                 |
+
 ### Custom permission handler
 
 If none of the integrated handlers suit your needs you can simply write 

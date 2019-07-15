@@ -37,27 +37,16 @@ class Permission:
         return self._merge(other, operator.or_)
 
     def _merge(self, other, op: operator):
-        if isinstance(self, MergedPermission):
-            merged = self
-            to_merge = other
-        elif isinstance(other, MergedPermission):
-            merged = other
-            to_merge = self
-        else:
-            merged = None
-            to_merge = None
-
-        if merged is not None and merged.op == op:
-            if isinstance(to_merge, MergedPermission):
-                merged.permissions.update(to_merge.permissions)
-            else:
-                merged.permissions.add(to_merge)
-            return merged
-
         return MergedPermission({self, other}, op)
 
     def __invert__(self):
         return InvertedPermission(self)
+
+    def __str__(self):
+        return self.__class__.__name__
+
+    def __repr__(self):
+        return "<{}>".format(self.__class__.__name__)
 
     @abstractmethod
     def evaluate(self, update: Update, context: CallbackContext) -> bool:
@@ -84,6 +73,12 @@ class InvertedPermission(Permission):
     def evaluate(self, update: Update, context: CallbackContext) -> bool:
         return not bool(self.original_permission(update, context))
 
+    def __str__(self):
+        return "(not {})".format(self.original_permission.__str__())
+
+    def __repr__(self):
+        return "<not {}>".format(self.original_permission.__repr__())
+
 
 class MergedPermission(Permission):
     """
@@ -109,3 +104,13 @@ class MergedPermission(Permission):
         """
         evaluations = list(map(lambda x: x.evaluate(update, context), self.permissions))
         return reduce(lambda x, y: self.op(x, y), evaluations)
+
+    def __str__(self):
+        permission_class_names = list(map(lambda x: x.__str__(), self.permissions))
+        string = " {} ".format(self.op.__name__).join(permission_class_names)
+        return "({})".format(string)
+
+    def __repr__(self):
+        permission_class_names = list(map(lambda x: x.__repr__(), self.permissions))
+        repr = " {} ".format(self.op.__name__[1:]).join(permission_class_names)
+        return "<{}>".format(repr)

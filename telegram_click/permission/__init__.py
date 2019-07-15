@@ -17,7 +17,13 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
-from telegram_click.permission.groupadmin import GroupAdmin
+from telegram_click.permission.chat import _PrivateChat, _GroupChat
+from telegram_click.permission.user import _GroupCreator, _GroupAdmin, _UserId, _UserName
 
-# Constants for static permissions
-GROUP_ADMIN = GroupAdmin()
+PRIVATE_CHAT = _PrivateChat()
+GROUP_CHAT = _GroupChat()
+
+USER_ID = _UserId
+USER_NAME = _UserName
+GROUP_CREATOR = (_GroupCreator() & GROUP_CHAT)
+GROUP_ADMIN = (_GroupAdmin() & GROUP_CHAT)
