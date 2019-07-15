@@ -26,11 +26,15 @@ LOGGER.setLevel(logging.DEBUG)
 COMMAND_LIST = []
 
 
-def generate_command_list() -> str:
+def generate_command_list(update, context, command) -> str:
     """
     :return: a Markdown styled text description of all available commands
     """
+    commands_with_permission = list(
+        filter(lambda x: x["permissions"] is None or x["permissions"].evaluate(update, context), COMMAND_LIST))
+    help_messages = list(map(lambda x: x["message"], commands_with_permission))
+
     return "\n\n".join([
         "Commands:",
-        *COMMAND_LIST
+        *help_messages
     ])

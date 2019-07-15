@@ -30,7 +30,7 @@ class GroupAdmin(Permission):
     If the chat is a private chat this is always true.
     """
 
-    def evaluate(self, update: Update, context: CallbackContext, command: str) -> bool:
+    def evaluate(self, update: Update, context: CallbackContext) -> bool:
         bot = context.bot
         chat_id = update.effective_message.chat_id
         from_user = update.effective_message.from_user

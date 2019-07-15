@@ -102,7 +102,7 @@ from telegram_click.permission.base import Permission
 from telegram_click.permission import GROUP_ADMIN
 
 class MyPermission(Permission):
-    def evaluate(self, update: Update, context: CallbackContext, command: str) -> bool:
+    def evaluate(self, update: Update, context: CallbackContext) -> bool:
         from_user = update.effective_message.from_user
         return from_user.id in [12345, 32435]
         

@@ -27,8 +27,8 @@ from telegram.ext import CallbackContext
 
 class Permission:
 
-    def __call__(self, update: Update, context: CallbackContext, command: str) -> bool:
-        return self.evaluate(update, context, command)
+    def __call__(self, update: Update, context: CallbackContext) -> bool:
+        return self.evaluate(update, context)
 
     def __and__(self, other):
         return self._merge(other, operator.and_)
@@ -60,12 +60,11 @@ class Permission:
         return InvertedPermission(self)
 
     @abstractmethod
-    def evaluate(self, update: Update, context: CallbackContext, command: str) -> bool:
+    def evaluate(self, update: Update, context: CallbackContext) -> bool:
         """
         Evaluates if the permission should be granted
         :param update: the message update
         :param context: the message context
-        :param command: the executed command
         :return: True if the permission is granted, False otherwise
         """
         raise NotImplementedError()
@@ -82,8 +81,8 @@ class InvertedPermission(Permission):
         """
         self.original_permission = original_permission
 
-    def evaluate(self, update: Update, context: CallbackContext, command: str) -> bool:
-        return not bool(self.original_permission(update, context, command))
+    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+        return not bool(self.original_permission(update, context))
 
 
 class MergedPermission(Permission):
@@ -103,10 +102,10 @@ class MergedPermission(Permission):
         if self.op not in [operator.and_, operator.or_]:
             raise ValueError("Only operator.and_, operator.or_ are supported")
 
-    def evaluate(self, update: Update, context: CallbackContext, command: str):
+    def evaluate(self, update: Update, context: CallbackContext) -> bool:
         """
         Evaluates all given permissions and combines their result using the given operator
         :return: reduced evaluation result
         """
-        evaluations = list(map(lambda x: x.evaluate(update, context, command), self.permissions))
+        evaluations = list(map(lambda x: x.evaluate(update, context), self.permissions))
         return reduce(lambda x, y: self.op(x, y), evaluations)

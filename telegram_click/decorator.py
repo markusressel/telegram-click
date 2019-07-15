@@ -50,7 +50,12 @@ def command(name: str, description: str = None,
     help_message = generate_help_message(name, description, arguments)
 
     from telegram_click import COMMAND_LIST
-    COMMAND_LIST.append(help_message)
+    COMMAND_LIST.append(
+        {
+            "message": help_message,
+            "permissions": permissions
+        }
+    )
 
     def decorator(func: callable):
         if not callable(func):
@@ -67,7 +72,7 @@ def command(name: str, description: str = None,
             parsed_args = []
             try:
                 if permissions is not None:
-                    if not permissions.evaluate(update, context, command):
+                    if not permissions.evaluate(update, context):
                         raise PermissionError("You do not have permission to use this command")
 
                 if len(string_arguments) > len(arguments):
