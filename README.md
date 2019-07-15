@@ -88,6 +88,9 @@ def _permission_command_callback(self, update: Update, context: CallbackContext)
 
 Multiple permissions can be combined using `&`, `|` and `~` (not) operators.
 
+If a user does not have permission to use a command it will not be displayed
+when this user generate a list of commands.
+
 ### Custom permission handler
 
 If none of the integrated handlers suit your needs you can simply write 
