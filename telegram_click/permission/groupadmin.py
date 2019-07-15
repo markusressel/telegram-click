@@ -25,6 +25,10 @@ from .base import Permission
 
 
 class GroupAdmin(Permission):
+    """
+    Requires the user that executes the command to be the creator or admin of the chat.
+    If the chat is a private chat this is always true.
+    """
 
     def evaluate(self, update: Update, context: CallbackContext, command: str) -> bool:
         bot = context.bot

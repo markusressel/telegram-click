@@ -23,8 +23,9 @@ of this library. The information you need to provide is used to generate
 the help messages.
 
 ```python
-[...]
-from telegram_click import command, generate_command_list
+from telegram import Update
+from telegram.ext import CallbackContext
+from telegram_click.decorator import command
 from telegram_click.argument import Argument
 
 class MyBot:
@@ -58,12 +59,58 @@ can be converted to your type using the `converter` attribute of the
 `Argument` constructor like so:
 
 ```python
+from telegram_click.argument import Argument
+
 Argument(name='age',
          description='The new age',
          type=MyType,
          converter=lambda x: MyType(x),
          validator=lambda x: x > 0,
          example='25')
+```
+
+## Permission handling
+
+If a command should only be executable when a specific criteria is met 
+you can specify those criteria using the `permissions` parameter:
+
+```python
+from telegram import Update
+from telegram.ext import CallbackContext
+from telegram_click.decorator import command
+from telegram_click.permission import GROUP_ADMIN
+
+@command(name='permission', description='Needs permission',
+         permissions=[
+            GROUP_ADMIN
+         ])
+def _permission_command_callback(self, update: Update, context: CallbackContext, age: int):
+    pass
+```
+
+### Custom permission handler
+
+If none of the integrated handlers suit your needs you can simply write 
+your own permission handler by extending the `Permission` base class 
+and pass an instance of the `MyPermission` class to the list of `permissions`:
+
+```python
+from telegram import Update
+from telegram.ext import CallbackContext
+from telegram_click.decorator import command
+from telegram_click.permission.base import Permission
+
+class MyPermission(Permission):
+    def evaluate(self, update: Update, context: CallbackContext, command: str) -> bool:
+        from_user = update.effective_message.from_user
+        return from_user.id in [12345, 32435]
+        
+@command(name='permission', description='Needs permission',
+         permissions=[
+            MyPermission()
+         ])
+def _permission_command_callback(self, update: Update, context: CallbackContext, age: int):
+    pass
 ```
 
 ## Error handling
