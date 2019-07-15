@@ -92,6 +92,11 @@ def command(name: str, description: str = None,
                 return
             except Exception as ex:
                 LOGGER.error(ex)
+
+                import traceback
+                exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),
+                                                    traceback.extract_tb(ex.__traceback__))))
+
                 text = "\n".join([
                     ":exclamation: `{}`".format(str(ex)),
                     "",
@@ -105,6 +110,10 @@ def command(name: str, description: str = None,
                 return func(self, update, context, *parsed_args, *args, **kwargs)
             except Exception as ex:
                 LOGGER.error(ex)
+
+                import traceback
+                exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),
+                                                    traceback.extract_tb(ex.__traceback__))))
                 if print_error:
                     text = ":boom: `{}`".format(str(ex))
                 else:
