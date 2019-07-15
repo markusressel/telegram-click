@@ -81,12 +81,12 @@ from telegram_click.decorator import command
 from telegram_click.permission import GROUP_ADMIN
 
 @command(name='permission', description='Needs permission',
-         permissions=[
-            GROUP_ADMIN
-         ])
-def _permission_command_callback(self, update: Update, context: CallbackContext, age: int):
+         permissions=GROUP_ADMIN)
+def _permission_command_callback(self, update: Update, context: CallbackContext):
     pass
 ```
+
+Multiple permissions can be combined using `&`, `|` and `~` (not) operators.
 
 ### Custom permission handler
 
@@ -99,6 +99,7 @@ from telegram import Update
 from telegram.ext import CallbackContext
 from telegram_click.decorator import command
 from telegram_click.permission.base import Permission
+from telegram_click.permission import GROUP_ADMIN
 
 class MyPermission(Permission):
     def evaluate(self, update: Update, context: CallbackContext, command: str) -> bool:
@@ -106,10 +107,8 @@ class MyPermission(Permission):
         return from_user.id in [12345, 32435]
         
 @command(name='permission', description='Needs permission',
-         permissions=[
-            MyPermission()
-         ])
-def _permission_command_callback(self, update: Update, context: CallbackContext, age: int):
+         permissions=MyPermission() & GROUP_ADMIN)
+def _permission_command_callback(self, update: Update, context: CallbackContext):
     pass
 ```
 

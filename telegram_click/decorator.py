@@ -24,6 +24,7 @@ from telegram import Update, ParseMode
 from telegram.ext import CallbackContext
 
 from telegram_click.argument import Argument
+from telegram_click.permission.base import Permission
 from telegram_click.util import generate_help_message, parse_telegram_command, send_message
 
 LOGGER = logging.getLogger(__name__)
@@ -32,21 +33,19 @@ LOGGER.setLevel(logging.DEBUG)
 
 def command(name: str, description: str = None,
             arguments: [Argument] = None,
-            permissions: [] = None,
+            permissions: Permission = None,
             print_error: bool = True):
     """
     Decorator to turn a command handler function into a full fledged, shell like command
     :param name: Name of the command
     :param description: a short description of the command
     :param arguments: list of command argument description objects
-    :param permissions: list of required permissions to run this command
+    :param permissions: required permissions to run this command
     :param print_error: sends the exception message to the chat of origin if set to True, False sends a general error message
     """
 
     if arguments is None:
         arguments = []
-    if permissions is None:
-        permissions = []
 
     help_message = generate_help_message(name, description, arguments)
 
@@ -67,8 +66,8 @@ def command(name: str, description: str = None,
 
             parsed_args = []
             try:
-                for permission in permissions:
-                    if not permission.evaluate(update, context, command):
+                if permissions is not None:
+                    if not permissions.evaluate(update, context, command):
                         raise PermissionError("You do not have permission to use this command")
 
                 if len(string_arguments) > len(arguments):

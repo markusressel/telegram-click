@@ -116,10 +116,7 @@ class MyBot:
                           validator=lambda x: x > 0,
                           example='25')
              ],
-             permissions=[
-                 GROUP_ADMIN,
-                 MyPermission()
-             ])
+             permissions=MyPermission() & ~ GROUP_ADMIN)
     def _age_command_callback(self, update: Update, context: CallbackContext, age: int):
         context.bot.send_message(update.effective_chat.id, "New age: {}".format(age))
 
