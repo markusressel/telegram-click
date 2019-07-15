@@ -125,8 +125,10 @@ In these cases the message of the internal exception is sent to the chat
 along with a help message for the failed command.
 
 **Note:**
-This error handling does not handle errors that occur in your handler 
-function but only command argument related ones.
+This error handling does also handle errors that occur in your handler 
+function and (by default) prints the exception text to the chat. If you 
+don't want to send the exception message to the user set the `print_error`
+parameter to `False`.
 
 # Limitations
 

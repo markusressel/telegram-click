@@ -32,13 +32,15 @@ LOGGER.setLevel(logging.DEBUG)
 
 def command(name: str, description: str = None,
             arguments: [Argument] = None,
-            permissions: [] = None):
+            permissions: [] = None,
+            print_error: bool = True):
     """
     Decorator to turn a command handler function into a full fledged, shell like command
     :param name: Name of the command
     :param description: a short description of the command
     :param arguments: list of command argument description objects
     :param permissions: list of required permissions to run this command
+    :param print_error: sends the exception message to the chat of origin if set to True, False sends a general error message
     """
 
     if arguments is None:
@@ -83,10 +85,11 @@ def command(name: str, description: str = None,
                 send_message(bot, chat_id=chat_id, message=":no_entry_sign: `{}`".format(str(ex)),
                              parse_mode=ParseMode.MARKDOWN,
                              reply_to=message.message_id)
+                return
             except Exception as ex:
                 LOGGER.error(ex)
                 text = "\n".join([
-                    ":boom: `{}`".format(str(ex)),
+                    ":exclamation: `{}`".format(str(ex)),
                     "",
                     help_message
                 ])
@@ -94,7 +97,16 @@ def command(name: str, description: str = None,
                              reply_to=message.message_id)
                 return
 
-            return func(self, update, context, *parsed_args, *args, **kwargs)
+            try:
+                return func(self, update, context, *parsed_args, *args, **kwargs)
+            except Exception as ex:
+                LOGGER.error(ex)
+                if print_error:
+                    text = ":boom: `{}`".format(str(ex))
+                else:
+                    text = "There was an error executing your command :worried:"
+                send_message(bot, chat_id=chat_id, message=text, parse_mode=ParseMode.MARKDOWN,
+                             reply_to=message.message_id)
 
         return wrapper
 
