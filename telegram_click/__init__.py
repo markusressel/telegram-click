@@ -26,7 +26,7 @@ LOGGER.setLevel(logging.DEBUG)
 COMMAND_LIST = []
 
 
-def generate_command_list(update, context, command) -> str:
+def generate_command_list(update, context) -> str:
     """
     :return: a Markdown styled text description of all available commands
     """

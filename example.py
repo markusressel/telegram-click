@@ -82,7 +82,7 @@ class MyBot:
     def _unknown_command_callback(self, update: Update, context: CallbackContext):
         bot = context.bot
         chat_id = update.effective_message.chat_id
-        text = generate_command_list(update, context, None)
+        text = generate_command_list(update, context)
         bot.send_message(chat_id, text, parse_mode=ParseMode.MARKDOWN)
 
     # Optionally specify this command to list all available commands
