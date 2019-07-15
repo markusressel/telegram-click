@@ -35,7 +35,7 @@ def generate_command_list(update, context) -> str:
     help_messages = list(map(lambda x: x["message"], commands_with_permission))
 
     if len(help_messages) <= 0:
-        return "You do not have permission to use commands :sad:"
+        return "You do not have permission to use commands."
 
     return "\n\n".join([
         *help_messages
