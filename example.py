@@ -115,7 +115,8 @@ class MyBot:
                           validator=lambda x: x > 0,
                           example='25')
              ],
-             permissions=MyPermission() & ~ GROUP_ADMIN & (USER_NAME("@markusressel") | USER_ID(123456)))
+             permissions=MyPermission() & ~ GROUP_ADMIN & (USER_NAME("@markusressel") | USER_ID(123456)),
+             permission_denied_message=":no_entry_sign: Permission denied")
     def _age_command_callback(self, update: Update, context: CallbackContext, age: int):
         context.bot.send_message(update.effective_chat.id, "New age: {}".format(age))
 

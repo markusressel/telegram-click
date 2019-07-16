@@ -91,6 +91,8 @@ Multiple permissions can be combined using `&`, `|` and `~` (not) operators.
 If a user does not have permission to use a command it will not be displayed
 when this user generate a list of commands.
 
+### Integrated permission handlers
+
 | Name                  | Description                                |
 |-----------------------|--------------------------------------------|
 | `PRIVATE_CHAT`        | Requires command execution inside of a private chat |
@@ -123,6 +125,13 @@ class MyPermission(Permission):
 def _permission_command_callback(self, update: Update, context: CallbackContext):
     pass
 ```
+
+### Show "Permission denied" message
+
+By default command calls coming from a user without permission are ignored.
+If you want to send them a "permission denied" like message you can 
+pass this message to the `permission_denied_message` argument of the 
+`@command` decorator.
 
 ## Error handling
 
