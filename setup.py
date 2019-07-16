@@ -25,11 +25,9 @@ from setuptools import setup, find_packages
 
 VERSION_NUMBER = "2.2.2"
 
-GIT_BRANCH = None
-if GIT_BRANCH is None:
-    GIT_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"])
-    GIT_BRANCH = GIT_BRANCH.decode()  # convert to standard string
-    GIT_BRANCH = GIT_BRANCH.rstrip()  # remove unnecessary whitespace
+GIT_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+GIT_BRANCH = GIT_BRANCH.decode()  # convert to standard string
+GIT_BRANCH = GIT_BRANCH.rstrip()  # remove unnecessary whitespace
 
 if GIT_BRANCH == "master":
     DEVELOPMENT_STATUS = "Development Status :: 5 - Production/Stable"
