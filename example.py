@@ -17,6 +17,7 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
+import logging
 import os
 
 from telegram import Update, ParseMode
@@ -25,8 +26,10 @@ from telegram.ext import CallbackContext, Updater, MessageHandler, CommandHandle
 from telegram_click import generate_command_list
 from telegram_click.argument import Argument
 from telegram_click.decorator import command
-from telegram_click.permission import GROUP_ADMIN, USER_ID, USER_NAME
+from telegram_click.permission import GROUP_ADMIN, USER_ID
 from telegram_click.permission.base import Permission
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class MyPermission(Permission):
@@ -115,8 +118,7 @@ class MyBot:
                           validator=lambda x: x > 0,
                           example='25')
              ],
-             permissions=MyPermission() & ~ GROUP_ADMIN & (USER_NAME("@markusressel") | USER_ID(123456)),
-             permission_denied_message=":no_entry_sign: Permission denied")
+             permissions=MyPermission() & ~ GROUP_ADMIN & (USER_ID(123456)))
     def _age_command_callback(self, update: Update, context: CallbackContext, age: int):
         context.bot.send_message(update.effective_chat.id, "New age: {}".format(age))
 
