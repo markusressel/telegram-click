@@ -1,13 +1,24 @@
 language: python
 python:
-  - "3.5"
-  - "3.6"
-  - "3.7-dev"
-  - "nightly" # currently points to 3.7-dev
-# command to install dependencies
+  - '3.5'
+  - '3.6'
+  - 3.7-dev
+  - nightly
 install:
   - pip install .
   - pip install -r test_requirements.txt
-# command to run tests
 script:
   - nosetests
+deploy:
+  provider: pypi
+  user: PYPI_USERNAME
+  password: PYPI_PASSWORD
+  distributions: sdist bdist_wheel
+  skip_existing: true
+  on:
+    branch: master
+    tags: true
+secure: V9WqmueL96cyhSboPjADzUoE3y1zh5PvnZu3d38sprtAZ3LLLKdRhz+sR6G779RFZZQwehhIVC4h42ck9YB2Os7bk7q3Z5te9PPWheLFXIqLTVDyyDJBHcd1GgrPZ2mWUEYUt4FS6fArYGv50YJUSGhb9Y09WHueIoF9uf1es+s2hIBns95DvhUXLmNU0SSMT3x1j77qNdMZTW9Pjtkzefjs/M3qkLyOSdc/sfB7flgt+CXKzyzIB4VN1E5A0F7K+GB/6hPXuwh9bHa5U2r5aPgbJrEhTo8AhW5rvDW7kg1j0WVRF2uqe9nodQE3VOCFMZS4YDp1x2Bywsxlh1WX0z8o1Es1FyLLg0QMsBY7PdZkMzsrJqosO3QvN0JGmAIYA1z0OoMHsC6CUwheZluq4HERzdD2oOGL7s7XUftxyMAeJoQba3ye2QYTtsee37MfPW5SkoDA/N2KN5I/SCuS1/Ywuru/OqKs6pg3S43L3EQjvmEQoINJgm0rfidMgm061y3jmmyYUsBnBe5lsHROGhxRaLlAVZmIPfQcFGPbGnZtWmvCSTViuHYCykGyaOrlnxlWwIAM+8laHv4mGbS/LEyhNzpVP9op5TKXO8VA3B4lZsq4ab6KHCK1a7OG1UZZed34E6+2TFkodFHdpvQVDnk+d3QHO99ltYI/Xp2+rDk=
+env:
+  global:
+    secure: tKkVh2zjSS9Ywi8EPI/2Gi8Lw9JeApiFpc0bj+P0xjQ/f4haJ4VIgiM+V5BFxaiWsbri+KDWOtzDjz11me5+EQucn0aZjw638vP9GkuALKMPrwr6FaLRjaCPSUKaRK0pDkl6Qv0F51CWc66w7HJvlMYHBa7Y69kkfPuwlZYAd6tvU/i4rtdcMoZ/RoMUvPK8p+i9TDSgPplHEG+Htqaqh8I9AI+/nH0uuli6ugyDObsGYIhj1sjpoie46ZzXdBdrbFqi4USw8D8m54YnKEu+Ks2zlrNnoSytqvRkGs7ejPKjEbfQtcrJAOyI76FCqA96gPzJyzzAYc5nKEuI8CiaMyjdQWmZc0F/MD9yrCmEAfjt/G4jr3E3zlB1tA/N9IEMtzux1ZSLkqQNSJOwLz7JwLpFKWDgaessiN6WooexCBCB4a/iK4RoLZUrHJMfVUZlBQLYdYstDDxzrBrQwo+WgcSbM+lyGO8+WlmLLqANmMHJSXWH63m6lmmt1uog34EaY2sQcsn+JTFzaIWkX6skxtXosrti5M3V5zntNmiHF1UqqcM2TdqHJAFzRUvj6Jhh3n67SHZK7QbnVPYkOd+wUhwlYRHcz2tV1ZN6HpufUtO+P4Cqc2/dV59LR3KYrWpBP2vy28H5eqPGHTw7nCLDiMANRY45bVsWSBviZLCZA4A=
