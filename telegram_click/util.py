@@ -42,6 +42,8 @@ def parse_telegram_command(text: str) -> (str, [str]):
     :param text: the text to parse
     :return: the command and its argument list
     """
+    import shlex
+
     if text is None or len(text) <= 0:
         return None, []
 
@@ -49,7 +51,7 @@ def parse_telegram_command(text: str) -> (str, [str]):
         return text[1:], []
     else:
         command, rest = text.split(" ", 1)
-        args = rest.split(" ")
+        args = shlex.split(rest)
         return command[1:], args
 
 
