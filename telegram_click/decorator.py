@@ -87,7 +87,15 @@ def command(name: str, description: str = None,
                         string_arg = string_arguments[idx]
                     except IndexError:
                         string_arg = None
-                    parsed = arg.parse_arg(string_arg)
+
+                    if string_arg is None:
+                        if arg.default is not None:
+                            parsed = arg.default
+                        else:
+                            raise ValueError("Missing value for argument: {}".format(arg.name))
+                    else:
+                        parsed = arg.parse_arg(string_arg)
+
                     parsed_args.append(parsed)
             except PermissionError as ex:
                 LOGGER.debug("Permission error in chat {} from user {}: {}".format(chat_id,
