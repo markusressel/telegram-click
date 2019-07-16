@@ -49,14 +49,22 @@ class MyBot:
         context.bot.send_message(update.effective_chat.id, "New age: {}".format(age))
 ```
 
-## Custom types
+## Arguments
+
+telegram-click automatically parses arguments based on 
+[shlex POSIX rules](https://docs.python.org/3/library/shlex.html#parsing-rules)
+so in general space acts as an argument delimiter and quoted arguments 
+are parsed as a single one (supporting both double (`"`) and 
+single (`'`) quote character).  
+
+### Types
 
 Since all user input initially is of type `str` there needs to be a type
-conversion if the expected type is a different one. For basic types like
+conversion if the expected type is not a `str`. For basic types like
 `bool`, `int`, `float` and `str` converters are built in to this library.
-If you want to use other types you have to specify how the string input
-can be converted to your type using the `converter` attribute of the 
-`Argument` constructor like so:
+If you want to use other types you have to specify how to convert the 
+`str` input to your type using the `converter` attribute of the 
+`Argument` constructor:
 
 ```python
 from telegram_click.argument import Argument
