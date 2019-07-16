@@ -34,6 +34,7 @@ LOGGER.setLevel(logging.DEBUG)
 def command(name: str, description: str = None,
             arguments: [Argument] = None,
             permissions: Permission = None,
+            permission_denied_message: str = None,
             print_error: bool = True):
     """
     Decorator to turn a command handler function into a full fledged, shell like command
@@ -41,7 +42,10 @@ def command(name: str, description: str = None,
     :param description: a short description of the command
     :param arguments: list of command argument description objects
     :param permissions: required permissions to run this command
-    :param print_error: sends the exception message to the chat of origin if set to True, False sends a general error message
+    :param permission_denied_message: text so send when a user is denied permission.
+                                      Set this to None to send no message at all.
+    :param print_error: True sends the exception message to the chat of origin,
+                        False sends a general error message
     """
 
     if arguments is None:
@@ -86,7 +90,13 @@ def command(name: str, description: str = None,
                     parsed = arg.parse_arg(string_arg)
                     parsed_args.append(parsed)
             except PermissionError as ex:
-                send_message(bot, chat_id=chat_id, message=":no_entry_sign: `{}`".format(str(ex)),
+                LOGGER.debug("Permission error in chat {} from user {}: {}".format(chat_id,
+                                                                                   update.effective_message.from_user.id,
+                                                                                   ex))
+                if permission_denied_message is None:
+                    return
+
+                send_message(bot, chat_id=chat_id, message=permission_denied_message,
                              parse_mode=ParseMode.MARKDOWN,
                              reply_to=message.message_id)
                 return
@@ -97,12 +107,12 @@ def command(name: str, description: str = None,
                 exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),
                                                     traceback.extract_tb(ex.__traceback__))))
 
-                text = "\n".join([
+                denied_text = "\n".join([
                     ":exclamation: `{}`".format(str(ex)),
                     "",
                     help_message
                 ])
-                send_message(bot, chat_id=chat_id, message=text, parse_mode=ParseMode.MARKDOWN,
+                send_message(bot, chat_id=chat_id, message=denied_text, parse_mode=ParseMode.MARKDOWN,
                              reply_to=message.message_id)
                 return
 
@@ -115,10 +125,10 @@ def command(name: str, description: str = None,
                 exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),
                                                     traceback.extract_tb(ex.__traceback__))))
                 if print_error:
-                    text = ":boom: `{}`".format(str(ex))
+                    denied_text = ":boom: `{}`".format(str(ex))
                 else:
-                    text = "There was an error executing your command :worried:"
-                send_message(bot, chat_id=chat_id, message=text, parse_mode=ParseMode.MARKDOWN,
+                    denied_text = "There was an error executing your command :worried:"
+                send_message(bot, chat_id=chat_id, message=denied_text, parse_mode=ParseMode.MARKDOWN,
                              reply_to=message.message_id)
 
         return wrapper
