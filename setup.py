@@ -25,8 +25,7 @@ from setuptools import setup, find_packages
 
 VERSION_NUMBER = "2.2.2"
 
-GIT_BRANCH = os.environ.get("TRAVIS_BRANCH", None)
-
+GIT_BRANCH = None
 if GIT_BRANCH is None:
     GIT_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"])
     GIT_BRANCH = GIT_BRANCH.decode()  # convert to standard string
@@ -41,6 +40,10 @@ elif GIT_BRANCH == "beta":
 elif GIT_BRANCH == "dev":
     DEVELOPMENT_STATUS = "Development Status :: 3 - Alpha"
     VERSION_NAME = "%s-dev" % VERSION_NUMBER
+elif os.environ.get("TRAVIS_BRANCH", None) == os.environ.get("TRAVIS_TAG", None) == "v{}".format(VERSION_NUMBER):
+    # travis tagged release branch
+    DEVELOPMENT_STATUS = "Development Status :: 5 - Production/Stable"
+    VERSION_NAME = VERSION_NUMBER
 else:
     print("Unknown git branch, using pre-alpha as default")
     DEVELOPMENT_STATUS = "Development Status :: 2 - Pre-Alpha"
