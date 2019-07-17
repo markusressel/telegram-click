@@ -196,12 +196,6 @@ function and (by default) prints the exception text to the chat. If you
 don't want to send the exception message to the user set the `print_error`
 parameter to `False`.
 
-# Limitations
-
-Currently the decorator expects a `classmethod` meaning the first 
-parameter of it is the `self` parameter. This will probably be supported
-in a future release.
-
 # Contributing
 
 GitHub is for social coding: if you want to write code, I encourage contributions through pull requests from forks
