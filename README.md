@@ -6,17 +6,17 @@ Click inspired command interface toolkit for pyton-telegram-bot.
 
 # Features
 * [x] POSIX style argument parsing
-  * Type conversion
-  * Validation 
+  * [x] Type conversion
+  * [x] Validation 
 * [x] Automatic help messages
-  * Show help messages if a command was used with invalid arguments
-  * List all available commands with a single method
+  * [x] Show help messages if a command was used with invalid arguments
+  * [x] List all available commands with a single method
 * [x] Permission handling
-  * Set up permissions for each command separately
-  * Limit command execution to private chats or group admins (or both!)
+  * [x] Set up permissions for each command separately
+  * [x] Limit command execution to private chats or group admins (or both!)
 * [x] Error handling
-  * Automatically send error messages if something goes wrong
-  * Optionally send exception messages
+  * [x] Automatically send error messages if something goes wrong
+  * [x] Optionally send exception messages
 
 # How to use
 
