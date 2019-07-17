@@ -55,7 +55,7 @@ class Argument:
             elif type is int:
                 self.converter = lambda x: int(x)
             elif type is float:
-                self.converter = lambda x: float(x)
+                self.converter = self._float_converter
             else:
                 raise ValueError("If you want to use a custom type you have to provide a converter function too!")
         else:
@@ -107,6 +107,18 @@ class Argument:
             return False
         else:
             raise ValueError("Invalid value '{}'".format(value))
+
+    @staticmethod
+    def _float_converter(value: str) -> float:
+        """
+        Converts a string to a float
+        :param value: string value
+        :return: float
+        """
+        if '%' == value[-1]:
+            return float(value[:-1]) / 100.0
+        else:
+            return float(value)
 
 
 class Selection(Argument):
