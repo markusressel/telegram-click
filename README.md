@@ -7,13 +7,16 @@
 # Features
 * [x] POSIX style argument parsing
   * [x] Type conversion
-  * [x] Validation 
+    * [x] Custom type conversion support
+  * [x] Input validation
 * [x] Automatic help messages
-  * [x] Show help messages if a command was used with invalid arguments
+  * [x] Show help messages when a command was used with invalid arguments
   * [x] List all available commands with a single method
 * [x] Permission handling
   * [x] Set up permissions for each command separately
-  * [x] Limit command execution to private chats or group admins (or both!)
+  * [x] Limit command execution to private chats or group admins
+  * [x] Combine permissions using logical operators
+  * [x] Create custom permission handlers
 * [x] Error handling
   * [x] Automatically send error messages if something goes wrong
   * [x] Optionally send exception messages
