@@ -45,7 +45,8 @@ class MyBot:
         # do something
         pass
         
-    @command(name='age', description='Set age',
+    @command(name='age', 
+             description='Set age',
              arguments=[
                  Argument(name='age',
                           description='The new age',
@@ -96,7 +97,8 @@ from telegram.ext import CallbackContext
 from telegram_click.decorator import command
 from telegram_click.permission import GROUP_ADMIN
 
-@command(name='permission', description='Needs permission',
+@command(name='permission', 
+         description='Needs permission',
          permissions=GROUP_ADMIN)
 def _permission_command_callback(self, update: Update, context: CallbackContext):
     pass
@@ -119,6 +121,7 @@ when this user generate a list of commands.
 | `USER_NAME`           | Only allow users with a username specified |
 | `GROUP_CREATOR`       | Only allow the group creator               |
 | `GROUP_ADMIN`         | Only allow the group admin                 |
+| `NOBODY`              | Nobody has permission. Useful for callbacks only that only trigger via code and not by user interaction (f.ex. "unknown command" handler) |
 
 ### Custom permission handler
 
@@ -150,6 +153,29 @@ By default command calls coming from a user without permission are ignored.
 If you want to send them a "permission denied" like message you can 
 pass this message to the `permission_denied_message` argument of the 
 `@command` decorator.
+
+## Targeted commands
+
+When using a `MessageHandler` instead of a `CommandHandler`
+it is possible to catch commands that are targeted at other bots.
+By default only messages without a target and messages that are targeted 
+directly at this bot are processed.
+
+To control this behaviour specify the `command_target` parameter:
+
+```python
+from telegram import Update
+from telegram.ext import CallbackContext
+from telegram_click.decorator import command
+from telegram_click import CommandTarget
+from telegram_click.permission import NOBODY
+
+@command(name="commands",
+         description="List commands supported by this bot.",
+         permissions=NOBODY,
+         command_target=CommandTarget.UNSPECIFIED | CommandTarget.SELF)
+def _unknown_command_callback(self, update: Update, context: CallbackContext):
+```
 
 ## Error handling
 

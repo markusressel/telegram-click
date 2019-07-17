@@ -23,6 +23,7 @@ import logging
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext
 
+from telegram_click import CommandTarget
 from telegram_click.argument import Argument
 from telegram_click.permission.base import Permission
 from telegram_click.util import generate_help_message, parse_telegram_command, send_message
@@ -35,6 +36,7 @@ def command(name: str, description: str = None,
             arguments: [Argument] = None,
             permissions: Permission = None,
             permission_denied_message: str = None,
+            command_target: bytes = CommandTarget.UNSPECIFIED | CommandTarget.SELF,
             print_error: bool = True):
     """
     Decorator to turn a command handler function into a full fledged, shell like command
@@ -44,6 +46,7 @@ def command(name: str, description: str = None,
     :param permissions: required permissions to run this command
     :param permission_denied_message: text so send when a user is denied permission.
                                       Set this to None to send no message at all.
+    :param command_target: command targets to accept
     :param print_error: True sends the exception message to the chat of origin,
                         False sends a general error message
     """
@@ -71,7 +74,10 @@ def command(name: str, description: str = None,
             message = update.effective_message
             chat_id = message.chat_id
 
-            command, string_arguments = parse_telegram_command(message.text)
+            target, command, string_arguments = parse_telegram_command(bot.username, message.text)
+
+            if not filter_command_target(target, bot.username, command_target):
+                return
 
             parsed_args = []
             try:
@@ -142,3 +148,21 @@ def command(name: str, description: str = None,
         return wrapper
 
     return decorator
+
+
+def filter_command_target(target: str, bot_username: int, allowed_targets: bytes):
+    """
+    Checks if the command target should be accepted based on given input
+    :param target: the target to check
+    :param bot_username: the username of this bot
+    :param allowed_targets: the allowed command target bitmask
+    :return: True if allowed, False if not
+    """
+    if target is None:
+        expected = CommandTarget.UNSPECIFIED
+    elif target == bot_username:
+        expected = CommandTarget.SELF
+    else:
+        expected = CommandTarget.OTHER
+
+    return expected & allowed_targets == expected

@@ -36,23 +36,35 @@ def escape_for_markdown(text: str) -> str:
     return escaped
 
 
-def parse_telegram_command(text: str) -> (str, [str]):
+def parse_telegram_command(bot_username: str, text: str) -> (str, str, [str]):
     """
     Parses the given message to a command and its arguments
+    :param bot_username: the username of the current bot
     :param text: the text to parse
-    :return: the command and its argument list
+    :return: the target bot username, command, and its argument list
     """
     import shlex
 
-    if text is None or len(text) <= 0:
-        return None, []
+    target = bot_username
 
-    if " " not in text:
-        return text[1:], []
+    if text is None or len(text) <= 0:
+        return target, None, []
+
+    if " " in text:
+        first, rest = text.split(" ", 1)
     else:
-        command, rest = text.split(" ", 1)
-        args = shlex.split(rest)
-        return command[1:], args
+        first = text
+        rest = ""
+
+    if '@' in first:
+        command, target = first.split('@', 1)
+        command = command
+        target = target
+    else:
+        command = first
+
+    args = shlex.split(rest)
+    return target, command[1:], args
 
 
 def generate_help_message(name: str, description: str, args: []) -> str:
