@@ -26,6 +26,18 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
 
+def find_first(args: [], type: type):
+    """
+    Finds the first element in the list of the given type
+    :param args: list of elements
+    :param type: expected type
+    :return: item or None
+    """
+    for arg in args:
+        if isinstance(arg, type):
+            return arg
+
+
 def escape_for_markdown(text: str) -> str:
     """
     Escapes text to use as plain text in a markdown document

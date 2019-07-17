@@ -20,13 +20,13 @@
 import functools
 import logging
 
-from telegram import Update, ParseMode
+from telegram import ParseMode, Update
 from telegram.ext import CallbackContext
 
 from telegram_click import CommandTarget
 from telegram_click.argument import Argument
 from telegram_click.permission.base import Permission
-from telegram_click.util import generate_help_message, parse_telegram_command, send_message
+from telegram_click.util import generate_help_message, parse_telegram_command, send_message, find_first
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -69,7 +69,10 @@ def command(name: str, description: str = None,
             raise AttributeError("Unsupported type: {}".format(func))
 
         @functools.wraps(func)
-        def wrapper(self, update: Update, context: CallbackContext, *args, **kwargs):
+        def wrapper(*args, **kwargs):
+            update = find_first(args, Update)
+            context = find_first(args, CallbackContext)
+
             bot = context.bot
             message = update.effective_message
             chat_id = message.chat_id
@@ -131,7 +134,7 @@ def command(name: str, description: str = None,
                 return
 
             try:
-                return func(self, update, context, *parsed_args, *args, **kwargs)
+                return func(*args, *parsed_args, **kwargs)
             except Exception as ex:
                 LOGGER.error(ex)
 
