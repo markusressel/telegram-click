@@ -43,6 +43,18 @@ from telegram.ext import CallbackContext
 from .base import Permission
 
 
+class _Nobody(Permission):
+    """
+    Permission that is never True.
+    """
+
+    def __init__(self, *id: int):
+        self.ids = set(list(id))
+
+    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+        return False
+
+
 class _UserId(Permission):
     """
     Requires that the command user has a specific user id.

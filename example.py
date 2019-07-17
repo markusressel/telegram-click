@@ -23,10 +23,10 @@ import os
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, Updater, MessageHandler, CommandHandler, Filters
 
-from telegram_click import generate_command_list
+from telegram_click import generate_command_list, CommandTarget
 from telegram_click.argument import Argument
 from telegram_click.decorator import command
-from telegram_click.permission import GROUP_ADMIN, USER_ID
+from telegram_click.permission import GROUP_ADMIN, USER_ID, NOBODY
 from telegram_click.permission.base import Permission
 
 logging.basicConfig(level=logging.DEBUG)
@@ -84,6 +84,10 @@ class MyBot:
 
     # optionally specify this callback to send a list of all available commands if
     # an unsupported command is used
+    @command(name="commands",
+             description="List commands supported by this bot.",
+             permissions=NOBODY,
+             command_target=CommandTarget.UNSPECIFIED | CommandTarget.SELF)
     def _unknown_command_callback(self, update: Update, context: CallbackContext):
         bot = context.bot
         chat_id = update.effective_message.chat_id
@@ -91,16 +95,19 @@ class MyBot:
         bot.send_message(chat_id, text, parse_mode=ParseMode.MARKDOWN)
 
     # Optionally specify this command to list all available commands
-    @command(name="commands", description="List commands supported by this bot.")
+    @command(name="commands",
+             description="List commands supported by this bot.")
     def _commands_command_callback(self, update: Update, context: CallbackContext):
         self._unknown_command_callback(update, context)
 
-    @command(name='start', description='Start bot interaction')
+    @command(name='start',
+             description='Start bot interaction')
     def _start_command_callback(self, update: Update, context: CallbackContext):
         # do something
         pass
 
-    @command(name='name', description='Set a name',
+    @command(name='name',
+             description='Set a name',
              arguments=[
                  Argument(name='name',
                           description='The new name',
@@ -110,7 +117,8 @@ class MyBot:
     def _name_command_callback(self, update: Update, context: CallbackContext, name: str):
         context.bot.send_message(update.effective_chat.id, "New name: {}".format(name))
 
-    @command(name='age', description='Set age',
+    @command(name='age',
+             description='Set age',
              arguments=[
                  Argument(name='age',
                           description='The new age',
