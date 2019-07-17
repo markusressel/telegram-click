@@ -27,8 +27,7 @@ pip install telegram-click
 ```
 
 Then annotate your command handler functions with the `@command` decorator
-of this library. The information you need to provide is used to generate
-the help messages.
+of this library:
 
 ```python
 from telegram import Update
@@ -59,11 +58,11 @@ class MyBot:
 
 ## Arguments
 
-telegram-click automatically parses arguments based on 
+**telegram-click** automatically parses arguments based on 
 [shlex POSIX rules](https://docs.python.org/3/library/shlex.html#parsing-rules)
 so in general space acts as an argument delimiter and quoted arguments 
 are parsed as a single one (supporting both double (`"`) and 
-single (`'`) quote character).  
+single (`'`) quote characters).  
 
 ### Types
 
