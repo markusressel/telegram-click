@@ -42,3 +42,13 @@ class _GroupChat(Permission):
     def evaluate(self, update: Update, context: CallbackContext) -> bool:
         chat_type = update.effective_chat.type
         return chat_type == 'group'
+
+
+class _SuperGroupChat(Permission):
+    """
+    Requires the interaction inside a supergroup chat.
+    """
+
+    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+        chat_type = update.effective_chat.type
+        return chat_type == 'supergroup'

@@ -17,11 +17,13 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
-from telegram_click.permission.chat import _PrivateChat, _GroupChat
+from telegram_click.permission.chat import _PrivateChat, _GroupChat, _SuperGroupChat
 from telegram_click.permission.user import _GroupCreator, _GroupAdmin, _UserId, _UserName
 
 PRIVATE_CHAT = _PrivateChat()
-GROUP_CHAT = _GroupChat()
+NORMAL_GROUP_CHAT = _GroupChat()
+SUPER_GROUP_CHAT = _SuperGroupChat()
+GROUP_CHAT = NORMAL_GROUP_CHAT | SUPER_GROUP_CHAT
 
 USER_ID = _UserId
 USER_NAME = _UserName
