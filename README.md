@@ -112,7 +112,9 @@ when this user generate a list of commands.
 | Name                  | Description                                |
 |-----------------------|--------------------------------------------|
 | `PRIVATE_CHAT`        | Requires command execution inside of a private chat |
-| `GROUP_CHAT`          | Requires command execution inside a group  |
+| `NORMAL_GROUP_CHAT`   | Requires command execution inside a normal group  |
+| `SUPER_GROUP_CHAT`    | Requires command execution inside a supergroup  |
+| `GROUP_CHAT`          | Requires command execution inside either a normal or supergroup |
 | `USER_ID`             | Only allow users with a user id specified  |
 | `USER_NAME`           | Only allow users with a username specified |
 | `GROUP_CREATOR`       | Only allow the group creator               |
