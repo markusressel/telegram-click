@@ -1,6 +1,8 @@
 # telegram-click ![https://badge.fury.io/py/telegram-click](https://badge.fury.io/py/telegram-click.svg) [![Build Status](https://travis-ci.org/markusressel/telegram-click.svg?branch=master)](https://travis-ci.org/markusressel/telegram-click)
 
-[Click](https://github.com/pallets/click/) inspired command interface toolkit for [pyton-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot).
+[Click](https://github.com/pallets/click/) 
+inspired command-line interface creation toolkit for 
+[pyton-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot).
 
 ![](/screenshots/demo.png)
 
