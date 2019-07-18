@@ -4,6 +4,8 @@
 inspired command-line interface creation toolkit for 
 [pyton-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot).
 
+Try the latest version of the [example.py](/example.py) out for yourself: [@PythonTelegramClickBot](http://t.me/PythonTelegramClickBot)
+
 <p align="center">
   <img src="/screenshots/demo1.png" width="400"> <img src="/screenshots/demo2.png" width="400"> <img src="/screenshots/demo3.png" width="400"> 
 </p>
