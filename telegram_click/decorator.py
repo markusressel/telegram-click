@@ -153,10 +153,10 @@ def command(name: str, description: str = None,
     return decorator
 
 
-def filter_command_target(target: str, bot_username: int, allowed_targets: bytes):
+def filter_command_target(target: str or None, bot_username: str, allowed_targets: bytes):
     """
     Checks if the command target should be accepted based on given input
-    :param target: the target to check
+    :param target: the target of the command or None
     :param bot_username: the username of this bot
     :param allowed_targets: the allowed command target bitmask
     :return: True if allowed, False if not
