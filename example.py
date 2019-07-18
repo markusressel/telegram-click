@@ -60,6 +60,9 @@ class MyBot:
                 CommandHandler('age',
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._age_command_callback),
+                CommandHandler('children',
+                               filters=(~ Filters.forwarded) & (~ Filters.reply),
+                               callback=self._children_command_callback),
                 # Unknown command handler
                 MessageHandler(Filters.command, callback=self._unknown_command_callback)
                 ]
@@ -132,6 +135,18 @@ class MyBot:
              permissions=MyPermission() & ~ GROUP_ADMIN & (USER_NAME("markusressel") | USER_ID(123456)))
     def _age_command_callback(self, update: Update, context: CallbackContext, age: int):
         context.bot.send_message(update.effective_chat.id, "New age: {}".format(age))
+
+    @command(name='children',
+             description='Set children',
+             arguments=[
+                 Argument(name='amount',
+                          description='The new amount',
+                          type=float,
+                          validator=lambda x: x >= 0,
+                          example='1.57')
+             ])
+    def _children_command_callback(self, update: Update, context: CallbackContext, age: float):
+        context.bot.send_message(update.effective_chat.id, "Children: {}".format(age))
 
 
 if __name__ == '__main__':
