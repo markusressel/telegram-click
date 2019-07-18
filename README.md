@@ -160,10 +160,19 @@ pass this message to the `permission_denied_message` argument of the
 
 ## Targeted commands
 
+Telegram supports the `@` notation to target commands at specific bot
+usernames:
+
+```
+/start               # unspecified
+/start@myAwesomeBot  # targeted at self
+/start@someOtherBot  # targeted at other bot
+```
+
 When using a `MessageHandler` instead of a `CommandHandler`
-it is possible to catch commands that are targeted at other bots.
-By default only messages without a target and messages that are targeted 
-directly at this bot are processed.
+it is possible to catch even commands that are targeted at other bots.
+By default only messages without a target, and messages that are targeted 
+directly at your bot are processed.
 
 To control this behaviour specify the `command_target` parameter:
 
@@ -180,6 +189,9 @@ from telegram_click.permission import NOBODY
          command_target=CommandTarget.UNSPECIFIED | CommandTarget.SELF)
 def _unknown_command_callback(self, update: Update, context: CallbackContext):
 ```
+
+You can combine `CommandTarget`'s using logical operators like in the 
+example above.
 
 ## Error handling
 
