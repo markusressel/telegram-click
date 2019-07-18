@@ -4,7 +4,9 @@
 inspired command-line interface creation toolkit for 
 [pyton-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot).
 
-![](/screenshots/demo1.png) ![](/screenshots/demo2.png) ![](/screenshots/demo3.png)
+<p align="center">
+  <img src="/screenshots/demo1.png" width="400"> <img src="/screenshots/demo2.png" width="400"> <img src="/screenshots/demo3.png" width="400"> 
+</p>
 
 # Features
 * [x] POSIX style argument parsing
