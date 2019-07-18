@@ -1,4 +1,9 @@
 language: python
+services:
+  - docker
+
+before_install:
+  docker build -t markusressel/telegram-click .
 python:
   - '3.5'
   - '3.6'
