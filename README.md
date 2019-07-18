@@ -105,7 +105,6 @@ from telegram_click.permission import GROUP_ADMIN
          description='Needs permission',
          permissions=GROUP_ADMIN)
 def _permission_command_callback(self, update: Update, context: CallbackContext):
-    pass
 ```
 
 Multiple permissions can be combined using `&`, `|` and `~` (not) operators.
@@ -148,7 +147,6 @@ class MyPermission(Permission):
 @command(name='permission', description='Needs permission',
          permissions=MyPermission() & GROUP_ADMIN)
 def _permission_command_callback(self, update: Update, context: CallbackContext):
-    pass
 ```
 
 ### Show "Permission denied" message

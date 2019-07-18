@@ -89,22 +89,25 @@ class MyBot:
              permissions=NOBODY,
              command_target=CommandTarget.UNSPECIFIED | CommandTarget.SELF)
     def _unknown_command_callback(self, update: Update, context: CallbackContext):
-        bot = context.bot
-        chat_id = update.effective_message.chat_id
-        text = generate_command_list(update, context)
-        bot.send_message(chat_id, text, parse_mode=ParseMode.MARKDOWN)
+        self._send_command_list(update, context)
 
     # Optionally specify this command to list all available commands
     @command(name="commands",
              description="List commands supported by this bot.")
     def _commands_command_callback(self, update: Update, context: CallbackContext):
-        self._unknown_command_callback(update, context)
+        self._send_command_list(update, context)
 
     @command(name='start',
              description='Start bot interaction')
     def _start_command_callback(self, update: Update, context: CallbackContext):
-        # do something
-        pass
+        self._send_command_list(update, context)
+
+    @staticmethod
+    def _send_command_list(update: Update, context: CallbackContext):
+        bot = context.bot
+        chat_id = update.effective_message.chat_id
+        text = generate_command_list(update, context)
+        bot.send_message(chat_id, text, parse_mode=ParseMode.MARKDOWN)
 
     @command(name='name',
              description='Set a name',
