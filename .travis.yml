@@ -10,15 +10,22 @@ install:
 script:
   - nosetests
 deploy:
-  provider: pypi
-  user:
-    secure: Jlasg5Ey3st6SJje2wJ5qZyo+uRtyYoczd2lKNkegu2Hdu9UBiHbBIah9sF8HiOAURkLx3xlSApdbG2thSHUHL2RxyD2228D29rOO+GDFWs7yybEduuoOOKo8b/xSsT1rvxMqmIITOlXXv7h7oFNDeMMIXZYdw+HlougQ7HW8nck/BgDCBb1WSYiJHZ0Ogm1dF30Khv3yuba3+iQvIhcD0FZDWmsvlB0LvtAjwcjGZoMks6Q9p6zVDzLqmrz9FGJn1Dcvu2IEgFuydeYeW5zzVv7GErTPkqlzg8kQaLwCBXmJ47OBv/AFXXvICWd+oHVfuf2k8KOwWcaoHxODOIYpTCl9U4ZegLabeW/bDWZWuSvOI/TCbSBGaHRdSn7Gt2du2/7n1CNjR8MVOQwyNg2qQDInbeKtcHfoxgpSUvkQxyPjwM1r8HyjBxVt8b0kaHTA41z8D2fbriE2WqDL2+R7wYsSA83lRGtpeSX+JgGHWsbGtB/X6XzUns4LvZHlWpR4vV++d0MC26mud4Z+pXD8s6P98VPuT9OPx1zAsKcJlj0mHYPTAaY7qFurHT6WHcRqmyrkUFwtGSWseyPjex+6VX/J/XklZQLUyhT0pINAuT02fLMRYmKVgCieFzvPQFiNdc7Sm/bQgshxK7p9xEPQfEJ8Hiwb1/qW+jMd99B8uU=
-  password:
-    secure: iYMqNddmSy2BF/FUfbdYTVDAXHQtq3bqnxC3eV/qSnBY8fY9QgXN1ce7aCl630RdXb8d/VLkSJAmPeZwrC048KLG+uAFSM1CowQ8bYhI+EyqzYTisCxbQ4bV7gwX8TMfTH2Aa0rLa2FdbRNvCc0+Wb5Ix0HPpHzZVGts6tBPH3ZxTEu4f1z7nrKL/bs3jUlDi5FEsVcoWHCpmmYWTlUqEDz7UJnU7Z/EowdUHUydnPsdKnBtRzCURY8pnpT2T3Vnguyl3IZ1DWY/Z80X33dIPFDfePL1AGOaU6zuXb4MUo9Ma6psqEGTiiVFySst0VZxdEF8zrc9kdYQFhlx6KSd1+bYj3m7GEh/NWIEWG2qDdZarZBSVjtAGg4LJNRZzR0dEjxzk72AI0xr59TmhR5VFXDGZB5BxbGfqesIZbqT6wagT3KfX9Ha68ZmA42AumqfJKdWexbQZX+19AeANI+bqZHbqUjvwws3BJiRDXfJsuUqKwNJaXZoU+6mRsIQBdRk7e36X0jmhuqg/rXs39r2VQazOokICyA4+CqGonOcsPhXexj9ZQn9I9wV1D5cINfnagHdhgWUDRYQ6dzCoV0GFh1bjVSzDFxe3Lzpd0zlCzl+PkokFiU7iauTtmJnglYw1nZmSadktALALZvERwgOWtD5UU+nVUzspeOb/F/vsXI=
-  distributions: sdist bdist_wheel
-  skip_cleanup: true
-  skip_existing: true
-  on:
-    branch: master
-    tags: true
-    python: 3.6
+  - provider: pypi
+    user:
+      secure: Jlasg5Ey3st6SJje2wJ5qZyo+uRtyYoczd2lKNkegu2Hdu9UBiHbBIah9sF8HiOAURkLx3xlSApdbG2thSHUHL2RxyD2228D29rOO+GDFWs7yybEduuoOOKo8b/xSsT1rvxMqmIITOlXXv7h7oFNDeMMIXZYdw+HlougQ7HW8nck/BgDCBb1WSYiJHZ0Ogm1dF30Khv3yuba3+iQvIhcD0FZDWmsvlB0LvtAjwcjGZoMks6Q9p6zVDzLqmrz9FGJn1Dcvu2IEgFuydeYeW5zzVv7GErTPkqlzg8kQaLwCBXmJ47OBv/AFXXvICWd+oHVfuf2k8KOwWcaoHxODOIYpTCl9U4ZegLabeW/bDWZWuSvOI/TCbSBGaHRdSn7Gt2du2/7n1CNjR8MVOQwyNg2qQDInbeKtcHfoxgpSUvkQxyPjwM1r8HyjBxVt8b0kaHTA41z8D2fbriE2WqDL2+R7wYsSA83lRGtpeSX+JgGHWsbGtB/X6XzUns4LvZHlWpR4vV++d0MC26mud4Z+pXD8s6P98VPuT9OPx1zAsKcJlj0mHYPTAaY7qFurHT6WHcRqmyrkUFwtGSWseyPjex+6VX/J/XklZQLUyhT0pINAuT02fLMRYmKVgCieFzvPQFiNdc7Sm/bQgshxK7p9xEPQfEJ8Hiwb1/qW+jMd99B8uU=
+    password:
+      secure: iYMqNddmSy2BF/FUfbdYTVDAXHQtq3bqnxC3eV/qSnBY8fY9QgXN1ce7aCl630RdXb8d/VLkSJAmPeZwrC048KLG+uAFSM1CowQ8bYhI+EyqzYTisCxbQ4bV7gwX8TMfTH2Aa0rLa2FdbRNvCc0+Wb5Ix0HPpHzZVGts6tBPH3ZxTEu4f1z7nrKL/bs3jUlDi5FEsVcoWHCpmmYWTlUqEDz7UJnU7Z/EowdUHUydnPsdKnBtRzCURY8pnpT2T3Vnguyl3IZ1DWY/Z80X33dIPFDfePL1AGOaU6zuXb4MUo9Ma6psqEGTiiVFySst0VZxdEF8zrc9kdYQFhlx6KSd1+bYj3m7GEh/NWIEWG2qDdZarZBSVjtAGg4LJNRZzR0dEjxzk72AI0xr59TmhR5VFXDGZB5BxbGfqesIZbqT6wagT3KfX9Ha68ZmA42AumqfJKdWexbQZX+19AeANI+bqZHbqUjvwws3BJiRDXfJsuUqKwNJaXZoU+6mRsIQBdRk7e36X0jmhuqg/rXs39r2VQazOokICyA4+CqGonOcsPhXexj9ZQn9I9wV1D5cINfnagHdhgWUDRYQ6dzCoV0GFh1bjVSzDFxe3Lzpd0zlCzl+PkokFiU7iauTtmJnglYw1nZmSadktALALZvERwgOWtD5UU+nVUzspeOb/F/vsXI=
+    distributions: sdist bdist_wheel
+    skip_cleanup: true
+    skip_existing: true
+    on:
+      branch: master
+      tags: true
+      python: 3.6
+  - provider: script
+    skip_cleanup: true
+    script: bash travis/docker_push
+    on:
+      branch: master
+      tags: true
+      python: 3.6
