@@ -1,4 +1,4 @@
-# telegram-click ![https://badge.fury.io/py/telegram-click](https://badge.fury.io/py/telegram-click.svg) [![Build Status](https://travis-ci.org/markusressel/telegram-click.svg?branch=master)](https://travis-ci.org/markusressel/telegram-click) ![LICENSE](https://img.shields.io/github/license/markusressel/telegram-click.svg)
+# telegram-click ![https://badge.fury.io/py/telegram-click](https://badge.fury.io/py/telegram-click.svg) [![Build Status](https://travis-ci.org/markusressel/telegram-click.svg?branch=master)](https://travis-ci.org/markusressel/telegram-click) [![MIT License](https://img.shields.io/github/license/markusressel/telegram-click.svg)](/LICENSE)
 
 [Click](https://github.com/pallets/click/) 
 inspired command-line interface creation toolkit for 
