@@ -125,7 +125,7 @@ when this user generate a list of commands.
 | `USER_NAME`           | Only allow users with a username specified |
 | `GROUP_CREATOR`       | Only allow the group creator               |
 | `GROUP_ADMIN`         | Only allow the group admin                 |
-| `NOBODY`              | Nobody has permission. Useful for callbacks only that only trigger via code and not by user interaction (f.ex. "unknown command" handler) |
+| `NOBODY`              | Nobody has permission. Useful for callbacks that only trigger via code and not by user interaction (f.ex. "unknown command" handler) |
 
 ### Custom permission handler
 
