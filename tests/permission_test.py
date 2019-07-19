@@ -78,7 +78,7 @@ def _create_update_mock(chat_id: int = -12345678, chat_type: str = "private", me
                         user_id: int = 12345678, username: str = "myusername") -> Update:
     import telegram
 
-    update: Update = lambda: None
+    update = lambda: None  # type: Update
 
     user = telegram.User(
         id=user_id,
