@@ -23,12 +23,14 @@ import logging
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
+# global list of all commands
+COMMAND_LIST = []
+
 
 class CommandTarget:
     """
     Values used to specify what command target (/command@target) to accept
     """
-
     # no target is specified (meaning there is no "@" in command)
     UNSPECIFIED = 1 << 0
     # directly targeted at this bot
@@ -39,9 +41,6 @@ class CommandTarget:
     ANY = UNSPECIFIED | SELF | OTHER
 
 
-COMMAND_LIST = []
-
-
 def generate_command_list(update, context) -> str:
     """
     :return: a Markdown styled text description of all available commands
@@ -50,7 +49,10 @@ def generate_command_list(update, context) -> str:
         filter(lambda x: x["permissions"] is None or x["permissions"].evaluate(update, context), COMMAND_LIST))
     help_messages = list(map(lambda x: x["message"], commands_with_permission))
 
-    if len(help_messages) <= 0:
+    if len(COMMAND_LIST) <= 0:
+        return "This bot does not have any commands."
+
+    if len(commands_with_permission) <= 0:
         return "You do not have permission to use commands."
 
     return "\n\n".join([

@@ -32,6 +32,119 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
 
+def _create_callback_wrapper(func: callable, help_message: str,
+                             arguments: [Argument],
+                             permissions: Permission, permission_denied_message: str or None,
+                             command_target: bytes,
+                             print_error: bool) -> callable:
+    """
+    Creates the wrapper function for the callback function
+    :param func: the function to wrap
+    :param help_message: command help message
+    :param arguments: command arguments
+    :param permissions: command permissions
+    :param permission_denied_message: permission denied message
+    :param command_target: command target
+    :param print_error:
+    :return: wrapper function
+    """
+    if not callable(func):
+        raise AttributeError("Unsupported type: {}".format(func))
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        # find function arguments
+        update = find_first(args, Update)
+        context = find_first(args, CallbackContext)
+
+        # get bot, chat and message info
+        bot = context.bot
+        message = update.effective_message
+        chat_id = message.chat_id
+
+        # parse command and arguments
+        target, command, string_arguments = parse_telegram_command(bot.username, message.text)
+
+        # check if we are allowed to process the given command target
+        if not filter_command_target(target, bot.username, command_target):
+            return
+
+        parsed_args = []
+        try:
+            # check permissions
+            if permissions is not None:
+                if not permissions.evaluate(update, context):
+                    raise PermissionError("You do not have permission to use this command")
+
+            # check argument count
+            if len(string_arguments) > len(arguments):
+                raise ValueError("Too many arguments!")
+
+            # try to convert arguments
+            for idx, arg in enumerate(arguments):
+                try:
+                    string_arg = string_arguments[idx]
+                except IndexError:
+                    string_arg = None
+
+                if string_arg is None:
+                    if arg.default is not None:
+                        parsed = arg.default
+                    else:
+                        raise ValueError("Missing value for argument: {}".format(arg.name))
+                else:
+                    parsed = arg.parse_arg(string_arg)
+
+                parsed_args.append(parsed)
+        except PermissionError as ex:
+            # send permission error (if configured)
+            LOGGER.debug("Permission error in chat {} from user {}: {}".format(chat_id,
+                                                                               update.effective_message.from_user.id,
+                                                                               ex))
+            if permission_denied_message is None:
+                return
+
+            send_message(bot, chat_id=chat_id, message=permission_denied_message,
+                         parse_mode=ParseMode.MARKDOWN,
+                         reply_to=message.message_id)
+            return
+        except Exception as ex:
+            # handle exceptions that occur during permission and argument parsing
+            LOGGER.error(ex)
+
+            import traceback
+            exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),
+                                                traceback.extract_tb(ex.__traceback__))))
+
+            denied_text = "\n".join([
+                ":exclamation: `{}`".format(str(ex)),
+                "",
+                help_message
+            ])
+            send_message(bot, chat_id=chat_id, message=denied_text, parse_mode=ParseMode.MARKDOWN,
+                         reply_to=message.message_id)
+            return
+
+        try:
+            # execute wrapped function
+            return func(*args, *parsed_args, **kwargs)
+        except Exception as ex:
+            # execute wrapped function
+            LOGGER.error(ex)
+
+            import traceback
+            exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),
+                                                traceback.extract_tb(ex.__traceback__))))
+            if print_error:
+                denied_text = ":boom: `{}`".format(str(ex))
+            else:
+                denied_text = "There was an error executing your command :worried:"
+            send_message(bot, chat_id=chat_id, message=denied_text, parse_mode=ParseMode.MARKDOWN,
+                         reply_to=message.message_id)
+
+    return wrapper
+
+
 def command(name: str, description: str = None,
             arguments: [Argument] = None,
             permissions: Permission = None,
@@ -50,7 +163,6 @@ def command(name: str, description: str = None,
     :param print_error: True sends the exception message to the chat of origin,
                         False sends a general error message
     """
-
     if arguments is None:
         arguments = []
 
@@ -64,93 +176,16 @@ def command(name: str, description: str = None,
         }
     )
 
-    def decorator(func: callable):
-        if not callable(func):
-            raise AttributeError("Unsupported type: {}".format(func))
+    def callback_decorator(func: callable):
+        """
+        Callback decorator function
+        :param func: the function to wrap
+        :return: wrapper function
+        """
+        return _create_callback_wrapper(func, help_message, arguments, permissions, permission_denied_message,
+                                        command_target, print_error)
 
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            update = find_first(args, Update)
-            context = find_first(args, CallbackContext)
-
-            bot = context.bot
-            message = update.effective_message
-            chat_id = message.chat_id
-
-            target, command, string_arguments = parse_telegram_command(bot.username, message.text)
-
-            if not filter_command_target(target, bot.username, command_target):
-                return
-
-            parsed_args = []
-            try:
-                if permissions is not None:
-                    if not permissions.evaluate(update, context):
-                        raise PermissionError("You do not have permission to use this command")
-
-                if len(string_arguments) > len(arguments):
-                    raise ValueError("Too many arguments!")
-
-                for idx, arg in enumerate(arguments):
-                    try:
-                        string_arg = string_arguments[idx]
-                    except IndexError:
-                        string_arg = None
-
-                    if string_arg is None:
-                        if arg.default is not None:
-                            parsed = arg.default
-                        else:
-                            raise ValueError("Missing value for argument: {}".format(arg.name))
-                    else:
-                        parsed = arg.parse_arg(string_arg)
-
-                    parsed_args.append(parsed)
-            except PermissionError as ex:
-                LOGGER.debug("Permission error in chat {} from user {}: {}".format(chat_id,
-                                                                                   update.effective_message.from_user.id,
-                                                                                   ex))
-                if permission_denied_message is None:
-                    return
-
-                send_message(bot, chat_id=chat_id, message=permission_denied_message,
-                             parse_mode=ParseMode.MARKDOWN,
-                             reply_to=message.message_id)
-                return
-            except Exception as ex:
-                LOGGER.error(ex)
-
-                import traceback
-                exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),
-                                                    traceback.extract_tb(ex.__traceback__))))
-
-                denied_text = "\n".join([
-                    ":exclamation: `{}`".format(str(ex)),
-                    "",
-                    help_message
-                ])
-                send_message(bot, chat_id=chat_id, message=denied_text, parse_mode=ParseMode.MARKDOWN,
-                             reply_to=message.message_id)
-                return
-
-            try:
-                return func(*args, *parsed_args, **kwargs)
-            except Exception as ex:
-                LOGGER.error(ex)
-
-                import traceback
-                exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),
-                                                    traceback.extract_tb(ex.__traceback__))))
-                if print_error:
-                    denied_text = ":boom: `{}`".format(str(ex))
-                else:
-                    denied_text = "There was an error executing your command :worried:"
-                send_message(bot, chat_id=chat_id, message=denied_text, parse_mode=ParseMode.MARKDOWN,
-                             reply_to=message.message_id)
-
-        return wrapper
-
-    return decorator
+    return callback_decorator
 
 
 def filter_command_target(target: str or None, bot_username: str, allowed_targets: bytes):

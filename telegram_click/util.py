@@ -87,7 +87,6 @@ def generate_help_message(name: str, description: str, args: []) -> str:
     :param args: command argument list
     :return: help message
     """
-
     argument_lines = list(map(lambda x: x.generate_argument_message(), args))
     arguments = "\n".join(argument_lines)
 

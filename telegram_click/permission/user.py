@@ -63,6 +63,12 @@ class _UserId(Permission):
     def __init__(self, *id: int):
         self.ids = set(list(id))
 
+    def __str__(self):
+        return "{}({})".format(self.__class__.__name__, " | ".join(list(map(str, self.ids))))
+
+    def __repr__(self):
+        return "<{}>".format(self.__str__())
+
     def evaluate(self, update: Update, context: CallbackContext) -> bool:
         from_user = update.effective_message.from_user
         return from_user.id in self.ids
@@ -74,11 +80,17 @@ class _UserName(Permission):
     """
 
     def __init__(self, *username: str):
-        fixed_usernames = map(self._add_at_if_missing, set(username))
+        fixed_usernames = map(self._remove_at_if_present, set(username))
         self.usernames = set(filter(lambda x: x is not None, fixed_usernames))
 
+    def __str__(self):
+        return "{}({})".format(self.__class__.__name__, " | ".join(self.usernames))
+
+    def __repr__(self):
+        return "<{}>".format(self.__str__())
+
     @staticmethod
-    def _add_at_if_missing(x: str) -> str or None:
+    def _remove_at_if_present(x: str) -> str or None:
         result = x
         if result is None or not result.strip():
             return None

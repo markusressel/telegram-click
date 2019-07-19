@@ -69,7 +69,6 @@ class Argument:
         :param arg: the string value
         :return: the parsed value
         """
-
         if self.default is not None and arg is None:
             return self.default
 
