@@ -172,6 +172,9 @@ def command(name: str, description: str = None,
     from telegram_click import COMMAND_LIST
     COMMAND_LIST.append(
         {
+            "name": name,
+            "description": description,
+            "arguments": arguments,
             "message": help_message,
             "permissions": permissions
         }
