@@ -47,7 +47,8 @@ def generate_command_list(update, context) -> str:
     """
     commands_with_permission = list(
         filter(lambda x: x["permissions"] is None or x["permissions"].evaluate(update, context), COMMAND_LIST))
-    help_messages = list(map(lambda x: x["message"], commands_with_permission))
+    sorted_commands = sorted(commands_with_permission, key=lambda x: (x["name"].lower(), len(x["arguments"])))
+    help_messages = list(map(lambda x: x["message"], sorted_commands))
 
     if len(COMMAND_LIST) <= 0:
         return "This bot does not have any commands."
