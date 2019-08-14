@@ -32,7 +32,7 @@ class ArgumentTest(TestBase):
             example="text"
         )
 
-        assert arg.parse_arg("sample") == "sample"
+        assert arg.parse_arg_value("sample") == "sample"
 
     @staticmethod
     def test_bool_argument():
@@ -43,7 +43,7 @@ class ArgumentTest(TestBase):
             example="0"
         )
 
-        assert not arg.parse_arg("0")
+        assert not arg.parse_arg_value("0")
 
     @staticmethod
     def test_int_argument():
@@ -54,9 +54,9 @@ class ArgumentTest(TestBase):
             example="0"
         )
 
-        assert arg.parse_arg("0") == 0
-        assert arg.parse_arg("01") == 1
-        assert arg.parse_arg("10") == 10
+        assert arg.parse_arg_value("0") == 0
+        assert arg.parse_arg_value("01") == 1
+        assert arg.parse_arg_value("10") == 10
 
     @staticmethod
     def test_float_argument():
@@ -67,8 +67,8 @@ class ArgumentTest(TestBase):
             example="1.2"
         )
 
-        assert arg.parse_arg("0") == 0.0
-        assert arg.parse_arg("01") == 1.0
-        assert arg.parse_arg("10") == 10.0
-        assert arg.parse_arg("10.2") == 10.2
-        assert arg.parse_arg("3%") == 0.03
+        assert arg.parse_arg_value("0") == 0.0
+        assert arg.parse_arg_value("01") == 1.0
+        assert arg.parse_arg_value("10") == 10.0
+        assert arg.parse_arg_value("10.2") == 10.2
+        assert arg.parse_arg_value("3%") == 0.03

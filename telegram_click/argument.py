@@ -32,7 +32,7 @@ class Argument:
     """
 
     def __init__(self, name: str, description: str, example: str, type: type = str, converter: callable = None,
-                 default: any = None, validator: callable = None):
+                 optional: bool = True, default: any = None, validator: callable = None):
         """
         Creates a command argument object
         :param name: the name of the argument
@@ -40,6 +40,7 @@ class Argument:
         :param example: an example (string!) value for this argument
         :param type: the expected type of the argument
         :param converter: a converter function to convert the string value to the expected type
+        :param optional: specifies if this argument is optional
         :param default: an optional default value
         :param validator: a validator function
         """
@@ -63,17 +64,18 @@ class Argument:
                 raise ValueError("If you want to use a custom type you have to provide a converter function too!")
         else:
             self.converter = converter
+        self.optional = optional
         self.default = default
         self.validator = validator
 
-    def parse_arg(self, arg: str) -> any:
+    def parse_arg_value(self, arg: str) -> any:
         """
         Tries to parse the given value
         :param arg: the string value
         :return: the parsed value
         """
         if arg is None:
-            if self.default is not None:
+            if self.optional:
                 return self.default
             else:
                 raise ValueError("Missing argument: {}".format(self.name))
@@ -94,8 +96,8 @@ class Argument:
             self.type.__name__,
             escape_for_markdown(self.description)
         )
-        if self.default is not None:
-            message += " (default: {}".format(escape_for_markdown(self.default))
+        if self.optional:
+            message += " (`{}`)".format(escape_for_markdown(self.default))
         return message
 
     @staticmethod
@@ -132,7 +134,7 @@ class Selection(Argument):
     """
 
     def __init__(self, name: str, description: str, allowed_values: [any], type: type = str, converter: callable = None,
-                 default: any = None):
+                 optional: bool = None, default: any = None):
         """
 
         :param name: the name of the argument
@@ -140,18 +142,12 @@ class Selection(Argument):
         :param allowed_values: list of allowed (target type) values
         :param type: the expected type of the argument
         :param converter: a converter function to convert the string value to the expected type
+        :param optional: specifies if this argument is optional
         :param default: an optional default value
         """
         self.allowed_values = allowed_values
-        validator = lambda x: x in self.allowed_values
-        super().__init__(name, description, allowed_values[0], type, converter, default, validator)
 
-    def generate_argument_message(self):
-        message = "  {} (`{}`): {}".format(
-            escape_for_markdown(self.name),
-            self.type.__name__,
-            escape_for_markdown(self.description)
-        )
-        if self.default is not None:
-            message += " (default: {}".format(escape_for_markdown(self.default))
-        return message
+        def validator(x):
+            return x in self.allowed_values
+
+        super().__init__(name, description, allowed_values[0], type, converter, optional, default, validator)

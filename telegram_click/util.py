@@ -39,12 +39,13 @@ def find_first(args: [], type: type):
             return arg
 
 
-def escape_for_markdown(text: str) -> str:
+def escape_for_markdown(text: str or None) -> str:
     """
     Escapes text to use as plain text in a markdown document
     :param text: the original text
     :return: the escaped text
     """
+    text = str(text)
     escaped = text.replace("*", "\\*").replace("_", "\\_")
     return escaped
 
