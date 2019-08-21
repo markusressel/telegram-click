@@ -120,15 +120,16 @@ when this user generate a list of commands.
 
 | Name                  | Description                                |
 |-----------------------|--------------------------------------------|
-| `PRIVATE_CHAT`        | Requires command execution inside of a private chat |
-| `NORMAL_GROUP_CHAT`   | Requires command execution inside a normal group  |
-| `SUPER_GROUP_CHAT`    | Requires command execution inside a supergroup  |
-| `GROUP_CHAT`          | Requires command execution inside either a normal or supergroup |
-| `USER_ID`             | Only allow users with a user id specified  |
-| `USER_NAME`           | Only allow users with a username specified |
-| `GROUP_CREATOR`       | Only allow the group creator               |
-| `GROUP_ADMIN`         | Only allow the group admin                 |
-| `NOBODY`              | Nobody has permission. Useful for callbacks that only trigger via code and not by user interaction (f.ex. "unknown command" handler) |
+| `PRIVATE_CHAT`        | The command can only be executed in a private chat |
+| `NORMAL_GROUP_CHAT`   | The command can only be executed in a normal group  |
+| `SUPER_GROUP_CHAT`    | The command can only be executed in a supergroup  |
+| `GROUP_CHAT`          | The command can only be executed in either a normal or a supergroup |
+| `USER_ID`             | Only users whose user id is specified have permission |
+| `USER_NAME`           | Only users whose username is specified have permission |
+| `GROUP_CREATOR`       | Only the group creator has permission               |
+| `GROUP_ADMIN`         | Only the group admin has permission                 |
+| `NOBODY`              | Nobody has permission (useful for callbacks triggered via code instead of user interaction f.ex. "unknown command" handler) |
+| `ANYBODY`             | Anybody has permission (this is the default) |
 
 ### Custom permission handler
 

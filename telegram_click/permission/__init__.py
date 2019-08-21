@@ -19,13 +19,14 @@
 #  SOFTWARE.
 
 from telegram_click.permission.chat import _PrivateChat, _GroupChat, _SuperGroupChat
-from telegram_click.permission.user import _GroupCreator, _GroupAdmin, _UserId, _UserName, _Nobody
+from telegram_click.permission.user import _GroupCreator, _GroupAdmin, _UserId, _UserName, _Nobody, _Anybody
 
 PRIVATE_CHAT = _PrivateChat()
 NORMAL_GROUP_CHAT = _GroupChat()
 SUPER_GROUP_CHAT = _SuperGroupChat()
 GROUP_CHAT = NORMAL_GROUP_CHAT | SUPER_GROUP_CHAT
 
+ANYBODY = _Anybody()
 NOBODY = _Nobody()
 USER_ID = _UserId
 USER_NAME = _UserName

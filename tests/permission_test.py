@@ -39,6 +39,9 @@ class FalsePermission(Permission):
 
 def _create_update_mock(chat_id: int = -12345678, chat_type: str = "private", message_id: int = 12345678,
                         user_id: int = 12345678, username: str = "myusername") -> Update:
+    """
+    Helper method to create an "Update" object with mocked content
+    """
     import telegram
 
     update = lambda: None  # type: Update
@@ -84,7 +87,13 @@ class PermissionTest(TestBase):
         valid_update = _create_update_mock(username="markusressel")
         assert permission.evaluate(valid_update, None)
 
+        invalid_update = _create_update_mock(username="markus")
+        assert not permission.evaluate(invalid_update, None)
+
         invalid_update = _create_update_mock(username="other")
+        assert not permission.evaluate(invalid_update, None)
+
+        invalid_update = _create_update_mock(username=None)
         assert not permission.evaluate(invalid_update, None)
 
     @staticmethod

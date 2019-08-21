@@ -24,13 +24,19 @@ from telegram.ext import CallbackContext
 from .base import Permission
 
 
+class _Anybody(Permission):
+    """
+    Permission that is always True.
+    """
+
+    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+        return True
+
+
 class _Nobody(Permission):
     """
     Permission that is never True.
     """
-
-    def __init__(self, *id: int):
-        self.ids = set(list(id))
 
     def evaluate(self, update: Update, context: CallbackContext) -> bool:
         return False
