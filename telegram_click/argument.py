@@ -43,8 +43,11 @@ class Argument:
         :param default: an optional default value
         :param validator: a validator function
         """
+        for c in name:
+            if c.isspace():
+                raise ValueError("Argument name must not contain whitespace!")
         self.name = name
-        self.description = description
+        self.description = description.strip()
         self.example = example
         self.type = type
         if converter is None:
