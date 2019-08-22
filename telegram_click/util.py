@@ -91,13 +91,16 @@ def split_named_args(str_args: [str]) -> ([(str, str)], [str]):
     return named, non_named
 
 
-def parse_command_args(arguments: str, expected_args: []) -> dict:
+def parse_command_args(arguments: str or None, expected_args: []) -> dict:
     """
     Parses the given argument text
     :param arguments: the argument text
     :param expected_args: a list of expected arguments
     :return: dictionary { argument-name -> value }
     """
+    if arguments is None:
+        arguments = ""
+
     import shlex
     str_args = shlex.split(arguments)
     named, floating = split_named_args(str_args)
@@ -127,7 +130,7 @@ def parse_command_args(arguments: str, expected_args: []) -> dict:
     return parsed_args
 
 
-def split_command_from_args(text: str) -> (str, str):
+def split_command_from_args(text: str or None) -> (str or None, str or None):
     """
     Splits the command (including any target) from its arguments
     :param text: the full message
@@ -142,7 +145,7 @@ def split_command_from_args(text: str) -> (str, str):
         return text, None
 
 
-def parse_command_target(bot_username: str, command: str) -> str:
+def parse_command_target(bot_username: str, command: str or None) -> str:
     """
     Determines the command target bot username
     :param bot_username: the username of this bot
