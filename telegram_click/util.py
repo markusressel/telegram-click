@@ -93,7 +93,7 @@ def parse_command_args(arguments: str, expected_args: []) -> dict:
             parsed_args[name] = arg_name_map[name].parse_arg(value)
             arg_name_map.pop(name)
         else:
-            raise ValueError(f"Unknown argument '{name}'")
+            raise ValueError("Unknown argument '{}'".format(name))
 
     # then floating args
     for floating_arg in floating:
