@@ -63,40 +63,19 @@ def _create_callback_wrapper(func: callable, help_message: str,
         message = update.effective_message
         chat_id = message.chat_id
 
-        # parse command and arguments
-        target, command, string_arguments = parse_telegram_command(bot.username, message.text, arguments)
-
-        # check if we are allowed to process the given command target
-        if not filter_command_target(target, bot.username, command_target):
-            return
-
         try:
             # check permissions
             if permissions is not None:
                 if not permissions.evaluate(update, context):
                     raise PermissionError("You do not have permission to use this command")
 
-            # check argument count
-            if len(string_arguments) > len(arguments):
-                raise ValueError("Too many arguments!")
+            # parse command and arguments
+            target, command, parsed_args = parse_telegram_command(bot.username, message.text, arguments)
 
-            # try to convert arguments
-            parsed_args = []
-            for idx, arg in enumerate(arguments):
-                try:
-                    string_arg = string_arguments[idx]
-                except IndexError:
-                    string_arg = None
+            # check if we are allowed to process the given command target
+            if not filter_command_target(target, bot.username, command_target):
+                return
 
-                if string_arg is None:
-                    if arg.default is not None:
-                        parsed = arg.default
-                    else:
-                        raise ValueError("Missing value for argument: {}".format(arg.name))
-                else:
-                    parsed = arg.parse_arg(string_arg)
-
-                parsed_args.append(parsed)
         except PermissionError as ex:
             # send permission error (if configured)
             LOGGER.debug("Permission error in chat {} from user {}: {}".format(chat_id,
@@ -128,7 +107,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
 
         try:
             # execute wrapped function
-            return func(*args, *parsed_args, **kwargs)
+            return func(*args, **{**parsed_args, **kwargs})
         except Exception as ex:
             # execute wrapped function
             LOGGER.error(ex)

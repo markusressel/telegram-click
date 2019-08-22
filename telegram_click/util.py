@@ -113,6 +113,7 @@ def parse_telegram_command(bot_username: str, text: str, expected_args: []) -> (
     Parses the given message to a command and its arguments
     :param bot_username: the username of the current bot
     :param text: the text to parse
+    :param expected_args: expected arguments
     :return: the target bot username, command, and its argument list
     """
     target = bot_username
