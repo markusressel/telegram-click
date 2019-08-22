@@ -64,13 +64,12 @@ def _create_callback_wrapper(func: callable, help_message: str,
         chat_id = message.chat_id
 
         # parse command and arguments
-        target, command, string_arguments = parse_telegram_command(bot.username, message.text)
+        target, command, string_arguments = parse_telegram_command(bot.username, message.text, arguments)
 
         # check if we are allowed to process the given command target
         if not filter_command_target(target, bot.username, command_target):
             return
 
-        parsed_args = []
         try:
             # check permissions
             if permissions is not None:
@@ -82,6 +81,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
                 raise ValueError("Too many arguments!")
 
             # try to convert arguments
+            parsed_args = []
             for idx, arg in enumerate(arguments):
                 try:
                     string_arg = string_arguments[idx]
@@ -166,6 +166,8 @@ def command(name: str, description: str = None,
     """
     if arguments is None:
         arguments = []
+    if len(set(map(lambda x: x.name, arguments))) < len(arguments):
+        raise ValueError("Argument names must be unique per command!")
 
     help_message = generate_help_message(name, description, arguments)
 

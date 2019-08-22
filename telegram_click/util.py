@@ -19,6 +19,7 @@
 #  SOFTWARE.
 
 import logging
+from collections import OrderedDict
 
 from telegram import Bot
 
@@ -48,15 +49,72 @@ def escape_for_markdown(text: str) -> str:
     return escaped
 
 
-def parse_telegram_command(bot_username: str, text: str) -> (str, str, [str]):
+def split_named_args(str_args: [str]) -> ([(str, str)], [str]):
+    """
+    Separates named command arguments (including their values) from non-named arguments
+    :return: list of (argument name, value) tuples, list of free-floating arguments
+    """
+    named = []
+    non_named = []
+
+    i = 0
+    while i < len(str_args):
+        arg = str_args[i]
+        if arg.startswith("--"):
+            named_item = (str_args[i][2:], str_args[i + 1])
+            named.append(named_item)
+            i += 1
+        else:
+            non_named.append(arg)
+
+        i += 1
+
+    return named, non_named
+
+
+def parse_command_args(arguments: str, expected_args: []) -> dict:
+    """
+    Parses the given argument text
+    :param arguments: the argument text
+    :param expected_args: a list of expected arguments
+    :return: dictionary { argument-name -> value }
+    """
+    import shlex
+    str_args = shlex.split(arguments)
+    named, floating = split_named_args(str_args)
+    parsed_args = {}
+
+    # map argument.name -> argument
+    arg_name_map = OrderedDict(map(lambda x: (x.name, x), expected_args))
+
+    # process named args first
+    for name, value in named:
+        if name in arg_name_map:
+            parsed_args[name] = arg_name_map[name].parse_arg(value)
+            arg_name_map.pop(name)
+        else:
+            raise ValueError(f"Unknown argument '{name}'")
+
+    # then floating args
+    for floating_arg in floating:
+        arg = list(arg_name_map.values())[0]
+        parsed_args[arg.name] = arg.parse_arg(floating_arg)
+        arg_name_map.pop(arg.name)
+
+    # and then handle missing args
+    for name, arg in arg_name_map.items():
+        parsed_args[arg.name] = arg.parse_arg(None)
+
+    return parsed_args
+
+
+def parse_telegram_command(bot_username: str, text: str, expected_args: []) -> (str, str, [str]):
     """
     Parses the given message to a command and its arguments
     :param bot_username: the username of the current bot
     :param text: the text to parse
     :return: the target bot username, command, and its argument list
     """
-    import shlex
-
     target = bot_username
 
     if text is None or len(text) <= 0:
@@ -75,8 +133,9 @@ def parse_telegram_command(bot_username: str, text: str) -> (str, str, [str]):
     else:
         command = first
 
-    args = shlex.split(rest)
-    return target, command[1:], args
+    parsed_args = parse_command_args(rest, expected_args)
+
+    return target, command[1:], parsed_args
 
 
 def generate_help_message(name: str, description: str, args: []) -> str:
