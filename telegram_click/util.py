@@ -91,7 +91,7 @@ def parse_command_args(arguments: str, expected_args: []) -> dict:
     # process named args first
     for name, value in named:
         if name in arg_name_map:
-            parsed_args[name] = arg_name_map[name].parse_arg(value)
+            parsed_args[name] = arg_name_map[name].parse_arg_value(value)
             arg_name_map.pop(name)
         else:
             raise ValueError("Unknown argument '{}'".format(name))
@@ -99,12 +99,12 @@ def parse_command_args(arguments: str, expected_args: []) -> dict:
     # then floating args
     for floating_arg in floating:
         arg = list(arg_name_map.values())[0]
-        parsed_args[arg.name] = arg.parse_arg(floating_arg)
+        parsed_args[arg.name] = arg.parse_arg_value(floating_arg)
         arg_name_map.pop(arg.name)
 
     # and then handle missing args
     for name, arg in arg_name_map.items():
-        parsed_args[arg.name] = arg.parse_arg(None)
+        parsed_args[arg.name] = arg.parse_arg_value(None)
 
     return parsed_args
 
