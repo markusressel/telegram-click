@@ -33,7 +33,7 @@ class Argument:
     """
 
     def __init__(self, name: str, description: str, example: str, type: type = str, converter: callable = None,
-                 optional: bool = True, default: any = None, validator: callable = None):
+                 optional: bool = False, default: any = None, validator: callable = None):
         """
         Creates a command argument object
         :param name: the name of the argument
