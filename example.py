@@ -118,7 +118,7 @@ class MyBot:
                           optional=True,
                           example='Markus')
              ])
-    def _name_command_callback(self, update: Update, context: CallbackContext, name: str):
+    def _name_command_callback(self, update: Update, context: CallbackContext, name: str or None):
         chat_id = update.effective_chat.id
         if name is None:
             context.bot.send_message(chat_id, "Current name: {}".format(name))
