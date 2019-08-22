@@ -43,6 +43,7 @@ class ParsingTest(TestBase):
             description="str description",
             type=float,
             example="1.23",
+            optional=True,
             default=12.5
         )
 
