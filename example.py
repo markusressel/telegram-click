@@ -43,11 +43,13 @@ class MyPermission(Permission):
 class MyBot:
 
     def __init__(self):
-        self._updater = Updater(token=os.environ.get("TELEGRAM_BOT_KEY"),
-                                use_context=True)
+        self._updater = Updater(
+            token=os.environ.get("TELEGRAM_BOT_KEY"),
+            use_context=True
+        )
 
         handler_groups = {
-            1: [MessageHandler(Filters.text, callback=self._message_callback),
+            1: [
                 CommandHandler('commands',
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._commands_command_callback),
@@ -65,7 +67,7 @@ class MyBot:
                                callback=self._children_command_callback),
                 # Unknown command handler
                 MessageHandler(Filters.command, callback=self._unknown_command_callback)
-                ]
+            ]
         }
 
         for group, handlers in handler_groups.items():
@@ -79,11 +81,6 @@ class MyBot:
         """
         self._updater.start_polling(clean=True)
         self._updater.idle()
-
-    def _message_callback(self, update: Update, context: CallbackContext):
-        text = update.effective_message.text
-        print("Message: {}".format(text))
-        pass
 
     # optionally specify this callback to send a list of all available commands if
     # an unsupported command is used
@@ -113,15 +110,21 @@ class MyBot:
         bot.send_message(chat_id, text, parse_mode=ParseMode.MARKDOWN)
 
     @command(name='name',
-             description='Set a name',
+             description='Get/Set a name',
              arguments=[
                  Argument(name='name',
                           description='The new name',
                           validator=lambda x: x.strip(),
+                          optional=True,
                           example='Markus')
              ])
     def _name_command_callback(self, update: Update, context: CallbackContext, name: str):
-        context.bot.send_message(update.effective_chat.id, "New name: {}".format(name))
+        chat_id = update.effective_chat.id
+        if name is None:
+            context.bot.send_message(chat_id, "Current name: {}".format(name))
+            return
+        else:
+            context.bot.send_message(chat_id, "New name: {}".format(name))
 
     @command(name='age',
              description='Set age',
