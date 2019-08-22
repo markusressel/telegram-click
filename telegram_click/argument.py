@@ -72,8 +72,11 @@ class Argument:
         :param arg: the string value
         :return: the parsed value
         """
-        if self.default is not None and arg is None:
-            return self.default
+        if arg is None:
+            if self.default is not None:
+                return self.default
+            else:
+                raise ValueError("Missing argument: {}".format(self.name))
 
         parsed = self.converter(arg)
         if self.validator is not None:
