@@ -79,12 +79,12 @@ class Argument:
             if self.optional:
                 return self.default
             else:
-                raise ValueError("Missing argument: {}".format(self.name))
+                raise ValueError("Missing required argument: '{}'".format(self.name))
 
         parsed = self.converter(arg)
         if self.validator is not None:
             if not self.validator(parsed):
-                raise ValueError("Invalid argument value: {}".format(arg))
+                raise ValueError("Invalid value for argument '{}': '{}'".format(self.name, arg))
         return parsed
 
     def generate_argument_message(self) -> str:
