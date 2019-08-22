@@ -33,6 +33,20 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
 
+def _check_permissions(update: Update, context: CallbackContext,
+                       permissions: Permission) -> bool:
+    """
+    Checks permissions and raises a PermissionError if a permission is not fulfilled
+    :param update: message update
+    :param context: message context
+    :param permissions: command permissions
+    """
+    if permissions is not None:
+        return permissions.evaluate(update, context)
+    else:
+        return True
+
+
 def _create_callback_wrapper(func: callable, help_message: str,
                              arguments: [Argument],
                              permissions: Permission, permission_denied_message: str or None,
@@ -64,33 +78,30 @@ def _create_callback_wrapper(func: callable, help_message: str,
         chat_id = message.chat_id
 
         try:
-            # check permissions
-            if permissions is not None:
-                if not permissions.evaluate(update, context):
-                    raise PermissionError("You do not have permission to use this command")
+            if not _check_permissions(update, context, permissions):
+                LOGGER.debug("Permission denied in chat {} for user {} for message: {}".format(
+                    chat_id,
+                    update.effective_message.from_user.id,
+                    message))
 
-            # parse command and arguments
+                # send 'permission denied' message, if configured
+                if permission_denied_message is not None:
+                    send_message(bot, chat_id=chat_id, message=permission_denied_message,
+                                 parse_mode=ParseMode.MARKDOWN,
+                                 reply_to=message.message_id)
+                # don't process command
+                return
+
+            # parse target, command and arguments
             target, command, parsed_args = parse_telegram_command(bot.username, message.text, arguments)
 
             # check if we are allowed to process the given command target
             if not filter_command_target(target, bot.username, command_target):
                 return
 
-        except PermissionError as ex:
-            # send permission error (if configured)
-            LOGGER.debug("Permission error in chat {} from user {}: {}".format(chat_id,
-                                                                               update.effective_message.from_user.id,
-                                                                               ex))
-            if permission_denied_message is None:
-                return
-
-            send_message(bot, chat_id=chat_id, message=permission_denied_message,
-                         parse_mode=ParseMode.MARKDOWN,
-                         reply_to=message.message_id)
-            return
         except Exception as ex:
             # handle exceptions that occur during permission and argument parsing
-            LOGGER.error(ex)
+            logging.exception("Error parsing command arguments")
 
             import traceback
             exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),
@@ -110,7 +121,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
             return func(*args, **{**parsed_args, **kwargs})
         except Exception as ex:
             # execute wrapped function
-            LOGGER.error(ex)
+            logging.exception("Error in callback")
 
             import traceback
             exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),

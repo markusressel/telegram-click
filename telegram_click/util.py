@@ -127,6 +127,39 @@ def parse_command_args(arguments: str, expected_args: []) -> dict:
     return parsed_args
 
 
+def split_command_from_args(text: str) -> (str, str):
+    """
+    Splits the command (including any target) from its arguments
+    :param text: the full message
+    :return: (command, args)
+    """
+    if text is None or len(text) <= 0:
+        return None, None
+
+    if " " in text:
+        return text.split(" ", 1)
+    else:
+        return text, None
+
+
+def parse_command_target(bot_username: str, command: str) -> str:
+    """
+    Determines the command target bot username
+    :param bot_username: the username of this bot
+    :param command: the command to check
+    :return: the username of the targeted bot
+    """
+    target = bot_username
+
+    if command is None or len(command) <= 0:
+        return target
+
+    if '@' in command:
+        _, target = command.split('@', 1)
+
+    return target
+
+
 def parse_telegram_command(bot_username: str, text: str, expected_args: []) -> (str, str, [str]):
     """
     Parses the given message to a command and its arguments
@@ -135,26 +168,9 @@ def parse_telegram_command(bot_username: str, text: str, expected_args: []) -> (
     :param expected_args: expected arguments
     :return: the target bot username, command, and its argument list
     """
-    target = bot_username
-
-    if text is None or len(text) <= 0:
-        return target, None, []
-
-    if " " in text:
-        first, rest = text.split(" ", 1)
-    else:
-        first = text
-        rest = ""
-
-    if '@' in first:
-        command, target = first.split('@', 1)
-        command = command
-        target = target
-    else:
-        command = first
-
-    parsed_args = parse_command_args(rest, expected_args)
-
+    command, args = split_command_from_args(text)
+    target = parse_command_target(bot_username, command)
+    parsed_args = parse_command_args(args, expected_args)
     return target, command[1:], parsed_args
 
 
