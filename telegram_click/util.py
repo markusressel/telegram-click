@@ -50,6 +50,25 @@ def escape_for_markdown(text: str or None) -> str:
     return escaped
 
 
+ARG_NAMING_PREFIXES = {"--", "—"}
+
+
+def starts_with_naming_prefix(arg: str) -> bool:
+    for prefix in ARG_NAMING_PREFIXES:
+        if arg.startswith(prefix):
+            return True
+
+    return False
+
+
+def remove_naming_prefix(arg: str) -> str:
+    for prefix in ARG_NAMING_PREFIXES:
+        if arg.startswith(prefix):
+            return arg[len(prefix):]
+
+    return arg
+
+
 def split_named_args(str_args: [str]) -> ([(str, str)], [str]):
     """
     Separates named command arguments (including their values) from non-named arguments
@@ -61,8 +80,8 @@ def split_named_args(str_args: [str]) -> ([(str, str)], [str]):
     i = 0
     while i < len(str_args):
         arg = str_args[i]
-        if arg.startswith("--"):
-            named_item = (str_args[i][2:], str_args[i + 1])
+        if starts_with_naming_prefix(arg):
+            named_item = (remove_naming_prefix(arg), str_args[i + 1])
             named.append(named_item)
             i += 1
         else:
