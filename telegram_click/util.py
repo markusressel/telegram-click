@@ -23,6 +23,8 @@ from collections import OrderedDict
 
 from telegram import Bot
 
+from telegram_click.const import ARG_NAMING_PREFIXES
+
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
@@ -48,9 +50,6 @@ def escape_for_markdown(text: str or None) -> str:
     text = str(text)
     escaped = text.replace("*", "\\*").replace("_", "\\_")
     return escaped
-
-
-ARG_NAMING_PREFIXES = {"--", "—"}
 
 
 def starts_with_naming_prefix(arg: str) -> bool:

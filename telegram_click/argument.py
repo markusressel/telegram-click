@@ -20,6 +20,7 @@
 
 import logging
 
+from telegram_click.const import ARG_NAMING_PREFIXES
 from telegram_click.util import escape_for_markdown
 
 LOGGER = logging.getLogger(__name__)
@@ -91,7 +92,8 @@ class Argument:
         Generates the usage text for this argument
         :return: usage text line
         """
-        message = "  {} (`{}`): {}".format(
+        message = "  `{}{}` (`{}`): {}".format(
+            next(iter(ARG_NAMING_PREFIXES)),
             escape_for_markdown(self.name),
             self.type.__name__,
             escape_for_markdown(self.description)
