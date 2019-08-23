@@ -55,7 +55,7 @@ class ParsingTest(TestBase):
             arg3
         ]
 
-        target, command, parsed_args = parse_telegram_command(bot_username, command_line, expected_args)
+        command, parsed_args = parse_telegram_command(bot_username, command_line, expected_args)
 
         def test(str_arg, int_arg, float_arg):
             assert int_arg == 12345
@@ -63,7 +63,6 @@ class ParsingTest(TestBase):
             assert float_arg == arg3.default
             return True
 
-        assert target == bot_username
         assert command == "command"
         assert len(parsed_args) == len(expected_args)
         assert test(**parsed_args)
