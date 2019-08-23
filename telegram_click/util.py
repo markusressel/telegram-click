@@ -149,22 +149,22 @@ def split_command_from_args(text: str or None) -> (str or None, str or None):
         return text, None
 
 
-def parse_command_target(bot_username: str, command: str or None) -> str:
+def split_command_from_target(bot_username: str, command: str or None) -> (str, str):
     """
     Determines the command target bot username
     :param bot_username: the username of this bot
     :param command: the command to check
-    :return: the username of the targeted bot
+    :return: (the command, the username of the targeted bot)
     """
     target = bot_username
 
     if command is None or len(command) <= 0:
-        return target
+        return command, target
 
     if '@' in command:
-        _, target = command.split('@', 1)
+        command, target = command.split('@', 1)
 
-    return target
+    return command, target
 
 
 def parse_telegram_command(bot_username: str, text: str, expected_args: []) -> (str, str, [str]):
@@ -176,9 +176,9 @@ def parse_telegram_command(bot_username: str, text: str, expected_args: []) -> (
     :return: the target bot username, command, and its argument list
     """
     command, args = split_command_from_args(text)
-    target = parse_command_target(bot_username, command)
+    command, target = split_command_from_target(bot_username, command)
     parsed_args = parse_command_args(args, expected_args)
-    return target, command[1:], parsed_args
+    return command[1:], parsed_args
 
 
 def generate_help_message(name: str, description: str, args: []) -> str:

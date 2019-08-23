@@ -27,7 +27,8 @@ from telegram.ext import CallbackContext
 from telegram_click import CommandTarget
 from telegram_click.argument import Argument
 from telegram_click.permission.base import Permission
-from telegram_click.util import generate_help_message, parse_telegram_command, send_message, find_first
+from telegram_click.util import generate_help_message, parse_telegram_command, send_message, find_first, \
+    split_command_from_args, split_command_from_target
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -36,10 +37,11 @@ LOGGER.setLevel(logging.DEBUG)
 def _check_permissions(update: Update, context: CallbackContext,
                        permissions: Permission) -> bool:
     """
-    Checks permissions and raises a PermissionError if a permission is not fulfilled
+    Checks if a message passes permission tests
     :param update: message update
     :param context: message context
     :param permissions: command permissions
+    :return: True if authorized, False otherwise
     """
     if permissions is not None:
         return permissions.evaluate(update, context)
@@ -92,9 +94,9 @@ def _create_callback_wrapper(func: callable, help_message: str,
                 # don't process command
                 return
 
-            # parse target, command and arguments
-            target, command, parsed_args = parse_telegram_command(bot.username, message.text, arguments)
-
+            # parse and check command target
+            cmd, _ = split_command_from_args(message.text)
+            _, target = split_command_from_target(bot.username, cmd)
             # check if we are allowed to process the given command target
             if not filter_command_target(target, bot.username, command_target):
                 LOGGER.debug("Ignoring command for unspecified target {} in chat {} for user {}: {}".format(
@@ -105,20 +107,23 @@ def _create_callback_wrapper(func: callable, help_message: str,
 
                 # don't process command
                 return
-        except Exception as ex:
-            # handle exceptions that occur during permission and argument parsing
-            logging.exception("Error parsing command arguments")
 
-            denied_text = "\n".join([
-                ":exclamation: `{}`".format(str(ex)),
-                "",
-                help_message
-            ])
-            send_message(bot, chat_id=chat_id, message=denied_text, parse_mode=ParseMode.MARKDOWN,
-                         reply_to=message.message_id)
-            return
+            try:
+                # parse command and arguments
+                cmd, parsed_args = parse_telegram_command(bot.username, message.text, arguments)
+            except ValueError as ex:
+                # handle exceptions that occur during permission and argument parsing
+                logging.exception("Error parsing command arguments")
 
-        try:
+                denied_text = "\n".join([
+                    ":exclamation: `{}`".format(str(ex)),
+                    "",
+                    help_message
+                ])
+                send_message(bot, chat_id=chat_id, message=denied_text, parse_mode=ParseMode.MARKDOWN,
+                             reply_to=message.message_id)
+                return
+
             # convert argument names to python param naming convention (snake-case)
             kw_function_args = dict(map(lambda x: (x[0].lower().replace("-", "_"), x[1]), list(parsed_args.items())))
             # execute wrapped function
