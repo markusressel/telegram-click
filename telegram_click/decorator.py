@@ -97,6 +97,13 @@ def _create_callback_wrapper(func: callable, help_message: str,
 
             # check if we are allowed to process the given command target
             if not filter_command_target(target, bot.username, command_target):
+                LOGGER.debug("Ignoring command for unspecified target {} in chat {} for user {}: {}".format(
+                    target,
+                    chat_id,
+                    update.effective_message.from_user.id,
+                    message))
+
+                # don't process command
                 return
 
         except Exception as ex:
@@ -117,8 +124,10 @@ def _create_callback_wrapper(func: callable, help_message: str,
             return
 
         try:
+            # convert argument names to python param naming convention (snake-case)
+            kw_function_args = dict(map(lambda x: (x[0].lower().replace("-", "_"), x[1]), list(parsed_args.items())))
             # execute wrapped function
-            return func(*args, **{**parsed_args, **kwargs})
+            return func(*args, **{**kw_function_args, **kwargs})
         except Exception as ex:
             # execute wrapped function
             logging.exception("Error in callback")
