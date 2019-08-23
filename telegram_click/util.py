@@ -119,6 +119,10 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
 
     # then floating args
     for floating_arg in floating:
+        if len(arg_name_map) <= 0:
+            # ignore excess arguments
+            break
+
         arg = list(arg_name_map.values())[0]
         parsed_args[arg.name] = arg.parse_arg_value(floating_arg)
         arg_name_map.pop(arg.name)

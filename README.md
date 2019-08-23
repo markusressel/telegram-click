@@ -198,20 +198,18 @@ example above.
 
 ## Error handling
 
-**telegram-click** automatically handles errors when
- 
+**telegram-click** automatically handles errors in most situations.
+
+When an exception is raised the user will be notified that his 
+command has crashed the server. By default he will only see
+a general error message. If you want to send full stacktraces 
+instead, set the `print_error` parameter to `True`.
+
+The user is also informed about input errors like
 * an argument can not be parsed correctly
 * an invalid value is passed for an argument
-* too many arguments are passed
-
-In these cases the message of the internal exception is sent to the chat
-along with a help message for the failed command.
-
-**Note:**
-This error handling does also handle errors that occur in your handler 
-function and (by default) prints the exception text to the chat. If you 
-don't want to send the exception message to the user set the `print_error`
-parameter to `False`.
+In these cases the user will get a more specific error message
+and a help message for the command he was trying to use.
 
 # Contributing
 

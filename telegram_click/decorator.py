@@ -60,7 +60,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
     :param permissions: command permissions
     :param permission_denied_message: permission denied message
     :param command_target: command target
-    :param print_error:
+    :param print_error: True prints the exception stacktrace, False a general error message
     :return: wrapper function
     """
     if not callable(func):
@@ -105,14 +105,9 @@ def _create_callback_wrapper(func: callable, help_message: str,
 
                 # don't process command
                 return
-
         except Exception as ex:
             # handle exceptions that occur during permission and argument parsing
             logging.exception("Error parsing command arguments")
-
-            import traceback
-            exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),
-                                                traceback.extract_tb(ex.__traceback__))))
 
             denied_text = "\n".join([
                 ":exclamation: `{}`".format(str(ex)),
@@ -136,9 +131,9 @@ def _create_callback_wrapper(func: callable, help_message: str,
             exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),
                                                 traceback.extract_tb(ex.__traceback__))))
             if print_error:
-                denied_text = ":boom: `{}`".format(str(ex))
+                denied_text = ":boom: `{}`".format(exception_text)
             else:
-                denied_text = "There was an error executing your command :worried:"
+                denied_text = ":boom: There was an error executing your command :worried:"
             send_message(bot, chat_id=chat_id, message=denied_text, parse_mode=ParseMode.MARKDOWN,
                          reply_to=message.message_id)
 
@@ -150,7 +145,7 @@ def command(name: str, description: str = None,
             permissions: Permission = None,
             permission_denied_message: str = None,
             command_target: bytes = CommandTarget.UNSPECIFIED | CommandTarget.SELF,
-            print_error: bool = True):
+            print_error: bool = False):
     """
     Decorator to turn a command handler function into a full fledged, shell like command
     :param name: Name of the command
