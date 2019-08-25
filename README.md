@@ -12,9 +12,11 @@ Try the latest version of the [example.py](/example.py) out for yourself: [@Pyth
 
 # Features
 * [x] POSIX style argument parsing
-  * [x] Type conversion
-    * [x] Custom type conversion support
-  * [x] Input validation
+  * [x] Quoted arguments (`/command "Hello World"`)
+  * [x] Named arguments (`/command --text "Hello World"`)
+  * [x] Optional arguments
+  * [x] Type conversion including support for custom types
+  * [x] Argument input validation
 * [x] Automatic help messages
   * [x] Show help messages when a command was used with invalid arguments
   * [x] List all available commands with a single method
@@ -26,6 +28,13 @@ Try the latest version of the [example.py](/example.py) out for yourself: [@Pyth
 * [x] Error handling
   * [x] Automatically send error messages if something goes wrong
   * [x] Optionally send exception messages
+  
+**telegram-click** is used by
+
+* [InfiniteWisdom](https://github.com/ekeih/InfiniteWisdom)
+* [DeineMudda](https://github.com/markusressel/DeineMudda)
+
+and hopefully many others :)
 
 # How to use
 
