@@ -29,6 +29,31 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
 
+def find_duplicates(l: list) -> []:
+    """
+    Finds duplicate entries in the given list
+    :param l: the list to check
+    :return: map of (value -> list of indexes)
+    """
+    if not len(l) != len(set(l)):
+        return []
+
+    # remember indexes of items with equal hash
+    tmp = {}
+    for i, v in enumerate(l):
+        if v in tmp.keys():
+            tmp[v].append(i)
+        else:
+            tmp[v] = [i]
+
+    result = {}
+    for k, v in tmp.items():
+        if len(v) > 1:
+            result[k] = v
+
+    return result
+
+
 def find_first(args: [], type: type):
     """
     Finds the first element in the list of the given type
@@ -190,28 +215,35 @@ def parse_telegram_command(bot_username: str, text: str, expected_args: []) -> (
     return command[1:], parsed_args
 
 
-def generate_help_message(name: str, description: str, args: []) -> str:
+def generate_help_message(names: [str], description: str, args: []) -> str:
     """
     Generates a command usage description
-    :param name: name of the command
+    :param names: names of the command
     :param description: command description
     :param args: command argument list
     :return: help message
     """
+    command_names = list(map(lambda x: "/{}".format(escape_for_markdown(x)), names))
+    command_names_line = command_names[0]
+    if len(command_names) > 1:
+        command_names_line += " ({})".format(", ".join(command_names[1:]))
+
     argument_lines = list(map(lambda x: x.generate_argument_message(), args))
     arguments = "\n".join(argument_lines)
 
     argument_examples = " ".join(list(map(lambda x: x.example, args)))
 
     lines = [
-        "/{}".format(escape_for_markdown(name)),
+        command_names_line,
         description
     ]
     if len(arguments) > 0:
-        lines.append("Arguments: ")
-        lines.append(arguments)
-        lines.append("Example:")
-        lines.append("  `/{} {}`".format(name, argument_examples))
+        lines.extend([
+            "Arguments: ",
+            arguments,
+            "Example:",
+            "  `/{} {}`".format(names[0], argument_examples)
+        ])
 
     return "\n".join(lines)
 

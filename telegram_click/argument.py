@@ -21,7 +21,7 @@
 import logging
 
 from telegram_click.const import ARG_NAMING_PREFIXES
-from telegram_click.util import escape_for_markdown
+from telegram_click.util import escape_for_markdown, find_duplicates
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -49,6 +49,11 @@ class Argument:
             if c.isspace():
                 raise ValueError("Argument name must not contain whitespace!")
         self.names = [name] if not isinstance(name, list) else name
+        duplicates = find_duplicates(self.names)
+        if len(duplicates) > 0:
+            clashing = ", ".join(duplicates.keys())
+            raise ValueError("Argument names must be unique! Clashing arguments: {}".format(clashing))
+
         self.description = description.strip()
         self.example = example
         self.type = type

@@ -51,19 +51,19 @@ class MyBot:
 
         handler_groups = {
             1: [
-                CommandHandler('commands',
+                CommandHandler(['help', 'h'],
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._commands_command_callback),
                 CommandHandler('start',
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._start_command_callback),
-                CommandHandler('name',
+                CommandHandler(['name', 'n'],
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._name_command_callback),
-                CommandHandler('age',
+                CommandHandler(['age', 'a'],
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._age_command_callback),
-                CommandHandler('children',
+                CommandHandler(['children', 'c'],
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._children_command_callback),
                 # Unknown command handler
@@ -87,7 +87,7 @@ class MyBot:
         self._send_command_list(update, context)
 
     # Optionally specify this command to list all available commands
-    @command(name='help',
+    @command(name=['help', 'h'],
              description='List commands supported by this bot.')
     def _commands_command_callback(self, update: Update, context: CallbackContext):
         self._send_command_list(update, context)
@@ -104,7 +104,7 @@ class MyBot:
         text = generate_command_list(update, context)
         bot.send_message(chat_id, text, parse_mode=ParseMode.MARKDOWN)
 
-    @command(name='name',
+    @command(name=['name', 'n'],
              description='Get/Set a name',
              arguments=[
                  Argument(name=['name', 'n'],
@@ -121,7 +121,7 @@ class MyBot:
             self.name = name
             context.bot.send_message(chat_id, 'New name: {}'.format(self.name))
 
-    @command(name='age',
+    @command(name=['age', 'a'],
              description='Set age',
              arguments=[
                  Argument(name=['age', 'a'],
@@ -134,7 +134,7 @@ class MyBot:
     def _age_command_callback(self, update: Update, context: CallbackContext, age: int):
         context.bot.send_message(update.effective_chat.id, 'New age: {}'.format(age))
 
-    @command(name='children',
+    @command(name=['children', 'c'],
              description='Set children',
              arguments=[
                  Argument(name=['amount', 'a'],
