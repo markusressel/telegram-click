@@ -28,7 +28,7 @@ from telegram_click import CommandTarget
 from telegram_click.argument import Argument
 from telegram_click.permission.base import Permission
 from telegram_click.util import generate_help_message, parse_telegram_command, send_message, find_first, \
-    split_command_from_args, split_command_from_target
+    split_command_from_args, split_command_from_target, find_duplicates
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -145,7 +145,36 @@ def _create_callback_wrapper(func: callable, help_message: str,
     return wrapper
 
 
-def command(name: str, description: str = None,
+def check_command_name_clashes(names: [str]):
+    """
+    Checks if a command name has been used multiple times and raises an exception if so
+    :param names: command names added in this decorator call
+    """
+    from telegram_click import COMMAND_LIST
+
+    t = []
+    t.extend(map(lambda x: x["names"], COMMAND_LIST))
+    t.extend([names])
+    t = functools.reduce(list.__add__, t)
+
+    duplicates = find_duplicates(t)
+    if len(duplicates) > 0:
+        clashing = ", ".join(duplicates.keys())
+        raise ValueError("Command names must be unique! Clashing names: {}".format(clashing))
+
+
+def check_argument_name_clashes(arguments: []):
+    """
+    Checks if an argument name of a command has been used multiple times and raises an exception if so
+    :param arguments: arguments of a command to check
+    """
+    duplicates = find_duplicates(list(map(lambda x: x.name, arguments)))
+    if len(duplicates) > 0:
+        clashing = ", ".join(duplicates.keys())
+        raise ValueError("Argument names must be unique per command! Clashing arguments: {}".format(clashing))
+
+
+def command(name: str or [str], description: str = None,
             arguments: [Argument] = None,
             permissions: Permission = None,
             permission_denied_message: str = None,
@@ -163,17 +192,20 @@ def command(name: str, description: str = None,
     :param print_error: True sends the exception message to the chat of origin,
                         False sends a general error message
     """
+    from telegram_click import COMMAND_LIST
+
+    name = [name] if not isinstance(name, list) else name
     if arguments is None:
         arguments = []
-    if len(set(map(lambda x: x.name, arguments))) < len(arguments):
-        raise ValueError("Argument names must be unique per command!")
+
+    check_command_name_clashes(name)
+    check_argument_name_clashes(arguments)
 
     help_message = generate_help_message(name, description, arguments)
 
-    from telegram_click import COMMAND_LIST
     COMMAND_LIST.append(
         {
-            "name": name,
+            "names": name,
             "description": description,
             "arguments": arguments,
             "message": help_message,

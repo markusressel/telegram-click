@@ -81,7 +81,14 @@ class MyBot:
 [shlex POSIX rules](https://docs.python.org/3/library/shlex.html#parsing-rules)
 so in general space acts as an argument delimiter and quoted arguments 
 are parsed as a single one (supporting both double (`"`) and 
-single (`'`) quote characters).  
+single (`'`) quote characters).
+
+### Naming
+
+Arguments can have multiple names to allow for abbreviated names. The
+first name you specify for an argument will be used for the 
+callback parameter name (normalized to snake-case). Because of this
+it is advisable to specify the full argument name as the first one.
 
 ### Types
 

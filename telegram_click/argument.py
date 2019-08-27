@@ -21,7 +21,7 @@
 import logging
 
 from telegram_click.const import ARG_NAMING_PREFIXES
-from telegram_click.util import escape_for_markdown
+from telegram_click.util import escape_for_markdown, find_duplicates
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -32,11 +32,11 @@ class Argument:
     Command argument description
     """
 
-    def __init__(self, name: str, description: str, example: str, type: type = str, converter: callable = None,
+    def __init__(self, name: str or [str], description: str, example: str, type: type = str, converter: callable = None,
                  optional: bool = False, default: any = None, validator: callable = None):
         """
         Creates a command argument object
-        :param name: the name of the argument
+        :param name: the name (or names) of the argument
         :param description: a short description of the argument
         :param example: an example (string!) value for this argument
         :param type: the expected type of the argument
@@ -48,7 +48,12 @@ class Argument:
         for c in name:
             if c.isspace():
                 raise ValueError("Argument name must not contain whitespace!")
-        self.name = name
+        self.names = [name] if not isinstance(name, list) else name
+        duplicates = find_duplicates(self.names)
+        if len(duplicates) > 0:
+            clashing = ", ".join(duplicates.keys())
+            raise ValueError("Argument names must be unique! Clashing arguments: {}".format(clashing))
+
         self.description = description.strip()
         self.example = example
         self.type = type
@@ -69,6 +74,10 @@ class Argument:
         self.default = default
         self.validator = validator
 
+    @property
+    def name(self) -> str:
+        return self.names[0]
+
     def parse_arg_value(self, arg: str) -> any:
         """
         Tries to parse the given value
@@ -79,12 +88,12 @@ class Argument:
             if self.optional:
                 return self.default
             else:
-                raise ValueError("Missing required argument: '{}'".format(self.name))
+                raise ValueError("Missing required argument: '{}'".format(self.names[0]))
 
         parsed = self.converter(arg)
         if self.validator is not None:
             if not self.validator(parsed):
-                raise ValueError("Invalid value for argument '{}': '{}'".format(self.name, arg))
+                raise ValueError("Invalid value for argument '{}': '{}'".format(self.names[0], arg))
         return parsed
 
     def generate_argument_message(self) -> str:
@@ -92,9 +101,11 @@ class Argument:
         Generates the usage text for this argument
         :return: usage text line
         """
-        message = "  `{}{}` (`{}`): {}".format(
-            next(iter(ARG_NAMING_PREFIXES)),
-            escape_for_markdown(self.name),
+        arg_prefix = next(iter(ARG_NAMING_PREFIXES))
+        arg_names = list(map(lambda x: escape_for_markdown("`{}{}`".format(arg_prefix, x)), self.names))
+
+        message = "  {} (`{}`): {}".format(
+            ", ".join(arg_names),
             self.type.__name__,
             escape_for_markdown(self.description)
         )

@@ -29,6 +29,31 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
 
+def find_duplicates(l: list) -> []:
+    """
+    Finds duplicate entries in the given list
+    :param l: the list to check
+    :return: map of (value -> list of indexes)
+    """
+    if not len(l) != len(set(l)):
+        return []
+
+    # remember indexes of items with equal hash
+    tmp = {}
+    for i, v in enumerate(l):
+        if v in tmp.keys():
+            tmp[v].append(i)
+        else:
+            tmp[v] = [i]
+
+    result = {}
+    for k, v in tmp.items():
+        if len(v) > 1:
+            result[k] = v
+
+    return result
+
+
 def find_first(args: [], type: type):
     """
     Finds the first element in the list of the given type
@@ -107,13 +132,18 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
     parsed_args = {}
 
     # map argument.name -> argument
-    arg_name_map = OrderedDict(map(lambda x: (x.name, x), expected_args))
+    arg_name_map = OrderedDict()
+    for expected_arg in expected_args:
+        for name in expected_arg.names:
+            arg_name_map[name] = expected_arg
 
     # process named args first
     for name, value in named:
         if name in arg_name_map:
-            parsed_args[name] = arg_name_map[name].parse_arg_value(value)
-            arg_name_map.pop(name)
+            arg = arg_name_map[name]
+            parsed_args[arg.name] = arg.parse_arg_value(value)
+            for name in arg.names:
+                arg_name_map.pop(name)
         else:
             raise ValueError("Unknown argument '{}'".format(name))
 
@@ -125,11 +155,15 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
 
         arg = list(arg_name_map.values())[0]
         parsed_args[arg.name] = arg.parse_arg_value(floating_arg)
-        arg_name_map.pop(arg.name)
+        for name in arg.names:
+            arg_name_map.pop(name)
 
     # and then handle missing args
-    for name, arg in arg_name_map.items():
+    while len(arg_name_map) > 0:
+        name, arg = arg_name_map.popitem()
         parsed_args[arg.name] = arg.parse_arg_value(None)
+        for name in list(filter(lambda x: x != name, arg.names)):
+            arg_name_map.pop(name)
 
     return parsed_args
 
@@ -181,28 +215,35 @@ def parse_telegram_command(bot_username: str, text: str, expected_args: []) -> (
     return command[1:], parsed_args
 
 
-def generate_help_message(name: str, description: str, args: []) -> str:
+def generate_help_message(names: [str], description: str, args: []) -> str:
     """
     Generates a command usage description
-    :param name: name of the command
+    :param names: names of the command
     :param description: command description
     :param args: command argument list
     :return: help message
     """
+    command_names = list(map(lambda x: "/{}".format(escape_for_markdown(x)), names))
+    command_names_line = command_names[0]
+    if len(command_names) > 1:
+        command_names_line += " ({})".format(", ".join(command_names[1:]))
+
     argument_lines = list(map(lambda x: x.generate_argument_message(), args))
     arguments = "\n".join(argument_lines)
 
     argument_examples = " ".join(list(map(lambda x: x.example, args)))
 
     lines = [
-        "/{}".format(escape_for_markdown(name)),
+        command_names_line,
         description
     ]
     if len(arguments) > 0:
-        lines.append("Arguments: ")
-        lines.append(arguments)
-        lines.append("Example:")
-        lines.append("  `/{} {}`".format(name, argument_examples))
+        lines.extend([
+            "Arguments: ",
+            arguments,
+            "Example:",
+            "  `/{} {}`".format(names[0], argument_examples)
+        ])
 
     return "\n".join(lines)
 

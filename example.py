@@ -23,10 +23,10 @@ import os
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, Updater, MessageHandler, CommandHandler, Filters
 
-from telegram_click import generate_command_list, CommandTarget
+from telegram_click import generate_command_list
 from telegram_click.argument import Argument
 from telegram_click.decorator import command
-from telegram_click.permission import GROUP_ADMIN, USER_ID, USER_NAME, NOBODY
+from telegram_click.permission import GROUP_ADMIN, USER_ID, USER_NAME
 from telegram_click.permission.base import Permission
 
 logging.basicConfig(level=logging.DEBUG)
@@ -41,6 +41,7 @@ class MyPermission(Permission):
 
 
 class MyBot:
+    name = None
 
     def __init__(self):
         self._updater = Updater(
@@ -50,19 +51,19 @@ class MyBot:
 
         handler_groups = {
             1: [
-                CommandHandler('commands',
+                CommandHandler(['help', 'h'],
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._commands_command_callback),
                 CommandHandler('start',
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._start_command_callback),
-                CommandHandler('name',
+                CommandHandler(['name', 'n'],
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._name_command_callback),
-                CommandHandler('age',
+                CommandHandler(['age', 'a'],
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._age_command_callback),
-                CommandHandler('children',
+                CommandHandler(['children', 'c'],
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._children_command_callback),
                 # Unknown command handler
@@ -82,18 +83,12 @@ class MyBot:
         self._updater.start_polling(clean=True)
         self._updater.idle()
 
-    # optionally specify this callback to send a list of all available commands if
-    # an unsupported command is used
-    @command(name="commands",
-             description="List commands supported by this bot.",
-             permissions=NOBODY,
-             command_target=CommandTarget.UNSPECIFIED | CommandTarget.SELF)
     def _unknown_command_callback(self, update: Update, context: CallbackContext):
         self._send_command_list(update, context)
 
     # Optionally specify this command to list all available commands
-    @command(name="commands",
-             description="List commands supported by this bot.")
+    @command(name=['help', 'h'],
+             description='List commands supported by this bot.')
     def _commands_command_callback(self, update: Update, context: CallbackContext):
         self._send_command_list(update, context)
 
@@ -109,10 +104,10 @@ class MyBot:
         text = generate_command_list(update, context)
         bot.send_message(chat_id, text, parse_mode=ParseMode.MARKDOWN)
 
-    @command(name='name',
+    @command(name=['name', 'n'],
              description='Get/Set a name',
              arguments=[
-                 Argument(name='name',
+                 Argument(name=['name', 'n'],
                           description='The new name',
                           validator=lambda x: x.strip(),
                           optional=True,
@@ -121,35 +116,35 @@ class MyBot:
     def _name_command_callback(self, update: Update, context: CallbackContext, name: str or None):
         chat_id = update.effective_chat.id
         if name is None:
-            context.bot.send_message(chat_id, "Current name: {}".format(name))
-            return
+            context.bot.send_message(chat_id, 'Current name: {}'.format(self.name))
         else:
-            context.bot.send_message(chat_id, "New name: {}".format(name))
+            self.name = name
+            context.bot.send_message(chat_id, 'New name: {}'.format(self.name))
 
-    @command(name='age',
+    @command(name=['age', 'a'],
              description='Set age',
              arguments=[
-                 Argument(name='age',
+                 Argument(name=['age', 'a'],
                           description='The new age',
                           type=int,
                           validator=lambda x: x > 0,
                           example='25')
              ],
-             permissions=MyPermission() & ~ GROUP_ADMIN & (USER_NAME("markusressel") | USER_ID(123456)))
+             permissions=MyPermission() & ~ GROUP_ADMIN & (USER_NAME('markusressel') | USER_ID(123456)))
     def _age_command_callback(self, update: Update, context: CallbackContext, age: int):
-        context.bot.send_message(update.effective_chat.id, "New age: {}".format(age))
+        context.bot.send_message(update.effective_chat.id, 'New age: {}'.format(age))
 
-    @command(name='children',
+    @command(name=['children', 'c'],
              description='Set children',
              arguments=[
-                 Argument(name='amount',
+                 Argument(name=['amount', 'a'],
                           description='The new amount',
                           type=float,
                           validator=lambda x: x >= 0,
                           example='1.57')
              ])
     def _children_command_callback(self, update: Update, context: CallbackContext, age: float):
-        context.bot.send_message(update.effective_chat.id, "Children: {}".format(age))
+        context.bot.send_message(update.effective_chat.id, 'Children: {}'.format(age))
 
 
 if __name__ == '__main__':
