@@ -107,13 +107,18 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
     parsed_args = {}
 
     # map argument.name -> argument
-    arg_name_map = OrderedDict(map(lambda x: (x.name, x), expected_args))
+    arg_name_map = OrderedDict()
+    for expected_arg in expected_args:
+        for name in expected_arg.names:
+            arg_name_map[name] = expected_arg
 
     # process named args first
     for name, value in named:
         if name in arg_name_map:
-            parsed_args[name] = arg_name_map[name].parse_arg_value(value)
-            arg_name_map.pop(name)
+            arg = arg_name_map[name]
+            parsed_args[arg.name] = arg.parse_arg_value(value)
+            for name in arg.names:
+                arg_name_map.pop(name)
         else:
             raise ValueError("Unknown argument '{}'".format(name))
 
@@ -125,11 +130,15 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
 
         arg = list(arg_name_map.values())[0]
         parsed_args[arg.name] = arg.parse_arg_value(floating_arg)
-        arg_name_map.pop(arg.name)
+        for name in arg.names:
+            arg_name_map.pop(name)
 
     # and then handle missing args
-    for name, arg in arg_name_map.items():
+    while len(arg_name_map) > 0:
+        name, arg = arg_name_map.popitem()
         parsed_args[arg.name] = arg.parse_arg_value(None)
+        for name in list(filter(lambda x: x != name, arg.names)):
+            arg_name_map.pop(name)
 
     return parsed_args
 
