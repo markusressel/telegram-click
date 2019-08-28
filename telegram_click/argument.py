@@ -102,7 +102,7 @@ class Argument:
         :return: usage text line
         """
         arg_prefix = next(iter(ARG_NAMING_PREFIXES))
-        arg_names = list(map(lambda x: escape_for_markdown("`{}{}`".format(arg_prefix, x)), self.names))
+        arg_names = list(map(lambda x: "`{}{}`".format(arg_prefix, x), self.names))
 
         message = "  {} (`{}`): {}".format(
             ", ".join(arg_names),

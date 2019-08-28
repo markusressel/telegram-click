@@ -42,6 +42,7 @@ class MyPermission(Permission):
 
 class MyBot:
     name = None
+    child_count = None
 
     def __init__(self):
         self._updater = Updater(
@@ -116,10 +117,10 @@ class MyBot:
     def _name_command_callback(self, update: Update, context: CallbackContext, name: str or None):
         chat_id = update.effective_chat.id
         if name is None:
-            context.bot.send_message(chat_id, 'Current name: {}'.format(self.name))
+            context.bot.send_message(chat_id, 'Current: {}'.format(self.name))
         else:
             self.name = name
-            context.bot.send_message(chat_id, 'New name: {}'.format(self.name))
+            context.bot.send_message(chat_id, 'New: {}'.format(self.name))
 
     @command(name=['age', 'a'],
              description='Set age',
@@ -137,14 +138,20 @@ class MyBot:
     @command(name=['children', 'c'],
              description='Set children',
              arguments=[
-                 Argument(name=['amount', 'a'],
+                 Argument(name=['child-count', 'amount', 'a'],
                           description='The new amount',
                           type=float,
                           validator=lambda x: x >= 0,
-                          example='1.57')
+                          example='1.57',
+                          optional=True)
              ])
-    def _children_command_callback(self, update: Update, context: CallbackContext, age: float):
-        context.bot.send_message(update.effective_chat.id, 'Children: {}'.format(age))
+    def _children_command_callback(self, update: Update, context: CallbackContext, child_count: float or None):
+        chat_id = update.effective_chat.id
+        if child_count is None:
+            context.bot.send_message(chat_id, 'Current: {}'.format(self.child_count))
+        else:
+            self.child_count = child_count
+            context.bot.send_message(chat_id, 'New: {}'.format(child_count))
 
 
 if __name__ == '__main__':
