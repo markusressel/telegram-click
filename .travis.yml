@@ -7,8 +7,8 @@ before_install:
 python:
   - '3.5'
   - '3.6'
-  - 3.7-dev
-  - nightly
+  - '3.7'
+  - '3.8'
 install:
   - pip install .
   - pip install -r test_requirements.txt
