@@ -2,7 +2,7 @@
 
 [Click](https://github.com/pallets/click/) 
 inspired command-line interface creation toolkit for 
-[pyton-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot).
+[python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot).
 
 Try the latest version of the [example.py](/example.py) out for yourself: [@PythonTelegramClickBot](http://t.me/PythonTelegramClickBot)
 
