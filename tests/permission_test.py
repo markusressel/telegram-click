@@ -69,69 +69,63 @@ def _create_update_mock(chat_id: int = -12345678, chat_type: str = "private", me
 
 class PermissionTest(TestBase):
 
-    @staticmethod
-    def test_permission_nobody():
+    def test_permission_nobody(self):
         from telegram_click.permission import NOBODY
         permission = NOBODY
 
         update = None
         context = None
 
-        assert not permission.evaluate(update, context)
+        self.assertFalse(permission.evaluate(update, context))
 
-    @staticmethod
-    def test_permission_username():
+    def test_permission_username(self):
         from telegram_click.permission import USER_NAME
         permission = USER_NAME("markusressel")
 
         valid_update = _create_update_mock(username="markusressel")
-        assert permission.evaluate(valid_update, None)
+        self.assertTrue(permission.evaluate(valid_update, None))
 
         invalid_update = _create_update_mock(username="markus")
-        assert not permission.evaluate(invalid_update, None)
+        self.assertFalse(permission.evaluate(invalid_update, None))
 
         invalid_update = _create_update_mock(username="other")
-        assert not permission.evaluate(invalid_update, None)
+        self.assertFalse(permission.evaluate(invalid_update, None))
 
         invalid_update = _create_update_mock(username=None)
-        assert not permission.evaluate(invalid_update, None)
+        self.assertFalse(permission.evaluate(invalid_update, None))
 
-    @staticmethod
-    def test_permission_user_id():
+    def test_permission_user_id(self):
         from telegram_click.permission import USER_ID
         permission = USER_ID(12345678)
 
         valid_update = _create_update_mock(user_id=12345678)
-        assert permission.evaluate(valid_update, None)
+        self.assertTrue(permission.evaluate(valid_update, None))
 
         invalid_update = _create_update_mock(user_id=87654321)
-        assert not permission.evaluate(invalid_update, None)
+        self.assertFalse(permission.evaluate(invalid_update, None))
 
-    @staticmethod
-    def test_permission_merged_and():
+    def test_permission_merged_and(self):
         merged_permission = FalsePermission() & FalsePermission()
-        assert not merged_permission.evaluate(None, None)
+        self.assertFalse(merged_permission.evaluate(None, None))
         merged_permission = TruePermission() & FalsePermission()
-        assert not merged_permission.evaluate(None, None)
+        self.assertFalse(merged_permission.evaluate(None, None))
         merged_permission = FalsePermission() & TruePermission()
-        assert not merged_permission.evaluate(None, None)
+        self.assertFalse(merged_permission.evaluate(None, None))
         merged_permission = TruePermission() & TruePermission()
-        assert merged_permission.evaluate(None, None)
+        self.assertTrue(merged_permission.evaluate(None, None))
 
-    @staticmethod
-    def test_permission_merged_or():
+    def test_permission_merged_or(self):
         merged_permission = FalsePermission() | FalsePermission()
-        assert not merged_permission.evaluate(None, None)
+        self.assertFalse(merged_permission.evaluate(None, None))
         merged_permission = TruePermission() | FalsePermission()
-        assert merged_permission.evaluate(None, None)
+        self.assertTrue(merged_permission.evaluate(None, None))
         merged_permission = FalsePermission() | TruePermission()
-        assert merged_permission.evaluate(None, None)
+        self.assertTrue(merged_permission.evaluate(None, None))
         merged_permission = TruePermission() | TruePermission()
-        assert merged_permission.evaluate(None, None)
+        self.assertTrue(merged_permission.evaluate(None, None))
 
-    @staticmethod
-    def test_permission_not():
+    def test_permission_not(self):
         not_permission = ~ TruePermission()
-        assert not not_permission.evaluate(None, None)
+        self.assertFalse(not_permission.evaluate(None, None))
         not_permission = ~ FalsePermission()
-        assert not_permission.evaluate(None, None)
+        self.assertTrue(not_permission.evaluate(None, None))

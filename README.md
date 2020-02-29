@@ -14,6 +14,7 @@ Try the latest version of the [example.py](/example.py) out for yourself: [@Pyth
 * [x] POSIX style argument parsing
   * [x] Quoted arguments (`/command "Hello World"`)
   * [x] Named arguments (`/command --text "Hello World"`)
+  * [x] Flags (`/command --yes`)
   * [x] Optional arguments
   * [x] Type conversion including support for custom types
   * [x] Argument input validation
@@ -33,6 +34,7 @@ Try the latest version of the [example.py](/example.py) out for yourself: [@Pyth
 
 * [InfiniteWisdom](https://github.com/ekeih/InfiniteWisdom)
 * [DeineMudda](https://github.com/markusressel/DeineMudda)
+* [grocy-telegram-bot](https://github.com/markusressel/grocy-telegram-bot)
 
 and hopefully many others :)
 
@@ -108,6 +110,19 @@ Argument(name='age',
          converter=lambda x: MyType(x),
          validator=lambda x: x > 0,
          example='25')
+```
+
+### Flags
+
+Technically you can use the `Argument` class to specify a flag, but since 
+many of its parameters are implicit for a flag the `Flag` class can be used
+instead:
+
+```python
+from telegram_click.argument import Flag
+
+Flag(name='flag',
+     description='My boolean flag')
 ```
 
 ## Permission handling

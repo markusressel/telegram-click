@@ -93,29 +93,6 @@ def remove_naming_prefix(arg: str) -> str:
     return arg
 
 
-def split_named_args(str_args: [str]) -> ([(str, str)], [str]):
-    """
-    Separates named command arguments (including their values) from non-named arguments
-    :return: list of (argument name, value) tuples, list of free-floating arguments
-    """
-    named = []
-    non_named = []
-
-    i = 0
-    while i < len(str_args):
-        arg = str_args[i]
-        if starts_with_naming_prefix(arg):
-            named_item = (remove_naming_prefix(arg), str_args[i + 1])
-            named.append(named_item)
-            i += 1
-        else:
-            non_named.append(arg)
-
-        i += 1
-
-    return named, non_named
-
-
 def parse_command_args(arguments: str or None, expected_args: []) -> dict:
     """
     Parses the given argument text
@@ -128,8 +105,6 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
 
     import shlex
     str_args = shlex.split(arguments)
-    named, floating = split_named_args(str_args)
-    parsed_args = {}
 
     # map argument.name -> argument
     arg_name_map = OrderedDict()
@@ -137,24 +112,45 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
         for name in expected_arg.names:
             arg_name_map[name] = expected_arg
 
-    # process named args first
-    for name, value in named:
-        if name in arg_name_map:
-            arg = arg_name_map[name]
-            parsed_args[arg.name] = arg.parse_arg_value(value)
-            for name in arg.names:
-                arg_name_map.pop(name)
-        else:
-            raise ValueError("Unknown argument '{}'".format(name))
+    parsed_args = {}
 
-    # then floating args
-    for floating_arg in floating:
+    named_arg_idx = []
+    for idx, val in enumerate(str_args):
+        if starts_with_naming_prefix(val):
+            named_arg_idx.append(idx)
+
+    # process named arguments first
+    used_idx = list(named_arg_idx)
+    for idx in named_arg_idx:
+        val = str_args[idx]
+        arg_name = remove_naming_prefix(val)
+        if arg_name not in arg_name_map:
+            raise ValueError("Unknown argument '{}'".format(arg_name))
+        arg = arg_name_map[arg_name]
+
+        if arg.flag:
+            # since it is present, we assume a true value
+            value = arg.parse_arg_value("True")
+        else:
+            value = str_args[idx + 1]
+            used_idx.append(idx + 1)
+            if starts_with_naming_prefix(value):
+                raise ValueError(
+                    "Expected argument value for '--{}' but found named argument '{}'".format(arg_name, value))
+
+        parsed_args[arg.name] = arg.parse_arg_value(value)
+        for name in arg.names:
+            arg_name_map.pop(name)
+
+    remaining_idx = list(set(list(range(len(str_args)))) - set(used_idx))
+    for idx in sorted(remaining_idx):
         if len(arg_name_map) <= 0:
             # ignore excess arguments
             break
 
+        val = str_args[idx]
         arg = list(arg_name_map.values())[0]
-        parsed_args[arg.name] = arg.parse_arg_value(floating_arg)
+        parsed_args[arg.name] = arg.parse_arg_value(val)
         for name in arg.names:
             arg_name_map.pop(name)
 

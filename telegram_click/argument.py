@@ -33,7 +33,7 @@ class Argument:
     """
 
     def __init__(self, name: str or [str], description: str, example: str, type: type = str, converter: callable = None,
-                 optional: bool = False, default: any = None, validator: callable = None):
+                 flag: bool = False, optional: bool = False, default: any = None, validator: callable = None):
         """
         Creates a command argument object
         :param name: the name (or names) of the argument
@@ -41,6 +41,7 @@ class Argument:
         :param example: an example (string!) value for this argument
         :param type: the expected type of the argument
         :param converter: a converter function to convert the string value to the expected type
+        :param flag: whether this argument should be treated as a flag
         :param optional: specifies if this argument is optional
         :param default: an optional default value
         :param validator: a validator function
@@ -56,18 +57,19 @@ class Argument:
 
         self.description = description.strip()
         self.example = example
-        self.type = type
+        self.flag = flag
+        self.type = bool if flag else type
         if converter is None:
-            if type is str:
+            if self.type is str:
                 self.converter = lambda x: x
-            elif type is bool:
+            elif self.type is bool:
                 self.converter = self._boolean_converter
-            elif type is int:
+            elif self.type is int:
                 self.converter = lambda x: int(x)
-            elif type is float:
+            elif self.type is float:
                 self.converter = self._float_converter
             else:
-                raise ValueError("If you want to use a custom type you have to provide a converter function too!")
+                raise ValueError("If you want to use a custom type, you have to provide a converter function too!")
         else:
             self.converter = converter
         self.optional = optional
@@ -141,6 +143,20 @@ class Argument:
             return float(value)
 
 
+class Flag(Argument):
+    """
+    Convenience class for specifying a flag argument
+    """
+
+    def __init__(self, name: str or [str], description: str):
+        """
+        Creates a command argument object
+        :param name: the name (or names) of the argument
+        :param description: a short description of the argument
+        """
+        super().__init__(name, description, example="", type=bool, flag=True, optional=True, default=False)
+
+
 class Selection(Argument):
     """
     Convenience class for a command argument based on a predefined selection of allowed values
@@ -149,7 +165,7 @@ class Selection(Argument):
     def __init__(self, name: str, description: str, allowed_values: [any], type: type = str, converter: callable = None,
                  optional: bool = None, default: any = None):
         """
-
+        Constructor
         :param name: the name of the argument
         :param description: a short description of the argument
         :param allowed_values: list of allowed (target type) values
@@ -163,4 +179,5 @@ class Selection(Argument):
         def validator(x):
             return x in self.allowed_values
 
-        super().__init__(name, description, allowed_values[0], type, converter, optional, default, validator)
+        super().__init__(name, description, example=allowed_values[0], type=type, converter=converter,
+                         optional=optional, default=default, validator=validator)

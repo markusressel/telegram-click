@@ -24,30 +24,27 @@ from tests import TestBase
 
 class CommandTargetTest(TestBase):
 
-    @staticmethod
-    def test_target_self():
+    def test_target_self(self):
         bot_name = "myBot"
 
-        assert filter_command_target(bot_name, bot_name, CommandTarget.SELF)
-        assert not filter_command_target(bot_name, bot_name, CommandTarget.UNSPECIFIED)
-        assert not filter_command_target(bot_name, bot_name, CommandTarget.OTHER)
-        assert filter_command_target(bot_name, bot_name, CommandTarget.ANY)
+        self.assertTrue(filter_command_target(bot_name, bot_name, CommandTarget.SELF))
+        self.assertFalse(filter_command_target(bot_name, bot_name, CommandTarget.UNSPECIFIED))
+        self.assertFalse(filter_command_target(bot_name, bot_name, CommandTarget.OTHER))
+        self.assertTrue(filter_command_target(bot_name, bot_name, CommandTarget.ANY))
 
-    @staticmethod
-    def test_target_other():
+    def test_target_other(self):
         bot_name = "myBot"
         other_bot_name = "otherBot"
 
-        assert not filter_command_target(other_bot_name, bot_name, CommandTarget.SELF)
-        assert not filter_command_target(other_bot_name, bot_name, CommandTarget.UNSPECIFIED)
-        assert filter_command_target(other_bot_name, bot_name, CommandTarget.OTHER)
-        assert filter_command_target(other_bot_name, bot_name, CommandTarget.ANY)
+        self.assertFalse(filter_command_target(other_bot_name, bot_name, CommandTarget.SELF))
+        self.assertFalse(filter_command_target(other_bot_name, bot_name, CommandTarget.UNSPECIFIED))
+        self.assertTrue(filter_command_target(other_bot_name, bot_name, CommandTarget.OTHER))
+        self.assertTrue(filter_command_target(other_bot_name, bot_name, CommandTarget.ANY))
 
-    @staticmethod
-    def test_target_unspecified():
+    def test_target_unspecified(self):
         bot_name = "myBot"
 
-        assert not filter_command_target(None, bot_name, CommandTarget.SELF)
-        assert filter_command_target(None, bot_name, CommandTarget.UNSPECIFIED)
-        assert not filter_command_target(None, bot_name, CommandTarget.OTHER)
-        assert filter_command_target(None, bot_name, CommandTarget.ANY)
+        self.assertFalse(filter_command_target(None, bot_name, CommandTarget.SELF))
+        self.assertTrue(filter_command_target(None, bot_name, CommandTarget.UNSPECIFIED))
+        self.assertFalse(filter_command_target(None, bot_name, CommandTarget.OTHER))
+        self.assertTrue(filter_command_target(None, bot_name, CommandTarget.ANY))
