@@ -18,15 +18,89 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-from telegram_click.argument import Argument
+from telegram_click.argument import Argument, Flag
 from telegram_click.util import parse_telegram_command
 from tests import TestBase
 
 
 class ParsingTest(TestBase):
 
-    @staticmethod
-    def test_named_argument():
+    def test_flag(self):
+        flag1 = Flag(
+            name="flag",
+            description="some flag description",
+        )
+
+        bot_username = "mybot"
+        command_line = '/command --{}'.format(flag1.name)
+        expected_args = [
+            flag1,
+        ]
+
+        command, parsed_args = parse_telegram_command(bot_username, command_line, expected_args)
+
+        self.assertEqual(command, "command")
+        self.assertEqual(len(parsed_args), len(expected_args))
+        self.assertTrue("flag" in parsed_args)
+        self.assertTrue(parsed_args["flag"] is True)
+
+    def test_flag_missing(self):
+        flag1 = Flag(
+            name="flag",
+            description="some flag description",
+        )
+
+        bot_username = "mybot"
+        command_line = '/command'.format(flag1.name)
+        expected_args = [
+            flag1,
+        ]
+
+        command, parsed_args = parse_telegram_command(bot_username, command_line, expected_args)
+
+        self.assertEqual(command, "command")
+        self.assertEqual(len(parsed_args), len(expected_args))
+        self.assertTrue("flag" in parsed_args)
+        self.assertTrue(parsed_args["flag"] is False)
+
+    def test_excess_floating_args(self):
+        flag1 = Argument(
+            name="flag",
+            description="some flag description",
+            flag=True,
+            example=""
+        )
+
+        bot_username = "mybot"
+        command_line = '/command --{} 123 haha'.format(flag1.name)
+        expected_args = [
+            flag1,
+        ]
+
+        command, parsed_args = parse_telegram_command(bot_username, command_line, expected_args)
+
+        self.assertEqual(command, "command")
+        self.assertEqual(len(parsed_args), len(expected_args))
+        self.assertTrue("flag" in parsed_args)
+        self.assertTrue(parsed_args["flag"] is True)
+
+    def test_excess_named_args(self):
+        flag1 = Argument(
+            name="flag",
+            description="some flag description",
+            flag=True,
+            example=""
+        )
+
+        bot_username = "mybot"
+        command_line = '/command hello --{} --fail 123'.format(flag1.name)
+        expected_args = [
+            flag1,
+        ]
+
+        self.assertRaises(ValueError, parse_telegram_command, bot_username, command_line, expected_args)
+
+    def test_named_argument(self):
         arg1 = Argument(
             name="int_arg",
             description="str description",
@@ -57,12 +131,8 @@ class ParsingTest(TestBase):
 
         command, parsed_args = parse_telegram_command(bot_username, command_line, expected_args)
 
-        def test(str_arg, int_arg, float_arg):
-            assert int_arg == 12345
-            assert str_arg == "two words"
-            assert float_arg == arg3.default
-            return True
-
-        assert command == "command"
-        assert len(parsed_args) == len(expected_args)
-        assert test(**parsed_args)
+        self.assertEqual(command, "command")
+        self.assertEqual(len(parsed_args), len(expected_args))
+        self.assertEqual(parsed_args[arg1.name], 12345)
+        self.assertEqual(parsed_args[arg2.name], "two words")
+        self.assertEqual(parsed_args[arg3.name], arg3.default)

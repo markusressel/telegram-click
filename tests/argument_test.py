@@ -24,18 +24,16 @@ from tests import TestBase
 
 class ArgumentTest(TestBase):
 
-    @staticmethod
-    def test_str_argument():
+    def test_str_argument(self):
         arg = Argument(
             name="str_arg",
             description="str description",
             example="text"
         )
 
-        assert arg.parse_arg_value("sample") == "sample"
+        self.assertEqual(arg.parse_arg_value("sample"), "sample")
 
-    @staticmethod
-    def test_bool_argument():
+    def test_bool_argument(self):
         arg = Argument(
             name="boolean_arg",
             description="boolean description",
@@ -43,10 +41,9 @@ class ArgumentTest(TestBase):
             example="0"
         )
 
-        assert not arg.parse_arg_value("0")
+        self.assertFalse(arg.parse_arg_value("0"))
 
-    @staticmethod
-    def test_int_argument():
+    def test_int_argument(self):
         arg = Argument(
             name="int_arg",
             description="int description",
@@ -54,12 +51,11 @@ class ArgumentTest(TestBase):
             example="0"
         )
 
-        assert arg.parse_arg_value("0") == 0
-        assert arg.parse_arg_value("01") == 1
-        assert arg.parse_arg_value("10") == 10
+        self.assertEqual(arg.parse_arg_value("0"), 0)
+        self.assertEqual(arg.parse_arg_value("01"), 1)
+        self.assertEqual(arg.parse_arg_value("10"), 10)
 
-    @staticmethod
-    def test_float_argument():
+    def test_float_argument(self):
         arg = Argument(
             name="float_arg",
             description="float description",
@@ -67,8 +63,8 @@ class ArgumentTest(TestBase):
             example="1.2"
         )
 
-        assert arg.parse_arg_value("0") == 0.0
-        assert arg.parse_arg_value("01") == 1.0
-        assert arg.parse_arg_value("10") == 10.0
-        assert arg.parse_arg_value("10.2") == 10.2
-        assert arg.parse_arg_value("3%") == 0.03
+        self.assertEqual(arg.parse_arg_value("0"), 0.0)
+        self.assertEqual(arg.parse_arg_value("01"), 1.0)
+        self.assertEqual(arg.parse_arg_value("10"), 10.0)
+        self.assertEqual(arg.parse_arg_value("10.2"), 10.2)
+        self.assertEqual(arg.parse_arg_value("3%"), 0.03)
