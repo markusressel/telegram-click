@@ -23,7 +23,7 @@ import subprocess
 
 from setuptools import setup, find_packages
 
-VERSION_NUMBER = "3.1.3"
+VERSION_NUMBER = "3.2.0"
 
 GIT_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"])
 GIT_BRANCH = GIT_BRANCH.decode()  # convert to standard string
@@ -98,7 +98,8 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7'
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8'
     ],
     install_requires=install_requirements(),
     tests_require=test_requirements()
