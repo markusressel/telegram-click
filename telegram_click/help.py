@@ -75,10 +75,10 @@ def generate_synopsis(names: [str], args: List[Argument]) -> str:
     """
     command_names = list(map(lambda x: "/{}".format(escape_for_markdown(x)), names))
     synopsis = command_names[0]
-    if len(args) > 0 and any(map(lambda x: not x.optional, args)):
-        synopsis += " [[OPTIONS]]"
     if len(command_names) > 1:
         synopsis += " ({})".format(", ".join(command_names[1:]))
+    if len(args) > 0 and any(map(lambda x: not x.optional, args)):
+        synopsis += " [[OPTIONS]]"
 
     return synopsis
 
