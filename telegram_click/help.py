@@ -33,25 +33,40 @@ def generate_help_message(names: [str], description: str, args: List[Argument]) 
     :return: help message
     """
     synopsis = generate_synopsis(names, args)
-    args_description = generate_argument_description(args)
-    argument_examples = " ".join(list(map(lambda x: x.example, args)))
+
+    flags = sorted(filter(lambda x: x.flag, args))
+    arguments = sorted(filter(lambda x: not x.flag, args))
+
+    flags_description = generate_arguments_description(flags)
+    arguments_description = generate_arguments_description(arguments)
 
     lines = [
         synopsis,
         description
     ]
-    if len(args) > 0:
+    if len(flags) > 0:
         lines.extend([
-            "Arguments: ",
-            args_description,
+            "Flags:",
+            flags_description
+        ])
+
+    if len(arguments) > 0:
+        lines.extend([
+            "Arguments:",
+            arguments_description
+        ])
+
+    if len(arguments) > 0 or len(flags) > 0:
+        example = generate_command_example(names, arguments, flags)
+        lines.extend([
             "Example:",
-            "  `/{} {}`".format(names[0], argument_examples)
+            example
         ])
 
     return "\n".join(lines)
 
 
-def generate_synopsis(names: [str], args: List[Argument]):
+def generate_synopsis(names: [str], args: List[Argument]) -> str:
     """
     Generates the synopsis for a command
     :param names: command names
@@ -68,18 +83,18 @@ def generate_synopsis(names: [str], args: List[Argument]):
     return synopsis
 
 
-def generate_argument_description(args):
+def generate_arguments_description(args: List[Argument]) -> str:
     """
     Generates the description of all given arguments
     :param args: arguments
     :return: description
     """
-    sorted_args = sorted(args, key=lambda x: (not x.flag, x.optional, x.name))
-    argument_lines = list(map(generate_argument_message, sorted_args))
+    sorted_args = sorted(args, key=lambda x: (x.optional, x.name))
+    argument_lines = list(map(generate_argument_description, sorted_args))
     return "\n".join(argument_lines)
 
 
-def generate_argument_message(arg: Argument) -> str:
+def generate_argument_description(arg: Argument) -> str:
     """
     Generates the usage text for an argument
     :param arg: the argument
@@ -96,3 +111,17 @@ def generate_argument_message(arg: Argument) -> str:
     if arg.optional and not arg.flag:
         message += "\t(`{}`)".format(escape_for_markdown(arg.default))
     return message
+
+
+def generate_command_example(names: List[str], arguments: List[Argument], flags: List[Argument]) -> str:
+    """
+    Generates an example call of a command
+    :param names: possible command names
+    :param arguments: command arguments (without flags)
+    :param flags: command flags
+    :return: example call
+    """
+    arg_prefix = next(iter(ARG_NAMING_PREFIXES))
+    argument_examples = list(map(lambda x: "`{}`".format(x.example), arguments))
+    flag_examples = list(map(lambda x: "`{}{}`".format(arg_prefix, x.name), flags))
+    return "/{} {}".format(names[0], " ".join(argument_examples + flag_examples)).strip()
