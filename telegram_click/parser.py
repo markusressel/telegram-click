@@ -96,8 +96,9 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
         val = str_args[idx]
         arg = list(arg_name_map.values())[0]
         # ignore flags here, to prevent accidentally setting a flag value
-        if not arg.flag:
-            parsed_args[arg.name] = arg.parse_arg_value(val)
+        if arg.flag:
+            continue
+        parsed_args[arg.name] = arg.parse_arg_value(val)
         for name in arg.names:
             arg_name_map.pop(name)
 
