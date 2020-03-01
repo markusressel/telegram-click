@@ -69,7 +69,7 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
             if value is None:
                 raise ValueError(
                     "Expected argument value for '{}' but found EOL".format(val))
-            used_idx.append(idx + 1)
+            used_idx.append(next_idx)
             if starts_with_naming_prefix(value):
                 raise ValueError(
                     "Expected argument value for '{}' but found named argument '{}'".format(val, value))
