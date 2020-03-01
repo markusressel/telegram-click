@@ -34,8 +34,8 @@ def generate_help_message(names: [str], description: str, args: List[Argument]) 
     """
     synopsis = generate_synopsis(names, args)
 
-    flags = sorted(filter(lambda x: x.flag, args))
-    arguments = sorted(filter(lambda x: not x.flag, args))
+    flags = list(filter(lambda x: x.flag, args))
+    arguments = list(filter(lambda x: not x.flag, args))
 
     flags_description = generate_arguments_description(flags)
     arguments_description = generate_arguments_description(arguments)
