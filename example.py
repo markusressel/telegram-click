@@ -24,12 +24,12 @@ from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, Updater, MessageHandler, CommandHandler, Filters
 
 from telegram_click import generate_command_list
-from telegram_click.argument import Argument
+from telegram_click.argument import Argument, Flag
 from telegram_click.decorator import command
 from telegram_click.permission import GROUP_ADMIN, USER_ID, USER_NAME
 from telegram_click.permission.base import Permission
 
-logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("telegram_click").setLevel(logging.DEBUG)
 
 
 class MyPermission(Permission):
@@ -112,15 +112,21 @@ class MyBot:
                           description='The new name',
                           validator=lambda x: x.strip(),
                           optional=True,
-                          example='Markus')
+                          example='Markus'),
+                 Flag(
+                     name=['flag', 'f'],
+                     description="Some flag that changes the command behaviour."
+                 )
              ])
-    def _name_command_callback(self, update: Update, context: CallbackContext, name: str or None):
+    def _name_command_callback(self, update: Update, context: CallbackContext, name: str or None, flag: bool):
         chat_id = update.effective_chat.id
         if name is None:
-            context.bot.send_message(chat_id, 'Current: {}'.format(self.name))
+            message = 'Current: {}'.format(self.name)
         else:
             self.name = name
-            context.bot.send_message(chat_id, 'New: {}'.format(self.name))
+            message = 'New: {}'.format(self.name)
+        message += '\n' + 'Flag is: {}'.format(flag)
+        context.bot.send_message(chat_id, message)
 
     @command(name=['age', 'a'],
              description='Set age',

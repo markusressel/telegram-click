@@ -24,7 +24,6 @@ from telegram_click.const import ARG_NAMING_PREFIXES
 from telegram_click.util import escape_for_markdown, find_duplicates
 
 LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
 
 
 class Argument:

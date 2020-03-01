@@ -26,7 +26,6 @@ from telegram import Bot
 from telegram_click.const import ARG_NAMING_PREFIXES
 
 LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
 
 
 def find_duplicates(l: list) -> []:

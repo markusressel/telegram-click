@@ -31,7 +31,6 @@ from telegram_click.util import generate_help_message, parse_telegram_command, s
     split_command_from_args, split_command_from_target, find_duplicates
 
 LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
 
 
 def _check_permissions(update: Update, context: CallbackContext,

@@ -21,7 +21,6 @@
 import logging
 
 LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
 
 # global list of all commands
 COMMAND_LIST = []
