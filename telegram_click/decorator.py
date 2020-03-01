@@ -20,6 +20,7 @@
 
 import functools
 import logging
+from typing import List
 
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext
@@ -145,7 +146,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
     return wrapper
 
 
-def check_command_name_clashes(names: [str]):
+def check_command_name_clashes(names: List[str]):
     """
     Checks if a command name has been used multiple times and raises an exception if so
     :param names: command names added in this decorator call
@@ -163,7 +164,7 @@ def check_command_name_clashes(names: [str]):
         raise ValueError("Command names must be unique! Clashing names: {}".format(clashing))
 
 
-def check_argument_name_clashes(arguments: []):
+def check_argument_name_clashes(arguments: List[Argument]):
     """
     Checks if an argument name of a command has been used multiple times and raises an exception if so
     :param arguments: arguments of a command to check
@@ -172,6 +173,21 @@ def check_argument_name_clashes(arguments: []):
     if len(duplicates) > 0:
         clashing = ", ".join(duplicates.keys())
         raise ValueError("Argument names must be unique per command! Clashing arguments: {}".format(clashing))
+
+
+def check_optional_argument_after_other(command_name: str, arguments: List[Argument]):
+    """
+    Checks the order of arguments to make sure no required argument is defined after an optional one
+    :param command_name: command name the arguments belong to
+    :param arguments: arguments to check
+    """
+    optional_detected = False
+    for arg in arguments:
+        if not arg.optional and optional_detected:
+            raise AssertionError(
+                "Required argument after optional argument in command /{}: {}".format(command_name, arg.name))
+        if arg.optional:
+            optional_detected = True
 
 
 def command(name: str or [str], description: str = None,
@@ -200,6 +216,7 @@ def command(name: str or [str], description: str = None,
 
     check_command_name_clashes(name)
     check_argument_name_clashes(arguments)
+    check_optional_argument_after_other(name, arguments)
 
     help_message = generate_help_message(name, description, arguments)
 
