@@ -20,6 +20,7 @@
 
 import logging
 
+from telegram_click.const import ARG_VALUE_SEPARATOR_CHAR
 from telegram_click.util import find_duplicates
 
 LOGGER = logging.getLogger(__name__)
@@ -47,11 +48,9 @@ class Argument:
         for c in name:
             if c.isspace():
                 raise ValueError("Argument name must not contain whitespace!")
-        self.names = [name] if not isinstance(name, list) else name
-        duplicates = find_duplicates(self.names)
-        if len(duplicates) > 0:
-            clashing = ", ".join(duplicates.keys())
-            raise ValueError("Argument names must be unique! Clashing arguments: {}".format(clashing))
+        self.names = [name.strip()] if not isinstance(name, list) else name
+        self.names = list(map(lambda x: x.strip(), self.names))
+        self._validate_names()
 
         self.description = description.strip()
         self.example = example
@@ -122,6 +121,19 @@ class Argument:
             return float(value[:-1]) / 100.0
         else:
             return float(value)
+
+    def _validate_names(self):
+        """
+        Validates argument names and raises an exception if something is invalid
+        """
+        for name in self.names:
+            if ARG_VALUE_SEPARATOR_CHAR in name:
+                raise ValueError("Argument names must not contain '=' character: {}".format(name))
+
+        duplicates = find_duplicates(self.names)
+        if len(duplicates) > 0:
+            clashing = ", ".join(duplicates.keys())
+            raise ValueError("Argument names must be unique! Clashing arguments: {}".format(clashing))
 
 
 class Flag(Argument):
