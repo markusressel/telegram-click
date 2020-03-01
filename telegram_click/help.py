@@ -90,7 +90,7 @@ def generate_argument_message(arg: Argument) -> str:
 
     message = "  " + ", ".join(arg_names)
     if not arg.flag:
-        message += "\t\t`{}`".format(arg.type.__name__)
+        message += "\t\t`{}`".format(arg.type.__name__.upper())
     message += "\t\t" + escape_for_markdown(arg.description)
 
     if arg.optional and not arg.flag:

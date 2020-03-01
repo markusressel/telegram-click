@@ -142,14 +142,13 @@ class MyBot:
         context.bot.send_message(update.effective_chat.id, 'New age: {}'.format(age))
 
     @command(name=['children', 'c'],
-             description='Set children',
+             description='Set children amount',
              arguments=[
                  Argument(name=['amount', 'a'],
                           description='The new amount',
                           type=float,
                           validator=lambda x: x >= 0,
-                          example='1.57',
-                          optional=True)
+                          example='1.57')
              ])
     def _children_command_callback(self, update: Update, context: CallbackContext, child_count: float or None):
         chat_id = update.effective_chat.id
