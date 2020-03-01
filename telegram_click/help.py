@@ -42,7 +42,7 @@ def generate_help_message(names: [str], description: str, args: List[Argument]) 
 
     lines = [
         synopsis,
-        description
+        "  " + description
     ]
     if len(flags) > 0:
         lines.extend([
@@ -60,7 +60,7 @@ def generate_help_message(names: [str], description: str, args: List[Argument]) 
         example = generate_command_example(names, arguments, flags)
         lines.extend([
             "Example:",
-            example
+            "  " + example
         ])
 
     return "\n".join(lines)
