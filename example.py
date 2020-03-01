@@ -150,13 +150,13 @@ class MyBot:
                           validator=lambda x: x >= 0,
                           example='1.57')
              ])
-    def _children_command_callback(self, update: Update, context: CallbackContext, child_count: float or None):
+    def _children_command_callback(self, update: Update, context: CallbackContext, amount: float or None):
         chat_id = update.effective_chat.id
-        if child_count is None:
+        if amount is None:
             context.bot.send_message(chat_id, 'Current: {}'.format(self.child_count))
         else:
-            self.child_count = child_count
-            context.bot.send_message(chat_id, 'New: {}'.format(child_count))
+            self.child_count = amount
+            context.bot.send_message(chat_id, 'New: {}'.format(amount))
 
 
 if __name__ == '__main__':
