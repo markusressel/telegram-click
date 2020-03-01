@@ -57,18 +57,22 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
         val = str_args[idx]
         arg_name = remove_naming_prefix(val)
         if arg_name not in arg_name_map:
-            raise ValueError("Unknown argument '{}'".format(arg_name))
+            raise ValueError("Unknown argument '{}'".format(val))
         arg = arg_name_map[arg_name]
 
         if arg.flag:
-            # since it is present, we assume a true value
+            # if a flag is present, we assume the value "true"
             value = arg.parse_arg_value("True")
         else:
-            value = str_args[idx + 1]
+            next_idx = idx + 1
+            value = str_args[next_idx] if next_idx < len(str_args) else None
+            if value is None:
+                raise ValueError(
+                    "Expected argument value for '{}' but found EOL".format(val))
             used_idx.append(idx + 1)
             if starts_with_naming_prefix(value):
                 raise ValueError(
-                    "Expected argument value for '--{}' but found named argument '{}'".format(arg_name, value))
+                    "Expected argument value for '{}' but found named argument '{}'".format(val, value))
 
         parsed_args[arg.name] = arg.parse_arg_value(value)
         for name in arg.names:
