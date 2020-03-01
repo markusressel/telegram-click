@@ -144,7 +144,7 @@ class MyBot:
     @command(name=['children', 'c'],
              description='Set children',
              arguments=[
-                 Argument(name=['child-count', 'amount', 'a'],
+                 Argument(name=['amount', 'a'],
                           description='The new amount',
                           type=float,
                           validator=lambda x: x >= 0,
