@@ -26,9 +26,9 @@ from telegram.ext import CallbackContext
 
 from telegram_click import CommandTarget
 from telegram_click.argument import Argument
+from telegram_click.parser import parse_telegram_command, split_command_from_args, split_command_from_target
 from telegram_click.permission.base import Permission
-from telegram_click.util import generate_help_message, parse_telegram_command, send_message, find_first, \
-    split_command_from_args, split_command_from_target, find_duplicates
+from telegram_click.util import generate_help_message, send_message, find_first, find_duplicates
 
 LOGGER = logging.getLogger(__name__)
 
