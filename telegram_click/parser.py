@@ -20,7 +20,7 @@
 import logging
 from collections import OrderedDict
 
-from telegram_click.const import ARG_NAMING_PREFIXES
+from telegram_click.const import ARG_NAMING_PREFIXES, ARG_VALUE_SEPARATOR_CHAR
 
 LOGGER = logging.getLogger(__name__)
 
@@ -56,20 +56,29 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
     for idx in named_arg_idx:
         val = str_args[idx]
         arg_name = remove_naming_prefix(val)
+        value = None
+
+        if ARG_VALUE_SEPARATOR_CHAR in arg_name:
+            arg_name, value = arg_name.split(ARG_VALUE_SEPARATOR_CHAR, 1)
+
         if arg_name not in arg_name_map:
             raise ValueError("Unknown argument '{}'".format(val))
         arg = arg_name_map[arg_name]
 
         if arg.flag:
+            if value is not None:
+                raise ValueError("Unexpected flag value: {}".format(val))
             # if a flag is present, we assume the value "true"
             value = arg.parse_arg_value("True")
         else:
-            next_idx = idx + 1
-            value = str_args[next_idx] if next_idx < len(str_args) else None
+            if ARG_VALUE_SEPARATOR_CHAR not in val:
+                next_idx = idx + 1
+                value = str_args[next_idx] if next_idx < len(str_args) else None
+                used_idx.append(next_idx)
+
             if value is None:
                 raise ValueError(
                     "Expected argument value for '{}' but found EOL".format(val))
-            used_idx.append(next_idx)
             if starts_with_naming_prefix(value):
                 raise ValueError(
                     "Expected argument value for '{}' but found named argument '{}'".format(val, value))
