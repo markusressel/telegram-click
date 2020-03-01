@@ -20,8 +20,7 @@
 
 import logging
 
-from telegram_click.const import ARG_NAMING_PREFIXES
-from telegram_click.util import escape_for_markdown, find_duplicates
+from telegram_click.util import find_duplicates
 
 LOGGER = logging.getLogger(__name__)
 
@@ -96,23 +95,6 @@ class Argument:
             if not self.validator(parsed):
                 raise ValueError("Invalid value for argument '{}': '{}'".format(self.names[0], arg))
         return parsed
-
-    def generate_argument_message(self) -> str:
-        """
-        Generates the usage text for this argument
-        :return: usage text line
-        """
-        arg_prefix = next(iter(ARG_NAMING_PREFIXES))
-        arg_names = list(map(lambda x: "`{}{}`".format(arg_prefix, x), self.names))
-
-        message = "  {} (`{}`): {}".format(
-            ", ".join(arg_names),
-            self.type.__name__,
-            escape_for_markdown(self.description)
-        )
-        if self.optional:
-            message += " (`{}`)".format(escape_for_markdown(self.default))
-        return message
 
     @staticmethod
     def _boolean_converter(value: str) -> bool:

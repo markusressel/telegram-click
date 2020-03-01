@@ -19,11 +19,11 @@
 #  SOFTWARE.
 
 from telegram_click.argument import Argument, Flag
-from telegram_click.util import parse_telegram_command
+from telegram_click.parser import parse_telegram_command
 from tests import TestBase
 
 
-class ParsingTest(TestBase):
+class ParserTest(TestBase):
 
     def test_flag(self):
         flag1 = Flag(
