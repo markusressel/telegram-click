@@ -1,4 +1,5 @@
 # telegram-click [![Contributors](https://img.shields.io/github/contributors/markusressel/telegram-click.svg)](https://github.com/markusressel/telegram-click/graphs/contributors) [![MIT License](https://img.shields.io/github/license/markusressel/telegram-click.svg)](/LICENSE) ![Code Size](https://img.shields.io/github/languages/code-size/markusressel/telegram-click.svg) ![Latest Version](https://badge.fury.io/py/telegram-click.svg) [![Build Status](https://travis-ci.org/markusressel/telegram-click.svg?branch=master)](https://travis-ci.org/markusressel/telegram-click)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmarkusressel%2Ftelegram-click.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmarkusressel%2Ftelegram-click?ref=badge_shield)
 
 [Click](https://github.com/pallets/click/) 
 inspired command-line interface creation toolkit for 
@@ -271,3 +272,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmarkusressel%2Ftelegram-click.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmarkusressel%2Ftelegram-click?ref=badge_large)
