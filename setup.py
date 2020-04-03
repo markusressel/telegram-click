@@ -66,19 +66,21 @@ def readme() -> [str]:
         return f.read()
 
 
-def install_requirements() -> [str]:
-    return read_requirements_file("requirements.txt")
+def locked_requirements(section):
+    """
+    Look through the 'Pipfile.lock' to fetch requirements by section.
+    """
+    import json
 
+    with open('Pipfile.lock') as pip_file:
+        pipfile_json = json.load(pip_file)
 
-def test_requirements() -> [str]:
-    return read_requirements_file("test_requirements.txt")
+    if section not in pipfile_json:
+        print("{0} section missing from Pipfile.lock".format(section))
+        return []
 
-
-def read_requirements_file(file_name: str):
-    with open(file_name, encoding='utf-8') as f:
-        requirements_file = f.readlines()
-    return [r.strip() for r in requirements_file]
-
+    return [package + detail.get('version', "")
+            for package, detail in pipfile_json[section].items()]
 
 setup(
     name='telegram_click',
@@ -101,6 +103,6 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8'
     ],
-    install_requires=install_requirements(),
-    tests_require=test_requirements()
+    install_requires=locked_requirements('default'),
+    tests_require=locked_requirements('develop'),
 )
