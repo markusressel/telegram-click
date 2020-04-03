@@ -20,7 +20,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install pipenv
+        pipenv install --system --deploy
     - name: Lint with flake8
       run: |
         pip install flake8
@@ -30,6 +31,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pip install -r test_requirements.txt
+        pipenv install --system --deploy
         pip install pytest
+        cd tests
         pytest
