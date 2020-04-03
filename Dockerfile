@@ -8,6 +8,10 @@ WORKDIR /app
 RUN apt-get update
 
 COPY . .
-RUN pip install --no-cache-dir -r requirements.txt
+
+RUN pip install --upgrade pip
+RUN pip install pipenv
+RUN pipenv install --system --deploy
+RUN pip install .
 
 CMD [ "python", "./example.py" ]
