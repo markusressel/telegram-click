@@ -239,6 +239,7 @@ instead, set the `print_error` parameter to `True`.
 The user is also informed about input errors like
 * an argument can not be parsed correctly
 * an invalid value is passed for an argument
+
 In these cases the user will get a more specific error message
 and a help message for the command he was trying to use.
 
