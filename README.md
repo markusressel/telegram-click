@@ -35,6 +35,7 @@ Try the latest version of the [example.py](/example.py) out for yourself: [@Pyth
 * [InfiniteWisdom](https://github.com/ekeih/InfiniteWisdom)
 * [DeineMudda](https://github.com/markusressel/DeineMudda)
 * [grocy-telegram-bot](https://github.com/markusressel/grocy-telegram-bot)
+* [FrundenBot](https://github.com/ekeih/FrundenBot)
 
 and hopefully many others :)
 
