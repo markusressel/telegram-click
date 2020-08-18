@@ -163,9 +163,9 @@ when this user generate a list of commands.
 | `NOBODY`              | Nobody has permission (useful for callbacks triggered via code instead of user interaction f.ex. "unknown command" handler) |
 | `ANYBODY`             | Anybody has permission (this is the default) |
 
-### Custom permission handler
+### Custom permissions
 
-If none of the integrated handlers suit your needs you can simply write 
+If none of the integrated permissions suit your needs you can simply write 
 your own permission handler by extending the `Permission` base class 
 and pass an instance of the `MyPermission` class to the list of `permissions`:
 
@@ -188,10 +188,9 @@ def _permission_command_callback(self, update: Update, context: CallbackContext)
 
 ### Show "Permission denied" message
 
-By default command calls coming from a user without permission are ignored.
-If you want to send them a "permission denied" like message you can 
-pass this message to the `permission_denied_message` argument of the 
-`@command` decorator.
+This behaviour is defined by the error handler. The `DefaultErrorHandler` silently ignores 
+command messages from users without permission. To change this simply define your own, customized `ErrorHandler`
+by extending the `DefaultErrorHandler`.
 
 ## Targeted commands
 
@@ -232,17 +231,24 @@ example above.
 
 **telegram-click** automatically handles errors in most situations.
 
-When an exception is raised the user will be notified that his 
-command has crashed the server. By default he will only see
-a general error message. If you want to send full stacktraces 
-instead, set the `print_error` parameter to `True`.
+Errors are into three categories:
+* Permission errors
+* Input validation errors
+* Command execution errors
 
-The user is also informed about input errors like
-* an argument can not be parsed correctly
-* an invalid value is passed for an argument
+The `DefaultErrorHandler` will handle these categories in the following way:
 
-In these cases the user will get a more specific error message
-and a help message for the command he was trying to use.
+* Permission errors will be silently ignored.
+* Input validation errors like
+  * an argument can not be parsed correctly
+  * an invalid value is passed for an argument
+  
+  will send the exception message, as well as a help message of the command the user was trying to use.
+* On command execution errors the user will be notified that his 
+  command has crashed, without any specific error message. 
+
+To modify the behaviour for each of those categories, define an `ErrorHandler` and 
+pass an instance of it to the `error_handler` parameter of the `@command` decorator.
 
 # Contributing
 

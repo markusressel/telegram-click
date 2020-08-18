@@ -22,15 +22,16 @@ import functools
 import logging
 from typing import List
 
-from telegram import ParseMode, Update
+from telegram import Update
 from telegram.ext import CallbackContext
 
 from telegram_click import CommandTarget
 from telegram_click.argument import Argument
+from telegram_click.error_handler import ErrorHandler, DEFAULT_ERROR_HANDLER
 from telegram_click.help import generate_help_message
 from telegram_click.parser import parse_telegram_command, split_command_from_args, split_command_from_target
 from telegram_click.permission.base import Permission
-from telegram_click.util import send_message, find_first, find_duplicates
+from telegram_click.util import find_first, find_duplicates
 
 LOGGER = logging.getLogger(__name__)
 
@@ -52,18 +53,17 @@ def _check_permissions(update: Update, context: CallbackContext,
 
 def _create_callback_wrapper(func: callable, help_message: str,
                              arguments: [Argument],
-                             permissions: Permission, permission_denied_message: str or None,
+                             permissions: Permission,
                              command_target: bytes,
-                             print_error: bool) -> callable:
+                             error_handlers: List[ErrorHandler]) -> callable:
     """
     Creates the wrapper function for the callback function
     :param func: the function to wrap
     :param help_message: command help message
     :param arguments: command arguments
     :param permissions: command permissions
-    :param permission_denied_message: permission denied message
     :param command_target: command target
-    :param print_error: True prints the exception stacktrace, False a general error message
+    :param error_handlers: list of error handlers
     :return: wrapper function
     """
     if not callable(func):
@@ -82,16 +82,16 @@ def _create_callback_wrapper(func: callable, help_message: str,
 
         try:
             if not _check_permissions(update, context, permissions):
+                # permission denied
                 LOGGER.debug("Permission denied in chat {} for user {} for message: {}".format(
                     chat_id,
                     update.effective_message.from_user.id,
                     message))
 
-                # send 'permission denied' message, if configured
-                if permission_denied_message is not None:
-                    send_message(bot, chat_id=chat_id, message=permission_denied_message,
-                                 parse_mode=ParseMode.MARKDOWN,
-                                 reply_to=message.message_id)
+                for handler in error_handlers:
+                    if handler.on_permission_error(context, update):
+                        break
+
                 # don't process command
                 return
 
@@ -113,16 +113,13 @@ def _create_callback_wrapper(func: callable, help_message: str,
                 # parse command and arguments
                 cmd, parsed_args = parse_telegram_command(bot.username, message.text, arguments)
             except ValueError as ex:
-                # handle exceptions that occur during permission and argument parsing
+                # error during argument parsing
                 logging.exception("Error parsing command arguments")
 
-                denied_text = "\n".join([
-                    ":exclamation: `{}`".format(str(ex)),
-                    "",
-                    help_message
-                ])
-                send_message(bot, chat_id=chat_id, message=denied_text, parse_mode=ParseMode.MARKDOWN,
-                             reply_to=message.message_id)
+                for handler in error_handlers:
+                    if handler.on_validation_error(context, update, ex, help_message):
+                        break
+
                 return
 
             # convert argument names to python param naming convention (snake-case)
@@ -130,18 +127,11 @@ def _create_callback_wrapper(func: callable, help_message: str,
             # execute wrapped function
             return func(*args, **{**kw_function_args, **kwargs})
         except Exception as ex:
-            # execute wrapped function
+            # error while executing wrapped function
             logging.exception("Error in callback")
-
-            import traceback
-            exception_text = "\n".join(list(map(lambda x: "{}:{}\n\t{}".format(x.filename, x.lineno, x.line),
-                                                traceback.extract_tb(ex.__traceback__))))
-            if print_error:
-                denied_text = ":boom: `{}`".format(exception_text)
-            else:
-                denied_text = ":boom: There was an error executing your command :worried:"
-            send_message(bot, chat_id=chat_id, message=denied_text, parse_mode=ParseMode.MARKDOWN,
-                         reply_to=message.message_id)
+            for handler in error_handlers:
+                if handler.on_execution_error(context, update, ex):
+                    break
 
     return wrapper
 
@@ -193,20 +183,16 @@ def check_optional_argument_after_other(command_name: str, arguments: List[Argum
 def command(name: str or [str], description: str = None,
             arguments: [Argument] = None,
             permissions: Permission = None,
-            permission_denied_message: str = None,
             command_target: bytes = CommandTarget.UNSPECIFIED | CommandTarget.SELF,
-            print_error: bool = False):
+            error_handler: ErrorHandler = None):
     """
     Decorator to turn a command handler function into a full fledged, shell like command
     :param name: Name of the command
     :param description: a short description of the command
     :param arguments: list of command argument description objects
     :param permissions: required permissions to run this command
-    :param permission_denied_message: text so send when a user is denied permission.
-                                      Set this to None to send no message at all.
     :param command_target: command targets to accept
-    :param print_error: True sends the exception message to the chat of origin,
-                        False sends a general error message
+    :param error_handler: a customized error handler
     """
     from telegram_click import COMMAND_LIST
 
@@ -230,14 +216,19 @@ def command(name: str or [str], description: str = None,
         }
     )
 
+    error_handlers = [DEFAULT_ERROR_HANDLER]
+    if error_handler is not None:
+        error_handlers.insert(0, error_handler)
+
     def callback_decorator(func: callable):
         """
         Callback decorator function
         :param func: the function to wrap
         :return: wrapper function
         """
-        return _create_callback_wrapper(func, help_message, arguments, permissions, permission_denied_message,
-                                        command_target, print_error)
+        return _create_callback_wrapper(
+            func, help_message, arguments, permissions,
+            command_target, error_handlers)
 
     return callback_decorator
 

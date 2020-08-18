@@ -26,6 +26,7 @@ from telegram.ext import CallbackContext, Updater, MessageHandler, CommandHandle
 from telegram_click import generate_command_list
 from telegram_click.argument import Argument, Flag
 from telegram_click.decorator import command
+from telegram_click.error_handler import ErrorHandler
 from telegram_click.permission import GROUP_ADMIN, USER_ID, USER_NAME
 from telegram_click.permission.base import Permission
 
@@ -37,6 +38,12 @@ class MyPermission(Permission):
         from_user = update.effective_message.from_user
 
         # do fancy stuff
+        return True
+
+
+class MyErrorHandler(ErrorHandler):
+
+    def on_execution_error(self, context: CallbackContext, update: Update, exception: Exception) -> bool:
         return True
 
 
@@ -149,7 +156,8 @@ class MyBot:
                           type=float,
                           validator=lambda x: x >= 0,
                           example='1.57')
-             ])
+             ],
+             error_handler=MyErrorHandler())
     def _children_command_callback(self, update: Update, context: CallbackContext, amount: float or None):
         chat_id = update.effective_chat.id
         if amount is None:
