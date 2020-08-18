@@ -27,7 +27,7 @@ from telegram_click import generate_command_list
 from telegram_click.argument import Argument, Flag
 from telegram_click.decorator import command
 from telegram_click.error_handler import ErrorHandler
-from telegram_click.permission import GROUP_ADMIN, USER_ID, USER_NAME
+from telegram_click.permission import GROUP_ADMIN, USER_ID, USER_NAME, NOBODY
 from telegram_click.permission.base import Permission
 
 logging.getLogger("telegram_click").setLevel(logging.DEBUG)
@@ -51,12 +51,11 @@ class MyErrorHandler(ErrorHandler):
         message = update.effective_message
         chat_id = message.chat_id
 
-        text = "YOU SHALL NOT PASS :raised_hand::magic_wand:"
+        text = "YOU SHALL NOT PASS! :hand::mage:"
 
         from telegram_click.util import send_message
         send_message(bot, chat_id=chat_id,
                      message=text,
-                     parse_mode=ParseMode.MARKDOWN,
                      reply_to=message.message_id)
 
         return True
@@ -181,6 +180,7 @@ class MyBot:
                           validator=lambda x: x >= 0,
                           example='1.57')
              ],
+             permissions=NOBODY,
              error_handler=MyErrorHandler())
     def _children_command_callback(self, update: Update, context: CallbackContext, amount: float or None):
         chat_id = update.effective_chat.id
