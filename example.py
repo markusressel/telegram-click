@@ -42,8 +42,32 @@ class MyPermission(Permission):
 
 
 class MyErrorHandler(ErrorHandler):
+    """
+    Example of a custom error handler
+    """
+
+    def on_permission_error(self, context: CallbackContext, update: Update) -> bool:
+        bot = context.bot
+        message = update.effective_message
+        chat_id = message.chat_id
+
+        text = "YOU SHALL NOT PASS :raised_hand::magic_wand:"
+
+        from telegram_click.util import send_message
+        send_message(bot, chat_id=chat_id,
+                     message=text,
+                     parse_mode=ParseMode.MARKDOWN,
+                     reply_to=message.message_id)
+
+        return True
+
+    def on_validation_error(self, context: CallbackContext, update: Update, exception: Exception,
+                            help_message: str) -> bool:
+        # return False to let the `DefaultErrorHandler` process this
+        return False
 
     def on_execution_error(self, context: CallbackContext, update: Update, exception: Exception) -> bool:
+        # do nothing when an execution error occurs
         return True
 
 
