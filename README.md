@@ -189,8 +189,8 @@ def _permission_command_callback(self, update: Update, context: CallbackContext)
 ### Show "Permission denied" message
 
 This behaviour is defined by the error handler. The `DefaultErrorHandler` silently ignores 
-command messages from users without permission. To change this simply define your own, customized `ErrorHandler`
-by extending the `DefaultErrorHandler`.
+command messages from users without permission. To change this simply define your own, 
+customized `ErrorHandler` class as shown in the [example.py](example.py).
 
 ## Targeted commands
 
@@ -248,7 +248,8 @@ The `DefaultErrorHandler` will handle these categories in the following way:
   command has crashed, without any specific error message. 
 
 To modify the behaviour for each of those categories, define an `ErrorHandler` and 
-pass an instance of it to the `error_handler` parameter of the `@command` decorator.
+pass an instance of it to the `error_handler` parameter of the `@command` decorator,
+like shown in the [example.py](example.py).
 
 # Contributing
 
