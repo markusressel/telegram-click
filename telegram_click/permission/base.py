@@ -21,6 +21,7 @@
 import operator
 from abc import abstractmethod
 from functools import reduce
+from typing import Dict
 
 from telegram import Update
 from telegram.ext import CallbackContext
@@ -38,7 +39,7 @@ class Permission:
         return self._merge(other, operator.or_)
 
     def _merge(self, other, op: operator):
-        return MergedPermission({self, other}, op)
+        return MergedPermission([self, other], op)
 
     def __invert__(self):
         return InvertedPermission(self)
@@ -86,7 +87,7 @@ class MergedPermission(Permission):
     Represents a permission consisting of two other permissions.
     """
 
-    def __init__(self, permissions: set, op: operator):
+    def __init__(self, permissions: list, op: operator):
         """
 
         :param permissions: Permission objects to merge
@@ -115,3 +116,21 @@ class MergedPermission(Permission):
         permission_class_names = list(map(lambda x: x.__repr__(), self.permissions))
         repr = " {} ".format(self.op.__name__[1:]).join(permission_class_names)
         return "<{}>".format(repr)
+
+
+def get_evaluation_tree(update: Update, context: CallbackContext, permission: Permission) -> any:
+    def add_child(tree_node: Dict, permission: Permission):
+        evaluation = permission.evaluate(update, context)
+        tree_node["permission"] = permission
+        tree_node["evaluation"] = evaluation
+
+        if isinstance(permission, MergedPermission):
+            tree_node["op"] = permission.op
+            tree_node["left"] = {}
+            add_child(tree_node["left"], permission.permissions[0])
+            tree_node["right"] = {}
+            add_child(tree_node["right"], permission.permissions[1])
+
+    root = {}
+    add_child(root, permission)
+    return root
