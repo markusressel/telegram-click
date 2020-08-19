@@ -1,6 +1,7 @@
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext
 
+from telegram_click.permission.base import Permission
 from telegram_click.util import send_message
 
 
@@ -9,11 +10,12 @@ class ErrorHandler:
     Interface for error handlers
     """
 
-    def on_permission_error(self, context: CallbackContext, update: Update) -> bool:
+    def on_permission_error(self, context: CallbackContext, update: Update, permissions: Permission) -> bool:
         """
         This method is called when a user tries to execute a command without permission
         :param context: Callback context
         :param update: Message Update
+        :param permissions: the permissions, at least one of which was missing
         :return: True if the error was handled, false otherwise
         """
         return False
@@ -55,7 +57,7 @@ class DefaultErrorHandler(ErrorHandler):
         self.silent_denial = silent_denial
         self.print_error = print_error
 
-    def on_permission_error(self, context: CallbackContext, update: Update) -> bool:
+    def on_permission_error(self, context: CallbackContext, update: Update, permissions: Permission) -> bool:
         bot = context.bot
         message = update.effective_message
         chat_id = message.chat_id

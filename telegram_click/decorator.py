@@ -89,7 +89,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
                     message))
 
                 for handler in error_handlers:
-                    if handler.on_permission_error(context, update):
+                    if handler.on_permission_error(context, update, permissions):
                         break
 
                 # don't process command

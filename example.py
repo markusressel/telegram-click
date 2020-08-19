@@ -46,7 +46,7 @@ class MyErrorHandler(ErrorHandler):
     Example of a custom error handler
     """
 
-    def on_permission_error(self, context: CallbackContext, update: Update) -> bool:
+    def on_permission_error(self, context: CallbackContext, update: Update, permissions: Permission) -> bool:
         bot = context.bot
         message = update.effective_message
         chat_id = message.chat_id
