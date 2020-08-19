@@ -231,7 +231,7 @@ example above.
 
 **telegram-click** automatically handles errors in most situations.
 
-Errors are into three categories:
+Errors are divided into three categories:
 * Permission errors
 * Input validation errors
 * Command execution errors
