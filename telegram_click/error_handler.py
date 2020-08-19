@@ -46,7 +46,7 @@ class ErrorHandler:
 
 
 class DefaultErrorHandler(ErrorHandler):
-    DEFAULT_PERMISSION_DENIED_MESSAGE = ":stop_sign: You do not have the permission to use this command."
+    DEFAULT_PERMISSION_DENIED_MESSAGE = ":stop_sign: You do not have permission to use this command."
 
     def __init__(self, silent_denial: bool = True, print_error: bool = False):
         """
