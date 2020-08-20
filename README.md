@@ -7,7 +7,7 @@ inspired command-line interface creation toolkit for
 Try the latest version of the [example.py](/example.py) out for yourself: [@PythonTelegramClickBot](http://t.me/PythonTelegramClickBot)
 
 <p align="center">
-  <img src="/screenshots/demo1.png" width="400"> <img src="/screenshots/demo2.png" width="400"> 
+  <img src="https://raw.githubusercontent.com/markusressel/telegram-click/master/screenshots/demo1.png" width="400"> <img src="https://raw.githubusercontent.com/markusressel/telegram-click/master/screenshots/demo2.png" width="400"> 
 </p>
 
 # Features
