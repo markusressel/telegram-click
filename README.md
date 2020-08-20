@@ -27,8 +27,8 @@ Try the latest version of the [example.py](/example.py) out for yourself: [@Pyth
   * [x] Combine permissions using logical operators
   * [x] Create custom permission handlers
 * [x] Error handling
-  * [x] Automatically send error messages if something goes wrong
-  * [x] Optionally send exception messages
+  * [x] Automatically send error and help messages if something goes wrong
+  * [x] Write custom error handlers
   
 **telegram-click** is used by
 
