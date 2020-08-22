@@ -52,7 +52,7 @@ def parse_command_args(arguments: str or None, expected_args: List[Argument]) ->
         if is_argument_key(arg_key):
             named_arg_idx.append(idx)
 
-    # process named arguments first
+    # process named arguments (and flags) first
     used_idx = list(named_arg_idx)
     for idx in named_arg_idx:
         arg_key = tokens[idx]
@@ -174,6 +174,9 @@ def split_into_tokens(text: str) -> List[str]:
                 start_quote_char = character
 
         current_token = current_token + character
+
+    if in_quote:
+        raise ValueError("Missing closing quotation character: {}".format(start_quote_char))
 
     if len(current_token) > 0:
         tokens.append(current_token)
