@@ -52,7 +52,7 @@ def parse_command_args(arguments: str or None, expected_args: List[Argument]) ->
         if is_argument_key(arg_key):
             named_arg_idx.append(idx)
 
-    # process named arguments first
+    # process named arguments (and flags) first
     used_idx = list(named_arg_idx)
     for idx in named_arg_idx:
         arg_key = tokens[idx]
@@ -63,7 +63,30 @@ def parse_command_args(arguments: str or None, expected_args: List[Argument]) ->
             arg_name, value = arg_name.split(ARG_VALUE_SEPARATOR_CHAR, 1)
 
         if arg_name not in arg_name_map:
-            raise ValueError("Unknown argument '{}'".format(arg_key))
+            # check if all individual characters could be used as flags
+            all_flags = True
+            for char in arg_name:
+                if not (char in arg_name_map.keys() and arg_name_map[char].flag):
+                    all_flags = False
+                    break
+
+            if all_flags:
+                if value is not None:
+                    raise ValueError("Unexpected flag value: {}".format(arg_key))
+
+                # process characters as flags
+                for char in arg_name:
+                    arg = arg_name_map[char]
+                    # if a flag is present, we assume the value "true"
+                    value = arg.parse_arg_value("True")
+
+                    parsed_args[arg.name] = arg.parse_arg_value(value)
+                    for name in arg.names:
+                        arg_name_map.pop(name)
+                continue
+            else:
+                # otherwise raise an error
+                raise ValueError("Unknown argument '{}'".format(arg_key))
         arg = arg_name_map[arg_name]
 
         if arg.flag:
@@ -174,6 +197,9 @@ def split_into_tokens(text: str) -> List[str]:
                 start_quote_char = character
 
         current_token = current_token + character
+
+    if in_quote:
+        raise ValueError("Missing closing quotation character: {}".format(start_quote_char))
 
     if len(current_token) > 0:
         tokens.append(current_token)

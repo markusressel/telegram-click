@@ -146,9 +146,14 @@ class MyBot:
                  Flag(
                      name=['flag', 'f'],
                      description="Some flag that changes the command behaviour."
+                 ),
+                 Flag(
+                     name=['flag2', 'F'],
+                     description="Some other flag."
                  )
              ])
-    def _name_command_callback(self, update: Update, context: CallbackContext, name: str or None, flag: bool):
+    def _name_command_callback(self, update: Update, context: CallbackContext, name: str or None, flag: bool,
+                               flag2: bool):
         chat_id = update.effective_chat.id
         if name is None:
             message = 'Current: {}'.format(self.name)
@@ -156,6 +161,7 @@ class MyBot:
             self.name = name
             message = 'New: {}'.format(self.name)
         message += '\n' + 'Flag is: {}'.format(flag)
+        message += '\n' + 'Flag2 is: {}'.format(flag2)
         context.bot.send_message(chat_id, message)
 
     @command(name=['age', 'a'],

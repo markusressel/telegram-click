@@ -44,6 +44,30 @@ class ParserTest(TestBase):
         self.assertTrue("flag" in parsed_args)
         self.assertTrue(parsed_args["flag"] is True)
 
+    def test_multi_flag(self):
+        flag1 = Flag(
+            name=["flag", "f"],
+            description="some flag description",
+        )
+        flag2 = Flag(
+            name=["Flag", "F"],
+            description="some flag description",
+        )
+
+        bot_username = "mybot"
+        command_line = '/command --{}{}'.format(flag1.names[1], flag2.names[1])
+        expected_args = [
+            flag1,
+            flag2,
+        ]
+
+        command, parsed_args = parse_telegram_command(bot_username, command_line, expected_args)
+
+        self.assertEqual(command, "command")
+        self.assertEqual(len(parsed_args), len(expected_args))
+        self.assertTrue("flag" in parsed_args)
+        self.assertTrue(parsed_args["flag"] is True)
+
     def test_flag_missing(self):
         flag1 = Flag(
             name="flag",
