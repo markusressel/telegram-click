@@ -23,7 +23,7 @@ import subprocess
 
 from setuptools import setup, find_packages
 
-VERSION_NUMBER = "4.0.0"
+VERSION_NUMBER = "4.1.0"
 
 GIT_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"])
 GIT_BRANCH = GIT_BRANCH.decode()  # convert to standard string
