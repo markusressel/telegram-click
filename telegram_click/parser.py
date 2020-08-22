@@ -254,15 +254,23 @@ def parse_telegram_command(bot_username: str, text: str, expected_args: []) -> (
     return command[1:], parsed_args
 
 
-def is_argument_key(text: str) -> bool:
+def is_argument_key(text: str, abbreviated: bool or None = None) -> bool:
     """
     Checks is a text has the form of an argument key
     :param text: the text to check
+    :param abbreviated: whether to check for an abbreviated argument key, a long one or both
     :return: true if valid argument form, false otherwise
     """
+    # if it starts with a single dash,
+    # but is not alphabetic,
+    # then we interpret it as a value
+    if starts_with_naming_prefix(text, abbreviated=True):
+        if not remove_naming_prefix(text).isalpha():
+            return False
+
     return (
             not is_quoted(text)
-            and starts_with_naming_prefix(text)
+            and starts_with_naming_prefix(text, abbreviated)
     )
 
 
@@ -284,13 +292,25 @@ def is_quoted(text: str or any) -> bool:
     return False
 
 
-def starts_with_naming_prefix(arg: str) -> bool:
+def starts_with_naming_prefix(arg: str, abbreviated: bool or None = None) -> bool:
     """
     Checks if the given string starts
-    :param arg:
-    :return:
+    :param arg: the arg to check
+    :param abbreviated: whether to look for a prefix used for abbreviated argument keys
+    :return: true if a prefix was found, false otherwise
     """
-    for prefix in ARG_NAMING_PREFIXES:
+    if abbreviated is None:
+        prefixes = ARG_NAMING_PREFIXES
+    elif abbreviated:
+        prefixes = ABBREVIATED_ARG_KEY_PREFIXES
+        # make sure we do not have a longer version instead
+        for prefix in LONG_ARG_KEY_PREFIXES:
+            if arg.startswith(prefix):
+                return False
+    else:
+        prefixes = LONG_ARG_KEY_PREFIXES
+
+    for prefix in prefixes:
         if arg.startswith(prefix):
             return True
 
