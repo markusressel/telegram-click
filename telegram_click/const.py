@@ -20,3 +20,5 @@
 
 ARG_NAMING_PREFIXES = ["—", "--"]
 ARG_VALUE_SEPARATOR_CHAR = "="
+
+QUOTE_CHARS = ['"', '\'']

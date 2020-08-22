@@ -19,7 +19,7 @@
 #  SOFTWARE.
 
 from telegram_click.argument import Argument, Flag
-from telegram_click.parser import parse_telegram_command
+from telegram_click.parser import parse_telegram_command, split_into_tokens
 from tests import TestBase
 
 
@@ -136,3 +136,88 @@ class ParserTest(TestBase):
         self.assertEqual(parsed_args[arg1.name], 12345)
         self.assertEqual(parsed_args[arg2.name], "two words")
         self.assertEqual(parsed_args[arg3.name], arg3.default)
+
+    def test_quote_within_quote(self):
+        arg1 = Argument(
+            name="a",
+            description="str description",
+            example="v"
+        )
+        arg_val = "te\'st"
+
+        bot_username = "mybot"
+        command_line = '/command "{}"'.format(arg_val)
+        expected_args = [
+            arg1
+        ]
+
+        command, parsed_args = parse_telegram_command(bot_username, command_line, expected_args)
+
+        self.assertEqual(parsed_args[arg1.name], arg_val)
+
+    def test_escape_char(self):
+        arg1 = Argument(
+            name="a",
+            description="str description",
+            example="v"
+        )
+
+        arg_values = [
+            {
+                "in": 'te\\"st',
+                "out": 'te"st'
+            },
+            {
+                "in": 'test\\"',
+                "out": 'test"'
+            }
+        ]
+
+        bot_username = "mybot"
+        expected_args = [
+            arg1
+        ]
+
+        for arg_val in arg_values:
+            command_line = '/command "{}"'.format(arg_val["in"])
+            command, parsed_args = parse_telegram_command(bot_username, command_line, expected_args)
+            self.assertEqual(parsed_args[arg1.name], arg_val["out"])
+
+    def test_naming_prefix_within_quote(self):
+        arg1 = Argument(
+            name="a",
+            description="str description",
+            example="v"
+        )
+        arg_val = "--a"
+
+        bot_username = "mybot"
+        command_line = '/command "{}"'.format(arg_val)
+        expected_args = [
+            arg1
+        ]
+
+        command, parsed_args = parse_telegram_command(bot_username, command_line, expected_args)
+
+        self.assertEqual(parsed_args[arg1.name], arg_val)
+
+    def test_token_splitting(self):
+        args = [
+            "abc",
+            "\"double quoted with space\"",
+            "\"'double quoted 'with single quote'\"",
+
+            "'single quoted with space'",
+            "'\"single quoted \"with double quote\"'",
+        ]
+        joined_args = " ".join(args)
+        tokens = split_into_tokens(joined_args)
+
+        for idx, arg in enumerate(args):
+            self.assertEqual(arg, tokens[idx])
+
+        double_test = "\"\\\"double quoted with \\\"escaped double quote\\\"\""
+        self.assertIn("\"\"double quoted with \"escaped double quote\"\"", split_into_tokens(double_test))
+
+        single_test = "'\\'single quoted with \\'escaped single quote\\''"
+        self.assertIn("''single quoted with 'escaped single quote''", split_into_tokens(single_test))
