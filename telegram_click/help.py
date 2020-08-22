@@ -76,10 +76,15 @@ def generate_synopsis(names: [str], args: List[Argument]) -> str:
     """
     command_names = list(map(lambda x: "/{}".format(escape_for_markdown(x)), names))
     synopsis = command_names[0]
+    # append command name aliases in round brackets
     if len(command_names) > 1:
         synopsis += " ({})".format(", ".join(command_names[1:]))
-    if len(args) > 0 and any(map(lambda x: not x.optional, args)):
-        synopsis += " [[OPTIONS]]"
+    # add hints about flags and arguments
+    if len(args) > 0:
+        if any(map(lambda x: x.flag, args)):
+            synopsis += " [[FLAGS]]"
+        if any(map(lambda x: not x.flag, args)):
+            synopsis += " [[ARGS]]"
 
     return synopsis
 
@@ -124,4 +129,4 @@ def generate_command_example(names: List[str], arguments: List[Argument], flags:
     arg_prefix = next(iter(ARG_NAMING_PREFIXES))
     argument_examples = list(map(lambda x: "{}".format(x.example), arguments))
     flag_examples = list(map(lambda x: "{}{}".format(arg_prefix, x.name), flags))
-    return "`/{} {}`".format(names[0], " ".join(argument_examples + flag_examples)).strip()
+    return "`/{} {}`".format(names[0], " ".join(flag_examples + argument_examples)).strip()
