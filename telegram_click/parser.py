@@ -303,6 +303,10 @@ def starts_with_naming_prefix(arg: str, abbreviated: bool or None = None) -> boo
         prefixes = ARG_NAMING_PREFIXES
     elif abbreviated:
         prefixes = ABBREVIATED_ARG_KEY_PREFIXES
+        # make sure we do not have a longer version instead
+        for prefix in LONG_ARG_KEY_PREFIXES:
+            if arg.startswith(prefix):
+                return False
     else:
         prefixes = LONG_ARG_KEY_PREFIXES
 
