@@ -136,3 +136,39 @@ class ParserTest(TestBase):
         self.assertEqual(parsed_args[arg1.name], 12345)
         self.assertEqual(parsed_args[arg2.name], "two words")
         self.assertEqual(parsed_args[arg3.name], arg3.default)
+
+    def test_quote_within_quote(self):
+        arg1 = Argument(
+            name="a",
+            description="str description",
+            example="v"
+        )
+        arg_val = "te\'st"
+
+        bot_username = "mybot"
+        command_line = '/command "{}"'.format(arg_val)
+        expected_args = [
+            arg1
+        ]
+
+        command, parsed_args = parse_telegram_command(bot_username, command_line, expected_args)
+
+        self.assertEqual(parsed_args[arg1.name], arg_val)
+
+    def test_naming_prefix_within_quote(self):
+        arg1 = Argument(
+            name="a",
+            description="str description",
+            example="v"
+        )
+        arg_val = "--a"
+
+        bot_username = "mybot"
+        command_line = '/command "{}"'.format(arg_val)
+        expected_args = [
+            arg1
+        ]
+
+        command, parsed_args = parse_telegram_command(bot_username, command_line, expected_args)
+
+        self.assertEqual(parsed_args[arg1.name], arg_val)
