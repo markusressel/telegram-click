@@ -82,17 +82,21 @@ class MyBot:
 ## Arguments
 
 **telegram-click** automatically parses arguments based on 
-[shlex POSIX rules](https://docs.python.org/3/library/shlex.html#parsing-rules)
-so in general space acts as an argument delimiter and quoted arguments 
-are parsed as a single one (supporting both double (`"`) and 
-single (`'`) quote characters).
+[shlex non-POSIX rules](https://docs.python.org/3/library/shlex.html#parsing-rules).
+Have a look at the documentation over there to get a better understanding of how arguments
+are parsed. Generally speaking 
+* space acts as an argument delimiter, except when quoted (supporting both `"` and `'`)
+* argument keys are prefixed with `--` or `—` (long dash)
+* quoted arguments are never considererd as argument keys, even when prefixed with `--` or `—`
+
+The behaviour should be pretty intuitive. If it's not, let's discuss!
 
 ### Naming
 
 Arguments can have multiple names to allow for abbreviated names. The
 first name you specify for an argument will be used for the 
 callback parameter name (normalized to snake-case). Because of this
-it is advisable to specify the full argument name as the first one.
+it is advisable to specify a full word argument name as the first one.
 
 ### Types
 
