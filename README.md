@@ -16,7 +16,7 @@ Try the latest version of the [example.py](/example.py) out for yourself: [@Pyth
   * [x] Named arguments (`/command --text "Hello World"`)
   * [x] Value Separator (`/command --text=myvalue` )
   * [x] Flags (`/command --yes`)
-  * [x] Multiple combined Flags (`/command --Syyu`)
+  * [x] Multiple combined Flags (`/command -Syu`)
   * [x] Optional arguments
   * [x] Type conversion including support for custom types
   * [x] Argument input validation
@@ -85,8 +85,9 @@ class MyBot:
 
 **telegram-click** parses arguments using a custom tokenizer:
 * space acts as an argument delimiter, except when quoted (supporting both `"` and `'`)
-* argument keys are prefixed with `--` or `—` (long dash)
-* quoted arguments are never considererd as argument keys, even when prefixed with `--` or `—`
+* argument keys are prefixed with `--`, `—` (long dash) or `-` (for single character keys)
+* quoted arguments are never considered as argument keys, even when prefixed with `--` or `—`
+* flags can be combined in a single argument (f.ex. `-AxZ`)
 
 The behaviour should be pretty intuitive. If it's not, let's discuss and improve it!
 

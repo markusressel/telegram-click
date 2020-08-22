@@ -262,11 +262,9 @@ def is_argument_key(text: str, abbreviated: bool or None = None) -> bool:
     :return: true if valid argument form, false otherwise
     """
     # if it starts with a single dash,
-    # but is not an abbreviated name or not alphabetic,
+    # but is not alphabetic,
     # then we interpret it as a value
     if starts_with_naming_prefix(text, abbreviated=True):
-        if len(text) != 2:
-            return False
         if not remove_naming_prefix(text).isalpha():
             return False
 
