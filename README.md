@@ -81,15 +81,12 @@ class MyBot:
 
 ## Arguments
 
-**telegram-click** automatically parses arguments based on 
-[shlex non-POSIX rules](https://docs.python.org/3/library/shlex.html#parsing-rules).
-Have a look at the documentation over there to get a better understanding of how arguments
-are parsed. Generally speaking 
+**telegram-click** parses arguments using a custom tokenizer:
 * space acts as an argument delimiter, except when quoted (supporting both `"` and `'`)
 * argument keys are prefixed with `--` or `—` (long dash)
 * quoted arguments are never considererd as argument keys, even when prefixed with `--` or `—`
 
-The behaviour should be pretty intuitive. If it's not, let's discuss!
+The behaviour should be pretty intuitive. If it's not, let's discuss and improve it!
 
 ### Naming
 
