@@ -14,6 +14,7 @@ Try the latest version of the [example.py](/example.py) out for yourself: [@Pyth
 * [x] POSIX style argument parsing
   * [x] Quoted arguments (`/command "Hello World"`)
   * [x] Named arguments (`/command --text "Hello World"`)
+  * [x] Value Separator (`/command --text=myvalue )
   * [x] Flags (`/command --yes`)
   * [x] Optional arguments
   * [x] Type conversion including support for custom types
