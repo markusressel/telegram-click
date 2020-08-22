@@ -261,6 +261,15 @@ def is_argument_key(text: str, abbreviated: bool or None = None) -> bool:
     :param abbreviated: whether to check for an abbreviated argument key, a long one or both
     :return: true if valid argument form, false otherwise
     """
+    # if it starts with a single dash,
+    # but is not an abbreviated name or not alphabetic,
+    # then we interpret it as a value
+    if starts_with_naming_prefix(text, abbreviated=True):
+        if len(text) != 2:
+            return False
+        if not remove_naming_prefix(text).isalpha():
+            return False
+
     return (
             not is_quoted(text)
             and starts_with_naming_prefix(text, abbreviated)
