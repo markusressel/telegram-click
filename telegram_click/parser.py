@@ -19,13 +19,15 @@
 #  SOFTWARE.
 import logging
 from collections import OrderedDict
+from typing import List
 
+from telegram_click.argument import Argument
 from telegram_click.const import *
 
 LOGGER = logging.getLogger(__name__)
 
 
-def parse_command_args(arguments: str or None, expected_args: []) -> dict:
+def parse_command_args(arguments: str or None, expected_args: List[Argument]) -> dict:
     """
     Parses the given argument text
     :param arguments: the argument text
@@ -35,8 +37,7 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
     if arguments is None:
         arguments = ""
 
-    import shlex
-    str_args = shlex.split(arguments, posix=False)
+    tokens = split_into_tokens(arguments)
 
     # map argument.name -> argument
     arg_name_map = OrderedDict()
@@ -47,14 +48,14 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
     parsed_args = {}
 
     named_arg_idx = []
-    for idx, arg_key in enumerate(str_args):
+    for idx, arg_key in enumerate(tokens):
         if is_argument_key(arg_key):
             named_arg_idx.append(idx)
 
     # process named arguments first
     used_idx = list(named_arg_idx)
     for idx in named_arg_idx:
-        arg_key = str_args[idx]
+        arg_key = tokens[idx]
         arg_name = remove_naming_prefix(arg_key)
         value = None
 
@@ -73,7 +74,7 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
         else:
             if ARG_VALUE_SEPARATOR_CHAR not in arg_key:
                 next_idx = idx + 1
-                value = str_args[next_idx] if next_idx < len(str_args) else None
+                value = tokens[next_idx] if next_idx < len(tokens) else None
                 used_idx.append(next_idx)
 
             if value is None:
@@ -91,13 +92,13 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
             arg_name_map.pop(name)
 
     # then process positional arguments
-    remaining_idx = list(set(list(range(len(str_args)))) - set(used_idx))
+    remaining_idx = list(set(list(range(len(tokens)))) - set(used_idx))
     for idx in sorted(remaining_idx):
         if len(arg_name_map) <= 0:
             # ignore excess arguments
             break
 
-        arg_key = str_args[idx]
+        arg_key = tokens[idx]
         if is_quoted(arg_key):
             arg_key = arg_key[1:-1]
         arg = list(arg_name_map.values())[0]
@@ -116,6 +117,68 @@ def parse_command_args(arguments: str or None, expected_args: []) -> dict:
             arg_name_map.pop(name)
 
     return parsed_args
+
+
+def split_into_tokens(text: str) -> List[str]:
+    """
+    This is a simple shell-style tokenizer for command arguments.
+    The goal was to emulate posix behaviour, while maintaining quotation characters,
+    to be able to differentiate quoted and non-quoted tokens even after tokenization.
+    :param text: the text to tokenize
+    :return: a lists of tokens
+    """
+    text = text.strip()
+
+    tokens = []
+    if len(text) <= 0:
+        return tokens
+
+    escape_flag = False
+    start_quote_char = None
+    in_quote = False
+
+    current_token = ""
+    for idx, character in enumerate(text):
+        if in_quote and escape_flag:
+            current_token = current_token + character
+            escape_flag = False
+            continue
+
+        if character == '\\' and not escape_flag and in_quote:
+            escape_flag = True
+            continue
+
+        # check for spaces
+        if character in [" ", "\t"]:
+            if not in_quote:
+                # we have a space while not quoting, this means the current token has ended
+                # or we can simply ignore it
+                if len(current_token) > 0:
+                    tokens.append(current_token)
+                    current_token = ""
+                continue
+
+        if character in QUOTE_CHARS:
+            if in_quote:
+                if character == start_quote_char:
+                    # the quote has ended and therefore the token
+                    in_quote = False
+                    current_token = current_token + character
+                    if len(current_token) > 0:
+                        tokens.append(current_token)
+                    current_token = ""
+                    continue
+            else:
+                # start a quote
+                in_quote = True
+                start_quote_char = character
+
+        current_token = current_token + character
+
+    if len(current_token) > 0:
+        tokens.append(current_token)
+
+    return tokens
 
 
 def split_command_from_args(text: str or None) -> (str or None, str or None):
