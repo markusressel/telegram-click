@@ -27,6 +27,7 @@ from telegram.ext import CallbackContext
 
 from telegram_click import CommandTarget
 from telegram_click.argument import Argument
+from telegram_click.const import *
 from telegram_click.error_handler import ErrorHandler, DEFAULT_ERROR_HANDLER
 from telegram_click.help import generate_help_message
 from telegram_click.parser import parse_telegram_command, split_command_from_args, split_command_from_target
@@ -89,7 +90,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
                     message))
 
                 for handler in error_handlers:
-                    if handler.on_permission_error(context, update, permissions):
+                    if handler.on_permission_error(update, context, permissions):
                         break
 
                 # don't process command
@@ -117,7 +118,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
                 logging.exception("Error parsing command arguments")
 
                 for handler in error_handlers:
-                    if handler.on_validation_error(context, update, ex, help_message):
+                    if handler.on_validation_error(update, context, ex, help_message):
                         break
 
                 return
@@ -130,7 +131,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
             # error while executing wrapped function
             logging.exception("Error in callback")
             for handler in error_handlers:
-                if handler.on_execution_error(context, update, ex):
+                if handler.on_execution_error(update, context, ex):
                     break
 
     return wrapper
@@ -182,6 +183,7 @@ def check_optional_argument_after_other(command_name: str, arguments: List[Argum
 
 def command(name: str or [str], description: str = None,
             arguments: [Argument] = None,
+            hidden: bool or callable = None,
             permissions: Permission = None,
             command_target: bytes = CommandTarget.UNSPECIFIED | CommandTarget.SELF,
             error_handler: ErrorHandler = None):
@@ -190,6 +192,7 @@ def command(name: str or [str], description: str = None,
     :param name: Name of the command
     :param description: a short description of the command
     :param arguments: list of command argument description objects
+    :param hidden: whether the command should be hidden from help output
     :param permissions: required permissions to run this command
     :param command_target: command targets to accept
     :param error_handler: a customized error handler
@@ -200,6 +203,9 @@ def command(name: str or [str], description: str = None,
     if arguments is None:
         arguments = []
 
+    if hidden is None:
+        hidden = False
+
     check_command_name_clashes(name)
     check_argument_name_clashes(arguments)
     check_optional_argument_after_other(name, arguments)
@@ -208,11 +214,12 @@ def command(name: str or [str], description: str = None,
 
     COMMAND_LIST.append(
         {
-            "names": name,
-            "description": description,
-            "arguments": arguments,
-            "message": help_message,
-            "permissions": permissions
+            KEY_NAMES: name,
+            KEY_DESCRIPTION: description,
+            KEY_ARGUMENTS: arguments,
+            KEY_HELP_MESSAGE: help_message,
+            KEY_PERMISSIONS: permissions,
+            KEY_HIDDEN: hidden
         }
     )
 

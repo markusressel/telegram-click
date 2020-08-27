@@ -10,35 +10,35 @@ class ErrorHandler:
     Interface for error handlers
     """
 
-    def on_permission_error(self, context: CallbackContext, update: Update, permissions: Permission) -> bool:
+    def on_permission_error(self, update: Update, context: CallbackContext, permissions: Permission) -> bool:
         """
         This method is called when a user tries to execute a command without permission
-        :param context: Callback context
         :param update: Message Update
+        :param context: Callback context
         :param permissions: the permissions, at least one of which was missing
         :return: True if the error was handled, false otherwise
         """
         return False
 
-    def on_validation_error(self, context: CallbackContext, update: Update, exception: Exception,
+    def on_validation_error(self, update: Update, context: CallbackContext, exception: Exception,
                             help_message: str) -> bool:
         """
         This method is called when an exception is raised during
         argument user input validation.
-        :param context: Callback context
         :param update: Message Update
+        :param context: Callback context
         :param exception: the exception
         :param help_message: help message for the command that failed validation
         :return: True if the error was handled, false otherwise
         """
         return False
 
-    def on_execution_error(self, context: CallbackContext, update: Update, exception: Exception) -> bool:
+    def on_execution_error(self, update: Update, context: CallbackContext, exception: Exception) -> bool:
         """
         This method is called when an exception is raised during
         the execution of a command
-        :param context: Callback context
         :param update: Message Update
+        :param context: Callback context
         :param exception: the exception
         :return: true if the error was handled, false otherwise
         """
@@ -57,7 +57,7 @@ class DefaultErrorHandler(ErrorHandler):
         self.silent_denial = silent_denial
         self.print_error = print_error
 
-    def on_permission_error(self, context: CallbackContext, update: Update, permissions: Permission) -> bool:
+    def on_permission_error(self, update: Update, context: CallbackContext, permissions: Permission) -> bool:
         bot = context.bot
         message = update.effective_message
         chat_id = message.chat_id
@@ -71,7 +71,7 @@ class DefaultErrorHandler(ErrorHandler):
 
         return True
 
-    def on_validation_error(self, context: CallbackContext, update: Update, exception: Exception,
+    def on_validation_error(self, update: Update, context: CallbackContext, exception: Exception,
                             help_message: str) -> bool:
         bot = context.bot
         message = update.effective_message
@@ -88,7 +88,7 @@ class DefaultErrorHandler(ErrorHandler):
                      reply_to=message.message_id)
         return True
 
-    def on_execution_error(self, context: CallbackContext, update: Update, exception: Exception) -> bool:
+    def on_execution_error(self, update: Update, context: CallbackContext, exception: Exception) -> bool:
         bot = context.bot
         message = update.effective_message
         chat_id = message.chat_id
