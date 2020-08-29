@@ -232,6 +232,17 @@ def _unknown_command_callback(self, update: Update, context: CallbackContext):
 You can combine `CommandTarget`'s using logical operators like in the 
 example above.
 
+## Hidden commands
+
+In rare cases it can be useful to hide a command from the help output.
+To do this you can use the `hidden` parameter on the `@command` decorator
+by either passing `True` or `False`, or a callable like f.ex. this one:
+```python
+def hide_whois_if_admin(update: Update, context: CallbackContext):
+    user_id = update.effective_user.id
+    return user_id not in [123456]
+```
+
 ## Error handling
 
 **telegram-click** automatically handles errors in most situations.

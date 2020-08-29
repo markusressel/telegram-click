@@ -46,7 +46,7 @@ class MyErrorHandler(ErrorHandler):
     Example of a custom error handler
     """
 
-    def on_permission_error(self, context: CallbackContext, update: Update, permissions: Permission) -> bool:
+    def on_permission_error(self, update: Update, context: CallbackContext, permissions: Permission) -> bool:
         bot = context.bot
         message = update.effective_message
         chat_id = message.chat_id
@@ -60,14 +60,19 @@ class MyErrorHandler(ErrorHandler):
 
         return True
 
-    def on_validation_error(self, context: CallbackContext, update: Update, exception: Exception,
+    def on_validation_error(self, update: Update, context: CallbackContext, exception: Exception,
                             help_message: str) -> bool:
         # return False to let the `DefaultErrorHandler` process this
         return False
 
-    def on_execution_error(self, context: CallbackContext, update: Update, exception: Exception) -> bool:
+    def on_execution_error(self, update: Update, context: CallbackContext, exception: Exception) -> bool:
         # do nothing when an execution error occurs
         return True
+
+
+def hide_whois_if_admin(update: Update, context: CallbackContext):
+    user_id = update.effective_user.id
+    return user_id not in [123456]
 
 
 class MyBot:
@@ -88,6 +93,9 @@ class MyBot:
                 CommandHandler('start',
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._start_command_callback),
+                CommandHandler('whois',
+                               filters=(~ Filters.forwarded) & (~ Filters.reply),
+                               callback=self._whois_command_callback),
                 CommandHandler(['name', 'n'],
                                filters=(~ Filters.forwarded) & (~ Filters.reply),
                                callback=self._name_command_callback),
@@ -127,6 +135,15 @@ class MyBot:
              description='Start bot interaction')
     def _start_command_callback(self, update: Update, context: CallbackContext):
         self._send_command_list(update, context)
+
+    @command(name='whois',
+             description='Some easter-egg',
+             hidden=hide_whois_if_admin)
+    def _whois_command_callback(self, update: Update, context: CallbackContext):
+        bot = context.bot
+        chat_id = update.effective_message.chat_id
+        text = update.effective_user.id
+        bot.send_message(chat_id, text, parse_mode=ParseMode.MARKDOWN)
 
     @staticmethod
     def _send_command_list(update: Update, context: CallbackContext):
