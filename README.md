@@ -243,6 +243,11 @@ def hide_whois_if_admin(update: Update, context: CallbackContext):
     return user_id not in [123456]
 ```
 
+This function is evaluated on each message and therefore provides
+the `update` and `context` object from **python-telegram-bot**, which
+allows you to make decisions based on chat and user properties
+among other things.
+
 ## Error handling
 
 **telegram-click** automatically handles errors in most situations.
