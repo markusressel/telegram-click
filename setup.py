@@ -80,8 +80,11 @@ def locked_requirements(section):
         print("{0} section missing from Pipfile.lock".format(section))
         return []
 
-    return [package + detail.get('version', "")
+    # return [package + detail.get('version', "")
+    #         for package, detail in pipfile_json[section].items()]
+    return [package
             for package, detail in pipfile_json[section].items()]
+
 
 setup(
     name='telegram_click',
