@@ -80,8 +80,6 @@ def locked_requirements(section):
         print("{0} section missing from Pipfile.lock".format(section))
         return []
 
-    # return [package + detail.get('version', "")
-    #         for package, detail in pipfile_json[section].items()]
     return [package
             for package, detail in pipfile_json[section].items()]
 
@@ -96,7 +94,7 @@ setup(
     author='Markus Ressel',
     author_email='mail@markusressel.de',
     url='https://github.com/markusressel/telegram-click',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests']),
     classifiers=[
         DEVELOPMENT_STATUS,
         'License :: OSI Approved :: MIT License',
