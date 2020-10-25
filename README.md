@@ -6,6 +6,8 @@ inspired command-line interface creation toolkit for
 
 Try the latest version of the [example.py](/example.py) out for yourself: [@PythonTelegramClickBot](http://t.me/PythonTelegramClickBot)
 
+If you are looking for asyncio and [aiogram](https://github.com/aiogram/aiogram) support, hear over to [telegram-click-aio](https://github.com/markusressel/telegram-click-aio)!
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/markusressel/telegram-click/master/screenshots/demo1.png" width="400"> <img src="https://raw.githubusercontent.com/markusressel/telegram-click/master/screenshots/demo2.png" width="400"> 
 </p>
