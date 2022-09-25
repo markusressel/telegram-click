@@ -1,6 +1,6 @@
 # Docker image for telegram-click (@PythonTelegramClickBot)
 
-FROM python:3.8
+FROM python:3.10
 #-alpine
 
 WORKDIR /app
