@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "683463887fc94bc0c4b47d6ae02cd018e177d532a7a1a06b6abb02291802b8b9"
+            "sha256": "a0c723f2193f69e4de139c0f63803bb5467253c86d8e20c58aeed76d5e0b29d7"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -48,11 +48,11 @@
         },
         "python-telegram-bot": {
             "hashes": [
-                "sha256:79abc66355af2310bbaaf7f41746230b996434e287f21f27070c92978dc0964f",
-                "sha256:e9391d43eb1123de2677a9d24ea878a9d5327d65b2419afba653f476d26aecc3"
+                "sha256:06780c258d3f2a3c6c79a7aeb45714f4cd1dd6275941b7dc4628bba64fddd465",
+                "sha256:b4047606b8081b62bbd6aa361f7ca1efe87fa8f1881ec9d932d35844bf57a154"
             ],
             "index": "pypi",
-            "version": "==13.14"
+            "version": "==13.15"
         },
         "pytz": {
             "hashes": [
@@ -71,11 +71,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:6211d2f5eddad8757bd0484923ca7c0a6302ebc4ab32ea5e94357176e0ca0840",
-                "sha256:d1eebf881c6114e51df1664bc2c9133d022f78d12d5f4f665b9191f084e2862d"
+                "sha256:57f6f22bde4e042978bcd50176fdb381d7c21a9efa4041202288d3737a0c6a54",
+                "sha256:a7620757bf984b58deaf32fc8a4577a9bbc0850cf92c20e1ce41c38c19e5fb75"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==65.6.0"
+            "version": "==65.6.3"
         },
         "six": {
             "hashes": [
@@ -134,11 +134,11 @@
         },
         "tzdata": {
             "hashes": [
-                "sha256:04a680bdc5b15750c39c12a448885a51134a27ec9af83667663f0b3a1bf3f342",
-                "sha256:91f11db4503385928c15598c98573e3af07e7229181bee5375bd30f1695ddcae"
+                "sha256:2b88858b0e3120792a3c0635c23daf36a7d7eeeca657c323da299d2094402a0d",
+                "sha256:fe5f866eddd8b96e9fcba978f8e503c909b19ea7efda11e52e39494bad3a7bfa"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2022.6"
+            "version": "==2022.7"
         },
         "tzlocal": {
             "hashes": [
