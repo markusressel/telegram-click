@@ -57,7 +57,7 @@ of this library:
 
 ```python
 from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.ext import ContextTypes
 from telegram_click.decorator import command
 from telegram_click.argument import Argument
 
@@ -66,7 +66,7 @@ class MyBot:
     [...]
     
     @command(name='start', description='Start bot interaction')
-    def _start_command_callback(self, update: Update, context: CallbackContext):
+    async def _start_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         # do something
         pass
         
@@ -79,7 +79,7 @@ class MyBot:
                           validator=lambda x: x > 0,
                           example='25')
              ])
-    def _age_command_callback(self, update: Update, context: CallbackContext, age: int):
+    async def _age_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE, age: int):
         context.bot.send_message(update.effective_chat.id, "New age: {}".format(age))
 ```
 
@@ -140,14 +140,14 @@ you can specify those criteria using the `permissions` parameter:
 
 ```python
 from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.ext import ContextTypes
 from telegram_click.decorator import command
 from telegram_click.permission import GROUP_ADMIN
 
 @command(name='permission', 
          description='Needs permission',
          permissions=GROUP_ADMIN)
-def _permission_command_callback(self, update: Update, context: CallbackContext):
+async def _permission_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
 ```
 
 Multiple permissions can be combined using `&`, `|` and `~` (not) operators.
@@ -178,19 +178,19 @@ and pass an instance of the `MyPermission` class to the list of `permissions`:
 
 ```python
 from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.ext import ContextTypes
 from telegram_click.decorator import command
 from telegram_click.permission.base import Permission
 from telegram_click.permission import GROUP_ADMIN
 
 class MyPermission(Permission):
-    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+    async def evaluate(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
         from_user = update.effective_message.from_user
         return from_user.id in [12345, 32435]
         
 @command(name='permission', description='Needs permission',
          permissions=MyPermission() & GROUP_ADMIN)
-def _permission_command_callback(self, update: Update, context: CallbackContext):
+async def _permission_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
 ```
 
 ### Show "Permission denied" message
@@ -219,7 +219,7 @@ To control this behaviour specify the `command_target` parameter:
 
 ```python
 from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.ext import ContextTypes
 from telegram_click.decorator import command
 from telegram_click import CommandTarget
 from telegram_click.permission import NOBODY
@@ -228,7 +228,7 @@ from telegram_click.permission import NOBODY
          description="List commands supported by this bot.",
          permissions=NOBODY,
          command_target=CommandTarget.UNSPECIFIED | CommandTarget.SELF)
-def _unknown_command_callback(self, update: Update, context: CallbackContext):
+async def _unknown_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
 ```
 
 You can combine `CommandTarget`'s using logical operators like in the 
@@ -240,7 +240,7 @@ In rare cases it can be useful to hide a command from the help output.
 To do this you can use the `hidden` parameter on the `@command` decorator
 by either passing `True` or `False`, or a callable like f.ex. this one:
 ```python
-def hide_whois_if_admin(update: Update, context: CallbackContext):
+async def hide_whois_if_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     return user_id not in [123456]
 ```

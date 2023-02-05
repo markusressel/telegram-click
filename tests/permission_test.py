@@ -21,19 +21,19 @@
 import datetime
 
 from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.ext import ContextTypes
 
 from telegram_click.permission.base import Permission
 from tests import TestBase
 
 
 class TruePermission(Permission):
-    def evaluate(self, update: Update, context: CallbackContext):
+    async def evaluate(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         return True
 
 
 class FalsePermission(Permission):
-    def evaluate(self, update: Update, context: CallbackContext):
+    async def evaluate(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         return False
 
 

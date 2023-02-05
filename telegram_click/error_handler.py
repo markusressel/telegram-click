@@ -1,5 +1,5 @@
-from telegram import Update, ParseMode
-from telegram.ext import CallbackContext
+from telegram import Update
+from telegram.ext import ContextTypes
 
 from telegram_click.permission.base import Permission
 from telegram_click.util import send_message
@@ -10,7 +10,8 @@ class ErrorHandler:
     Interface for error handlers
     """
 
-    def on_permission_error(self, update: Update, context: CallbackContext, permissions: Permission) -> bool:
+    async def on_permission_error(self, update: Update, context: ContextTypes.DEFAULT_TYPE,
+                                  permissions: Permission) -> bool:
         """
         This method is called when a user tries to execute a command without permission
         :param update: Message Update
@@ -20,8 +21,8 @@ class ErrorHandler:
         """
         return False
 
-    def on_validation_error(self, update: Update, context: CallbackContext, exception: Exception,
-                            help_message: str) -> bool:
+    async def on_validation_error(self, update: Update, context: ContextTypes.DEFAULT_TYPE, exception: Exception,
+                                  help_message: str) -> bool:
         """
         This method is called when an exception is raised during
         argument user input validation.
@@ -33,7 +34,8 @@ class ErrorHandler:
         """
         return False
 
-    def on_execution_error(self, update: Update, context: CallbackContext, exception: Exception) -> bool:
+    async def on_execution_error(self, update: Update, context: ContextTypes.DEFAULT_TYPE,
+                                 exception: Exception) -> bool:
         """
         This method is called when an exception is raised during
         the execution of a command
@@ -57,7 +59,8 @@ class DefaultErrorHandler(ErrorHandler):
         self.silent_denial = silent_denial
         self.print_error = print_error
 
-    def on_permission_error(self, update: Update, context: CallbackContext, permissions: Permission) -> bool:
+    async def on_permission_error(self, update: Update, context: ContextTypes.DEFAULT_TYPE,
+                                  permissions: Permission) -> bool:
         bot = context.bot
         message = update.effective_message
         chat_id = message.chat_id
@@ -66,13 +69,13 @@ class DefaultErrorHandler(ErrorHandler):
             # send 'permission denied' message
             text = self.DEFAULT_PERMISSION_DENIED_MESSAGE
             send_message(bot, chat_id=chat_id, message=text,
-                         parse_mode=ParseMode.MARKDOWN,
+                         parse_mode="MARKDOWN",
                          reply_to=message.message_id)
 
         return True
 
-    def on_validation_error(self, update: Update, context: CallbackContext, exception: Exception,
-                            help_message: str) -> bool:
+    async def on_validation_error(self, update: Update, context: ContextTypes.DEFAULT_TYPE, exception: Exception,
+                                  help_message: str) -> bool:
         bot = context.bot
         message = update.effective_message
         chat_id = message.chat_id
@@ -84,11 +87,12 @@ class DefaultErrorHandler(ErrorHandler):
         ])
         send_message(bot, chat_id=chat_id,
                      message=denied_text,
-                     parse_mode=ParseMode.MARKDOWN,
+                     parse_mode="MARKDOWN",
                      reply_to=message.message_id)
         return True
 
-    def on_execution_error(self, update: Update, context: CallbackContext, exception: Exception) -> bool:
+    async def on_execution_error(self, update: Update, context: ContextTypes.DEFAULT_TYPE,
+                                 exception: Exception) -> bool:
         bot = context.bot
         message = update.effective_message
         chat_id = message.chat_id
@@ -102,7 +106,7 @@ class DefaultErrorHandler(ErrorHandler):
             denied_text = ":boom: There was an error executing your command :worried:"
         send_message(bot, chat_id=chat_id,
                      message=denied_text,
-                     parse_mode=ParseMode.MARKDOWN,
+                     parse_mode="MARKDOWN",
                      reply_to=message.message_id)
         return True
 

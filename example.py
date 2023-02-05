@@ -20,8 +20,8 @@
 import logging
 import os
 
-from telegram import Update, ParseMode
-from telegram.ext import CallbackContext, Updater, MessageHandler, CommandHandler, Filters
+from telegram import Update
+from telegram.ext import ContextTypes, MessageHandler, CommandHandler, filters, ApplicationBuilder
 
 from telegram_click import generate_command_list
 from telegram_click.argument import Argument, Flag
@@ -34,7 +34,7 @@ logging.getLogger("telegram_click").setLevel(logging.DEBUG)
 
 
 class MyPermission(Permission):
-    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+    async def evaluate(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
         from_user = update.effective_message.from_user
 
         # do fancy stuff
@@ -46,7 +46,8 @@ class MyErrorHandler(ErrorHandler):
     Example of a custom error handler
     """
 
-    def on_permission_error(self, update: Update, context: CallbackContext, permissions: Permission) -> bool:
+    async def on_permission_error(self, update: Update, context: ContextTypes.DEFAULT_TYPE,
+                                  permissions: Permission) -> bool:
         bot = context.bot
         message = update.effective_message
         chat_id = message.chat_id
@@ -60,17 +61,18 @@ class MyErrorHandler(ErrorHandler):
 
         return True
 
-    def on_validation_error(self, update: Update, context: CallbackContext, exception: Exception,
-                            help_message: str) -> bool:
+    async def on_validation_error(self, update: Update, context: ContextTypes.DEFAULT_TYPE, exception: Exception,
+                                  help_message: str) -> bool:
         # return False to let the `DefaultErrorHandler` process this
         return False
 
-    def on_execution_error(self, update: Update, context: CallbackContext, exception: Exception) -> bool:
+    async def on_execution_error(self, update: Update, context: ContextTypes.DEFAULT_TYPE,
+                                 exception: Exception) -> bool:
         # do nothing when an execution error occurs
         return True
 
 
-def hide_whois_if_admin(update: Update, context: CallbackContext):
+def hide_whois_if_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     return user_id not in [123456]
 
@@ -80,77 +82,74 @@ class MyBot:
     child_count = None
 
     def __init__(self):
-        self._updater = Updater(
-            token=os.environ.get("TELEGRAM_BOT_KEY"),
-            use_context=True
-        )
+        telegram_bot_token = os.environ.get("TELEGRAM_BOT_KEY")
+        self._app = ApplicationBuilder().token(telegram_bot_token).build()
 
         handler_groups = {
             1: [
                 CommandHandler(['help', 'h'],
-                               filters=(~ Filters.forwarded) & (~ Filters.reply),
+                               filters=(~ filters.FORWARDED) & (~ filters.REPLY),
                                callback=self._commands_command_callback),
                 CommandHandler('start',
-                               filters=(~ Filters.forwarded) & (~ Filters.reply),
+                               filters=(~ filters.FORWARDED) & (~ filters.REPLY),
                                callback=self._start_command_callback),
                 CommandHandler('whois',
-                               filters=(~ Filters.forwarded) & (~ Filters.reply),
+                               filters=(~ filters.FORWARDED) & (~ filters.REPLY),
                                callback=self._whois_command_callback),
                 CommandHandler(['name', 'n'],
-                               filters=(~ Filters.forwarded) & (~ Filters.reply),
+                               filters=(~ filters.FORWARDED) & (~ filters.REPLY),
                                callback=self._name_command_callback),
                 CommandHandler(['age', 'a'],
-                               filters=(~ Filters.forwarded) & (~ Filters.reply),
+                               filters=(~ filters.FORWARDED) & (~ filters.REPLY),
                                callback=self._age_command_callback),
                 CommandHandler(['children', 'c'],
-                               filters=(~ Filters.forwarded) & (~ Filters.reply),
+                               filters=(~ filters.FORWARDED) & (~ filters.REPLY),
                                callback=self._children_command_callback),
                 # Unknown command handler
-                MessageHandler(Filters.command, callback=self._unknown_command_callback)
+                MessageHandler(filters.COMMAND, callback=self._unknown_command_callback)
             ]
         }
 
         for group, handlers in handler_groups.items():
             for handler in handlers:
-                self._updater.dispatcher.add_handler(handler, group=group)
+                self._app.add_handler(handler, group=group)
 
     def start(self):
         """
         Starts up the bot.
         This means filling the url pool and listening for messages.
         """
-        self._updater.start_polling(clean=True)
-        self._updater.idle()
+        self._app.run_polling()
 
-    def _unknown_command_callback(self, update: Update, context: CallbackContext):
-        self._send_command_list(update, context)
+    async def _unknown_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        await self._send_command_list(update, context)
 
     # Optionally specify this command to list all available commands
     @command(name=['help', 'h'],
              description='List commands supported by this bot.')
-    def _commands_command_callback(self, update: Update, context: CallbackContext):
-        self._send_command_list(update, context)
+    async def _commands_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        await self._send_command_list(update, context)
 
     @command(name='start',
              description='Start bot interaction')
-    def _start_command_callback(self, update: Update, context: CallbackContext):
-        self._send_command_list(update, context)
+    async def _start_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        await self._send_command_list(update, context)
 
     @command(name='whois',
              description='Some easter-egg',
              hidden=hide_whois_if_admin)
-    def _whois_command_callback(self, update: Update, context: CallbackContext):
+    async def _whois_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         bot = context.bot
         chat_id = update.effective_message.chat_id
         text = update.effective_user.id
-        bot.send_message(chat_id, text, parse_mode=ParseMode.MARKDOWN)
+        bot.send_message(chat_id, text, parse_mode="MARKDOWN")
 
     @staticmethod
-    def _send_command_list(update: Update, context: CallbackContext):
+    async def _send_command_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
         bot = context.bot
         chat_id = update.effective_message.chat_id
-        text = generate_command_list(update, context)
-        bot.send_message(chat_id, text, parse_mode=ParseMode.MARKDOWN)
+        text = await generate_command_list(update, context)
+        await bot.send_message(chat_id, text, parse_mode="MARKDOWN")
 
     @command(name=['name', 'n'],
              description='Get/Set a name',
@@ -169,8 +168,9 @@ class MyBot:
                      description="Some other flag."
                  )
              ])
-    def _name_command_callback(self, update: Update, context: CallbackContext, name: str or None, flag: bool,
-                               flag2: bool):
+    async def _name_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE, name: str or None,
+                                     flag: bool,
+                                     flag2: bool):
         chat_id = update.effective_chat.id
         if name is None:
             message = 'Current: {}'.format(self.name)
@@ -191,7 +191,7 @@ class MyBot:
                           example='25')
              ],
              permissions=MyPermission() & ~ GROUP_ADMIN & (USER_NAME('markusressel') | USER_ID(123456)))
-    def _age_command_callback(self, update: Update, context: CallbackContext, age: int):
+    async def _age_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE, age: int):
         context.bot.send_message(update.effective_chat.id, 'New age: {}'.format(age))
 
     @command(name=['children', 'c'],
@@ -205,7 +205,8 @@ class MyBot:
              ],
              permissions=NOBODY,
              error_handler=MyErrorHandler())
-    def _children_command_callback(self, update: Update, context: CallbackContext, amount: float or None):
+    async def _children_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE,
+                                         amount: float or None):
         chat_id = update.effective_chat.id
         if amount is None:
             context.bot.send_message(chat_id, 'Current: {}'.format(self.child_count))
