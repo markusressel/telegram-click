@@ -19,7 +19,7 @@
 #  SOFTWARE.
 
 from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.ext import ContextTypes
 
 from .base import Permission
 
@@ -29,7 +29,7 @@ class _Anybody(Permission):
     Permission that is always True.
     """
 
-    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+    async def evaluate(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
         return True
 
 
@@ -38,7 +38,7 @@ class _Nobody(Permission):
     Permission that is never True.
     """
 
-    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+    async def evaluate(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
         return False
 
 
@@ -56,7 +56,7 @@ class _UserId(Permission):
     def __repr__(self):
         return "<{}>".format(self.__str__())
 
-    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+    async def evaluate(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
         from_user = update.effective_message.from_user
         return from_user.id in self.ids
 
@@ -87,7 +87,7 @@ class _UserName(Permission):
 
         return result
 
-    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+    async def evaluate(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
         from_user = update.effective_message.from_user
         return from_user.username in self.usernames
 
@@ -97,7 +97,7 @@ class _GroupCreator(Permission):
     Requires that the command user is the group creator.
     """
 
-    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+    async def evaluate(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
         bot = context.bot
         chat_id = update.effective_message.chat_id
         from_user = update.effective_message.from_user
@@ -111,10 +111,10 @@ class _GroupAdmin(Permission):
     Requires that the command user is a group admin.
     """
 
-    def evaluate(self, update: Update, context: CallbackContext) -> bool:
+    async def evaluate(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
         bot = context.bot
         chat_id = update.effective_message.chat_id
         from_user = update.effective_message.from_user
-        member = bot.getChatMember(chat_id, from_user.id)
+        member = await bot.getChatMember(chat_id, from_user.id)
 
         return member.status == "administrator"
