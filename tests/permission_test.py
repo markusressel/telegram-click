@@ -69,63 +69,63 @@ def _create_update_mock(chat_id: int = -12345678, chat_type: str = "private", me
 
 class PermissionTest(TestBase):
 
-    def test_permission_nobody(self):
+    async def test_permission_nobody(self):
         from telegram_click.permission import NOBODY
         permission = NOBODY
 
         update = None
         context = None
 
-        self.assertFalse(permission.evaluate(update, context))
+        self.assertFalse(await permission.evaluate(update, context))
 
-    def test_permission_username(self):
+    async def test_permission_username(self):
         from telegram_click.permission import USER_NAME
         permission = USER_NAME("markusressel")
 
         valid_update = _create_update_mock(username="markusressel")
-        self.assertTrue(permission.evaluate(valid_update, None))
+        self.assertTrue(await permission.evaluate(valid_update, None))
 
         invalid_update = _create_update_mock(username="markus")
-        self.assertFalse(permission.evaluate(invalid_update, None))
+        self.assertFalse(await permission.evaluate(invalid_update, None))
 
         invalid_update = _create_update_mock(username="other")
-        self.assertFalse(permission.evaluate(invalid_update, None))
+        self.assertFalse(await permission.evaluate(invalid_update, None))
 
         invalid_update = _create_update_mock(username=None)
-        self.assertFalse(permission.evaluate(invalid_update, None))
+        self.assertFalse(await permission.evaluate(invalid_update, None))
 
-    def test_permission_user_id(self):
+    async def test_permission_user_id(self):
         from telegram_click.permission import USER_ID
         permission = USER_ID(12345678)
 
         valid_update = _create_update_mock(user_id=12345678)
-        self.assertTrue(permission.evaluate(valid_update, None))
+        self.assertTrue(await permission.evaluate(valid_update, None))
 
         invalid_update = _create_update_mock(user_id=87654321)
-        self.assertFalse(permission.evaluate(invalid_update, None))
+        self.assertFalse(await permission.evaluate(invalid_update, None))
 
-    def test_permission_merged_and(self):
+    async def test_permission_merged_and(self):
         merged_permission = FalsePermission() & FalsePermission()
-        self.assertFalse(merged_permission.evaluate(None, None))
+        self.assertFalse(await merged_permission.evaluate(None, None))
         merged_permission = TruePermission() & FalsePermission()
-        self.assertFalse(merged_permission.evaluate(None, None))
+        self.assertFalse(await merged_permission.evaluate(None, None))
         merged_permission = FalsePermission() & TruePermission()
-        self.assertFalse(merged_permission.evaluate(None, None))
+        self.assertFalse(await merged_permission.evaluate(None, None))
         merged_permission = TruePermission() & TruePermission()
-        self.assertTrue(merged_permission.evaluate(None, None))
+        self.assertTrue(await merged_permission.evaluate(None, None))
 
-    def test_permission_merged_or(self):
+    async def test_permission_merged_or(self):
         merged_permission = FalsePermission() | FalsePermission()
-        self.assertFalse(merged_permission.evaluate(None, None))
+        self.assertFalse(await merged_permission.evaluate(None, None))
         merged_permission = TruePermission() | FalsePermission()
-        self.assertTrue(merged_permission.evaluate(None, None))
+        self.assertTrue(await merged_permission.evaluate(None, None))
         merged_permission = FalsePermission() | TruePermission()
-        self.assertTrue(merged_permission.evaluate(None, None))
+        self.assertTrue(await merged_permission.evaluate(None, None))
         merged_permission = TruePermission() | TruePermission()
-        self.assertTrue(merged_permission.evaluate(None, None))
+        self.assertTrue(await merged_permission.evaluate(None, None))
 
-    def test_permission_not(self):
+    async def test_permission_not(self):
         not_permission = ~ TruePermission()
-        self.assertFalse(not_permission.evaluate(None, None))
+        self.assertFalse(await not_permission.evaluate(None, None))
         not_permission = ~ FalsePermission()
-        self.assertTrue(not_permission.evaluate(None, None))
+        self.assertTrue(await not_permission.evaluate(None, None))
