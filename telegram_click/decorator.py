@@ -23,7 +23,7 @@ import logging
 from typing import List
 
 from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.ext import ContextTypes, CallbackContext
 
 from telegram_click import CommandTarget
 from telegram_click.argument import Argument
@@ -37,8 +37,8 @@ from telegram_click.util import find_first, find_duplicates
 LOGGER = logging.getLogger(__name__)
 
 
-def _check_permissions(update: Update, context: CallbackContext,
-                       permissions: Permission) -> bool:
+async def _check_permissions(update: Update, context: ContextTypes.DEFAULT_TYPE,
+                             permissions: Permission) -> bool:
     """
     Checks if a message passes permission tests
     :param update: message update
@@ -47,7 +47,7 @@ def _check_permissions(update: Update, context: CallbackContext,
     :return: True if authorized, False otherwise
     """
     if permissions is not None:
-        return permissions.evaluate(update, context)
+        return await permissions.evaluate(update, context)
     else:
         return True
 
@@ -71,7 +71,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
         raise AttributeError("Unsupported type: {}".format(func))
 
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         # find function arguments
         update = find_first(args, Update)
         context = find_first(args, CallbackContext)
@@ -82,7 +82,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
         chat_id = message.chat_id
 
         try:
-            if not _check_permissions(update, context, permissions):
+            if not await _check_permissions(update, context, permissions):
                 # permission denied
                 LOGGER.debug("Permission denied in chat {} for user {} for message: {}".format(
                     chat_id,
@@ -90,7 +90,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
                     message))
 
                 for handler in error_handlers:
-                    if handler.on_permission_error(update, context, permissions):
+                    if await handler.on_permission_error(update, context, permissions):
                         break
 
                 # don't process command
@@ -100,7 +100,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
             cmd, _ = split_command_from_args(message.text)
             _, target = split_command_from_target(bot.username, cmd)
             # check if we are allowed to process the given command target
-            if not filter_command_target(target, bot.username, command_target):
+            if not await filter_command_target(target, bot.username, command_target):
                 LOGGER.debug("Ignoring command for unspecified target {} in chat {} for user {}: {}".format(
                     target,
                     chat_id,
@@ -118,7 +118,7 @@ def _create_callback_wrapper(func: callable, help_message: str,
                 logging.exception("Error parsing command arguments")
 
                 for handler in error_handlers:
-                    if handler.on_validation_error(update, context, ex, help_message):
+                    if await handler.on_validation_error(update, context, ex, help_message):
                         break
 
                 return
@@ -126,12 +126,12 @@ def _create_callback_wrapper(func: callable, help_message: str,
             # convert argument names to python param naming convention (snake-case)
             kw_function_args = dict(map(lambda x: (x[0].lower().replace("-", "_"), x[1]), list(parsed_args.items())))
             # execute wrapped function
-            return func(*args, **{**kw_function_args, **kwargs})
+            return await func(*args, **{**kw_function_args, **kwargs})
         except Exception as ex:
             # error while executing wrapped function
             logging.exception("Error in callback")
             for handler in error_handlers:
-                if handler.on_execution_error(update, context, ex):
+                if await handler.on_execution_error(update, context, ex):
                     break
 
     return wrapper
@@ -240,7 +240,7 @@ def command(name: str or [str], description: str = None,
     return callback_decorator
 
 
-def filter_command_target(target: str or None, bot_username: str, allowed_targets: bytes):
+async def filter_command_target(target: str or None, bot_username: str, allowed_targets: bytes):
     """
     Checks if the command target should be accepted based on given input
     :param target: the target of the command or None

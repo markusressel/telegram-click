@@ -21,7 +21,7 @@
 import logging
 
 from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.ext import ContextTypes
 
 from telegram_click.const import *
 
@@ -45,16 +45,27 @@ class CommandTarget:
     ANY = UNSPECIFIED | SELF | OTHER
 
 
-def generate_command_list(update: Update, context: CallbackContext) -> str:
+async def generate_command_list(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
     """
     :return: a Markdown styled text description of all available commands
     """
-    commands_with_permission = list(
-        filter(lambda x: x[KEY_PERMISSIONS] is None or x[KEY_PERMISSIONS].evaluate(update, context), COMMAND_LIST))
-    commands_not_hidden = list(
-        filter(lambda x: not x[KEY_HIDDEN] if isinstance(x[KEY_HIDDEN], bool)
-        else not x[KEY_HIDDEN](update, context) if callable(x[KEY_HIDDEN])
-        else True, commands_with_permission))
+
+    async def permission_filter(x):
+        return x[KEY_PERMISSIONS] is None or await x[KEY_PERMISSIONS].evaluate(update, context)
+
+    async def hidden_filter(x):
+        return not x[KEY_HIDDEN] if isinstance(x[KEY_HIDDEN], bool) else not x[KEY_HIDDEN](update, context) if callable(
+            x[KEY_HIDDEN]) else True
+
+    commands_with_permission = []
+    commands_not_hidden = []
+    result = []
+    for x in COMMAND_LIST:
+        if await permission_filter(x):
+            commands_with_permission.append(x)
+            if await hidden_filter(x):
+                commands_not_hidden.append(x)
+
     sorted_commands = sorted(commands_not_hidden, key=lambda x: (x[KEY_NAMES][0].lower(), len(x[KEY_ARGUMENTS])))
     help_messages = list(map(lambda x: x[KEY_HELP_MESSAGE], sorted_commands))
 

@@ -24,27 +24,27 @@ from tests import TestBase
 
 class CommandTargetTest(TestBase):
 
-    def test_target_self(self):
+    async def test_target_self(self):
         bot_name = "myBot"
 
-        self.assertTrue(filter_command_target(bot_name, bot_name, CommandTarget.SELF))
-        self.assertFalse(filter_command_target(bot_name, bot_name, CommandTarget.UNSPECIFIED))
-        self.assertFalse(filter_command_target(bot_name, bot_name, CommandTarget.OTHER))
-        self.assertTrue(filter_command_target(bot_name, bot_name, CommandTarget.ANY))
+        self.assertTrue(await filter_command_target(bot_name, bot_name, CommandTarget.SELF))
+        self.assertFalse(await filter_command_target(bot_name, bot_name, CommandTarget.UNSPECIFIED))
+        self.assertFalse(await filter_command_target(bot_name, bot_name, CommandTarget.OTHER))
+        self.assertTrue(await filter_command_target(bot_name, bot_name, CommandTarget.ANY))
 
-    def test_target_other(self):
+    async def test_target_other(self):
         bot_name = "myBot"
         other_bot_name = "otherBot"
 
-        self.assertFalse(filter_command_target(other_bot_name, bot_name, CommandTarget.SELF))
-        self.assertFalse(filter_command_target(other_bot_name, bot_name, CommandTarget.UNSPECIFIED))
-        self.assertTrue(filter_command_target(other_bot_name, bot_name, CommandTarget.OTHER))
-        self.assertTrue(filter_command_target(other_bot_name, bot_name, CommandTarget.ANY))
+        self.assertFalse(await filter_command_target(other_bot_name, bot_name, CommandTarget.SELF))
+        self.assertFalse(await filter_command_target(other_bot_name, bot_name, CommandTarget.UNSPECIFIED))
+        self.assertTrue(await filter_command_target(other_bot_name, bot_name, CommandTarget.OTHER))
+        self.assertTrue(await filter_command_target(other_bot_name, bot_name, CommandTarget.ANY))
 
-    def test_target_unspecified(self):
+    async def test_target_unspecified(self):
         bot_name = "myBot"
 
-        self.assertFalse(filter_command_target(None, bot_name, CommandTarget.SELF))
-        self.assertTrue(filter_command_target(None, bot_name, CommandTarget.UNSPECIFIED))
-        self.assertFalse(filter_command_target(None, bot_name, CommandTarget.OTHER))
-        self.assertTrue(filter_command_target(None, bot_name, CommandTarget.ANY))
+        self.assertFalse(await filter_command_target(None, bot_name, CommandTarget.SELF))
+        self.assertTrue(await filter_command_target(None, bot_name, CommandTarget.UNSPECIFIED))
+        self.assertFalse(await filter_command_target(None, bot_name, CommandTarget.OTHER))
+        self.assertTrue(await filter_command_target(None, bot_name, CommandTarget.ANY))
