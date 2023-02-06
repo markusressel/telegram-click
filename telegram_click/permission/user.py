@@ -101,7 +101,7 @@ class _GroupCreator(Permission):
         bot = context.bot
         chat_id = update.effective_message.chat_id
         from_user = update.effective_message.from_user
-        member = bot.getChatMember(chat_id, from_user.id)
+        member = await bot.getChatMember(chat_id, from_user.id)
 
         return member.status == "creator"
 
