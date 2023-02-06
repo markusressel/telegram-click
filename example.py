@@ -55,9 +55,9 @@ class MyErrorHandler(ErrorHandler):
         text = "YOU SHALL NOT PASS! :hand::mage:"
 
         from telegram_click.util import send_message
-        send_message(bot, chat_id=chat_id,
-                     message=text,
-                     reply_to=message.message_id)
+        await send_message(bot, chat_id=chat_id,
+                           message=text,
+                           reply_to=message.message_id)
 
         return True
 
@@ -142,7 +142,7 @@ class MyBot:
         bot = context.bot
         chat_id = update.effective_message.chat_id
         text = update.effective_user.id
-        bot.send_message(chat_id, text, parse_mode="MARKDOWN")
+        await bot.send_message(chat_id, text, parse_mode="MARKDOWN")
 
     @staticmethod
     async def _send_command_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -179,7 +179,7 @@ class MyBot:
             message = 'New: {}'.format(self.name)
         message += '\n' + 'Flag is: {}'.format(flag)
         message += '\n' + 'Flag2 is: {}'.format(flag2)
-        context.bot.send_message(chat_id, message)
+        await context.bot.send_message(chat_id, message)
 
     @command(name=['age', 'a'],
              description='Set age',
@@ -192,7 +192,7 @@ class MyBot:
              ],
              permissions=MyPermission() & ~ GROUP_ADMIN & (USER_NAME('markusressel') | USER_ID(123456)))
     async def _age_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE, age: int):
-        context.bot.send_message(update.effective_chat.id, 'New age: {}'.format(age))
+        await context.bot.send_message(update.effective_chat.id, 'New age: {}'.format(age))
 
     @command(name=['children', 'c'],
              description='Set children amount',
@@ -209,10 +209,10 @@ class MyBot:
                                          amount: float or None):
         chat_id = update.effective_chat.id
         if amount is None:
-            context.bot.send_message(chat_id, 'Current: {}'.format(self.child_count))
+            await context.bot.send_message(chat_id, 'Current: {}'.format(self.child_count))
         else:
             self.child_count = amount
-            context.bot.send_message(chat_id, 'New: {}'.format(amount))
+            await context.bot.send_message(chat_id, 'New: {}'.format(amount))
 
 
 if __name__ == '__main__':

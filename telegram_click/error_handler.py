@@ -68,9 +68,9 @@ class DefaultErrorHandler(ErrorHandler):
         if not self.silent_denial:
             # send 'permission denied' message
             text = self.DEFAULT_PERMISSION_DENIED_MESSAGE
-            send_message(bot, chat_id=chat_id, message=text,
-                         parse_mode="MARKDOWN",
-                         reply_to=message.message_id)
+            await send_message(bot, chat_id=chat_id, message=text,
+                               parse_mode="MARKDOWN",
+                               reply_to=message.message_id)
 
         return True
 
@@ -85,10 +85,10 @@ class DefaultErrorHandler(ErrorHandler):
             "",
             help_message
         ])
-        send_message(bot, chat_id=chat_id,
-                     message=denied_text,
-                     parse_mode="MARKDOWN",
-                     reply_to=message.message_id)
+        await send_message(bot, chat_id=chat_id,
+                           message=denied_text,
+                           parse_mode="MARKDOWN",
+                           reply_to=message.message_id)
         return True
 
     async def on_execution_error(self, update: Update, context: ContextTypes.DEFAULT_TYPE,
@@ -104,10 +104,10 @@ class DefaultErrorHandler(ErrorHandler):
             denied_text = ":boom: `{}`".format(exception_text)
         else:
             denied_text = ":boom: There was an error executing your command :worried:"
-        send_message(bot, chat_id=chat_id,
-                     message=denied_text,
-                     parse_mode="MARKDOWN",
-                     reply_to=message.message_id)
+        await send_message(bot, chat_id=chat_id,
+                           message=denied_text,
+                           parse_mode="MARKDOWN",
+                           reply_to=message.message_id)
         return True
 
 
