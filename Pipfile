@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-python-telegram-bot = "~=20.1"
+python-telegram-bot = "~=20.3"
 emoji = "*"
 
 [dev-packages]
