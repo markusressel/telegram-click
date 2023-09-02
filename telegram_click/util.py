@@ -73,7 +73,7 @@ def escape_for_markdown(text: str or None) -> str:
     return escaped
 
 
-async def send_message(bot: Bot, chat_id: str, message: str, parse_mode: str = None, reply_to: int = None):
+async def send_message(bot: Bot, chat_id: int, message: str, parse_mode: str = None, reply_to: int = None):
     """
     Sends a text message to the given chat
     :param bot: the bot
