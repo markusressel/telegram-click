@@ -34,12 +34,12 @@
         },
         "emoji": {
             "hashes": [
-                "sha256:4aa0488817691aa58d83764b6c209f8a27c0b3ab3f89d1b8dceca1a62e4973eb",
-                "sha256:a00d62173bdadc2510967a381810101624a2f0986145b8da0cffa42e29430235"
+                "sha256:ef6f2ee63b245e934c763b1a9a0637713955aa3d9e322432e036bb60559de4d6",
+                "sha256:f95d10d96c5f21299ed2c4b32511611ba890b8c07f5f2bf5b04d5d3eee91fd19"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.7'",
-            "version": "==2.12.1"
+            "version": "==2.13.2"
         },
         "h11": {
             "hashes": [
