@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "263c51aff9ebf9f37b1525c06b8b558f8f66882b3655ecbb56a55d0aa57ee959"
+            "sha256": "7b1833597083cf2a8bb8ee8d0cfac50ba0dab396469acba733c171f635ba09a4"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -18,11 +18,11 @@
     "default": {
         "anyio": {
             "hashes": [
-                "sha256:137b4559cbb034c477165047febb6ff83f390fc3b20bf181c1fc0a728cb8beeb",
-                "sha256:c7d2e9d63e31599eeb636c8c5c03a7e108d73b345f064f1c19fdc87b79036a9a"
+                "sha256:4c8bc31ccdb51c7f7bd251f51c609e038d63e34219b44aa86e47576389880b4c",
+                "sha256:6d170c36fba3bdd840c73d3868c1e777e33676a69c3a72cf0a0d5d6d8009b61d"
             ],
             "markers": "python_version >= '3.9'",
-            "version": "==4.6.0"
+            "version": "==4.6.2.post1"
         },
         "certifi": {
             "hashes": [
@@ -51,19 +51,19 @@
         },
         "httpcore": {
             "hashes": [
-                "sha256:34a38e2f9291467ee3b44e89dd52615370e152954ba21721378a87b2960f7a61",
-                "sha256:421f18bac248b25d310f3cacd198d55b8e6125c107797b609ff9b7a6ba7991b5"
+                "sha256:8551cb62a169ec7162ac7be8d4817d561f60e08eaa485234898414bb5a8a0b4c",
+                "sha256:a3fff8f43dc260d5bd363d9f9cf1830fa3a458b332856f34282de498ed420edd"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==1.0.5"
+            "version": "==1.0.7"
         },
         "httpx": {
             "hashes": [
-                "sha256:7bb2708e112d8fdd7829cd4243970f0c223274051cb35ee80c03301ee29a3df0",
-                "sha256:f7c2be1d2f3c3c3160d441802406b206c2b76f5947b11115e6df10c6c65e66c2"
+                "sha256:0858d3bab51ba7e386637f22a61d8ccddaeec5f3fe4209da3a6168dbb91573e0",
+                "sha256:dc0b419a0cfeb6e8b34e85167c0da2671206f5095f1baa9663d23bcfd6b535fc"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==0.27.2"
+            "version": "==0.28.0"
         },
         "idna": {
             "hashes": [
@@ -75,12 +75,12 @@
         },
         "python-telegram-bot": {
             "hashes": [
-                "sha256:8b2b37836c3ff9c2924e990474a1c4731df21b1668acebff5099f475666426c6",
-                "sha256:f2d6431bf154a53f40cdfc6c1d492a66102c0e4938709f6d8202bcd951c840cb"
+                "sha256:114437f194e32eee0651f25fb1ab1664b605e877ca33adf58547a599afe73b72",
+                "sha256:2fea8e65d97e593f47666e7de81fb15bd517100504e98ca7cb399ee6ce4f3838"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.8'",
-            "version": "==21.6"
+            "markers": "python_version >= '3.9'",
+            "version": "==21.8"
         },
         "sniffio": {
             "hashes": [
