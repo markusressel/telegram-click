@@ -20,13 +20,13 @@
 
 import functools
 import logging
-from typing import List
+from typing import List, Callable
 
 from telegram import Update
 from telegram.ext import ContextTypes, CallbackContext
 
 from telegram_click import CommandTarget
-from telegram_click.argument import Argument
+from telegram_click.argument import Argument, Flag
 from telegram_click.const import *
 from telegram_click.error_handler import ErrorHandler, DEFAULT_ERROR_HANDLER
 from telegram_click.help import generate_help_message
@@ -52,11 +52,11 @@ async def _check_permissions(update: Update, context: ContextTypes.DEFAULT_TYPE,
         return True
 
 
-def _create_callback_wrapper(func: callable, help_message: str,
-                             arguments: [Argument],
+def _create_callback_wrapper(func: Callable, help_message: str,
+                             arguments: List[Argument | Flag],
                              permissions: Permission,
                              command_target: bytes,
-                             error_handlers: List[ErrorHandler]) -> callable:
+                             error_handlers: List[ErrorHandler]) -> Callable:
     """
     Creates the wrapper function for the callback function
     :param func: the function to wrap
@@ -166,7 +166,7 @@ def check_argument_name_clashes(arguments: List[Argument]):
         raise ValueError("Argument names must be unique per command! Clashing arguments: {}".format(clashing))
 
 
-def check_optional_argument_after_other(command_name: str, arguments: List[Argument]):
+def check_optional_argument_after_other(command_name: str | List[str], arguments: List[Argument]):
     """
     Checks the order of arguments to make sure no required argument is defined after an optional one
     :param command_name: command name the arguments belong to
@@ -181,9 +181,9 @@ def check_optional_argument_after_other(command_name: str, arguments: List[Argum
             optional_detected = True
 
 
-def command(name: str or [str], description: str = None,
-            arguments: [Argument] = None,
-            hidden: bool or callable = None,
+def command(name: str | List[str], description: str = None,
+            arguments: List[Argument | Flag] = None,
+            hidden: bool | Callable = None,
             permissions: Permission = None,
             command_target: bytes = CommandTarget.UNSPECIFIED | CommandTarget.SELF,
             error_handler: ErrorHandler = None):

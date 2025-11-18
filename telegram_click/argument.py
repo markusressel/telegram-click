@@ -19,6 +19,7 @@
 #  SOFTWARE.
 
 import logging
+from typing import List, Any, Callable
 
 from telegram_click.const import ARG_VALUE_SEPARATOR_CHAR
 from telegram_click.util import find_duplicates
@@ -31,8 +32,8 @@ class Argument:
     Command argument description
     """
 
-    def __init__(self, name: str or [str], description: str, example: str, type: type = str, converter: callable = None,
-                 flag: bool = False, optional: bool = False, default: any = None, validator: callable = None):
+    def __init__(self, name: str | List[str], description: str, example: str, type: type = str, converter: Callable = None,
+                 flag: bool = False, optional: bool = False, default: Any = None, validator: Callable = None):
         """
         Creates a command argument object
         :param name: the name (or names) of the argument
@@ -77,7 +78,7 @@ class Argument:
     def name(self) -> str:
         return self.names[0]
 
-    def parse_arg_value(self, arg: str) -> any:
+    def parse_arg_value(self, arg: str) -> Any:
         """
         Tries to parse the given value
         :param arg: the string value
@@ -141,7 +142,7 @@ class Flag(Argument):
     Convenience class for specifying a flag argument
     """
 
-    def __init__(self, name: str or [str], description: str):
+    def __init__(self, name: str | List[str], description: str):
         """
         Creates a command argument object
         :param name: the name (or names) of the argument
@@ -155,8 +156,8 @@ class Selection(Argument):
     Convenience class for a command argument based on a predefined selection of allowed values
     """
 
-    def __init__(self, name: str, description: str, allowed_values: [any], type: type = str, converter: callable = None,
-                 optional: bool = None, default: any = None):
+    def __init__(self, name: str, description: str, allowed_values: List[Any], type: type = str, converter: Callable = None,
+                 optional: bool = None, default: Any = None):
         """
         Constructor
         :param name: the name of the argument

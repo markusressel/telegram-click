@@ -19,13 +19,14 @@
 #  SOFTWARE.
 
 import logging
+from typing import List, Dict
 
 from telegram import Bot
 
 LOGGER = logging.getLogger(__name__)
 
 
-def find_duplicates(l: list) -> []:
+def find_duplicates(l: List) -> List | Dict:
     """
     Finds duplicate entries in the given list
     :param l: the list to check

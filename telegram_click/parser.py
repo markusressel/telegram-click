@@ -19,7 +19,7 @@
 #  SOFTWARE.
 import logging
 from collections import OrderedDict
-from typing import List
+from typing import List, Optional, Tuple, Any, Dict
 
 from telegram_click.argument import Argument
 from telegram_click.const import *
@@ -207,7 +207,7 @@ def split_into_tokens(text: str) -> List[str]:
     return tokens
 
 
-def split_command_from_args(text: str or None) -> (str or None, str or None):
+def split_command_from_args(text: Optional[str]) -> Tuple[Optional[str], Optional[str]]:
     """
     Splits the command (including any target) from its arguments
     :param text: the full message
@@ -217,12 +217,13 @@ def split_command_from_args(text: str or None) -> (str or None, str or None):
         return None, None
 
     if " " in text:
-        return text.split(" ", 1)
+        command, args = text.split(" ", 1)
+        return command, args
     else:
         return text, None
 
 
-def split_command_from_target(bot_username: str, command: str or None) -> (str, str):
+def split_command_from_target(bot_username: str, command: Optional[str]) -> Tuple[str, str]:
     """
     Determines the command target bot username
     :param bot_username: the username of this bot
@@ -240,7 +241,7 @@ def split_command_from_target(bot_username: str, command: str or None) -> (str, 
     return command, target
 
 
-def parse_telegram_command(bot_username: str, text: str, expected_args: []) -> (str, str, [str]):
+def parse_telegram_command(bot_username: str, text: str, expected_args: List) -> Tuple[str, Dict]:
     """
     Parses the given message to a command and its arguments
     :param bot_username: the username of the current bot
@@ -254,7 +255,7 @@ def parse_telegram_command(bot_username: str, text: str, expected_args: []) -> (
     return command[1:], parsed_args
 
 
-def is_argument_key(text: str, abbreviated: bool or None = None) -> bool:
+def is_argument_key(text: str, abbreviated: Optional[bool] = None) -> bool:
     """
     Checks is a text has the form of an argument key
     :param text: the text to check
@@ -269,12 +270,12 @@ def is_argument_key(text: str, abbreviated: bool or None = None) -> bool:
             return False
 
     return (
-            not is_quoted(text)
-            and starts_with_naming_prefix(text, abbreviated)
+        not is_quoted(text)
+        and starts_with_naming_prefix(text, abbreviated)
     )
 
 
-def is_quoted(text: str or any) -> bool:
+def is_quoted(text: str | Any) -> bool:
     """
     Checks if the given text is quoted.
     Note: This method expects a stripped text!
@@ -292,7 +293,7 @@ def is_quoted(text: str or any) -> bool:
     return False
 
 
-def starts_with_naming_prefix(arg: str, abbreviated: bool or None = None) -> bool:
+def starts_with_naming_prefix(arg: str, abbreviated: Optional[bool] = None) -> bool:
     """
     Checks if the given string starts
     :param arg: the arg to check

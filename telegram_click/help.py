@@ -24,7 +24,7 @@ from telegram_click.const import ARG_NAMING_PREFIXES
 from telegram_click.util import escape_for_markdown
 
 
-def generate_help_message(names: [str], description: str, args: List[Argument]) -> str:
+def generate_help_message(names: List[str], description: str, args: List[Argument]) -> str:
     """
     Generates a command usage description
     :param names: names of the command
@@ -67,7 +67,7 @@ def generate_help_message(names: [str], description: str, args: List[Argument]) 
     return "\n".join(lines)
 
 
-def generate_synopsis(names: [str], args: List[Argument]) -> str:
+def generate_synopsis(names: List[str], args: List[Argument]) -> str:
     """
     Generates the synopsis for a command
     :param names: command names
