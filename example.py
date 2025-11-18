@@ -19,6 +19,7 @@
 #  SOFTWARE.
 import logging
 import os
+from typing import Optional
 
 from telegram import Update
 from telegram.ext import ContextTypes, MessageHandler, CommandHandler, filters, ApplicationBuilder
@@ -168,7 +169,7 @@ class MyBot:
                      description="Some other flag."
                  )
              ])
-    async def _name_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE, name: str or None,
+    async def _name_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE, name: Optional[str],
                                      flag: bool,
                                      flag2: bool):
         chat_id = update.effective_chat.id
@@ -206,7 +207,7 @@ class MyBot:
              permissions=NOBODY,
              error_handler=MyErrorHandler())
     async def _children_command_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE,
-                                         amount: float or None):
+                                         amount: Optional[float]):
         chat_id = update.effective_chat.id
         if amount is None:
             await context.bot.send_message(chat_id, 'Current: {}'.format(self.child_count))
