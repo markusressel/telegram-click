@@ -21,13 +21,13 @@ import logging
 from collections import OrderedDict
 from typing import List, Optional, Tuple, Any, Dict
 
-from telegram_click.argument import Argument
+from telegram_click.argument import Argument, Flag
 from telegram_click.const import *
 
 LOGGER = logging.getLogger(__name__)
 
 
-def parse_command_args(arguments: str or None, expected_args: List[Argument]) -> dict:
+def parse_command_args(arguments: Optional[str], expected_args: List[Argument | Flag]) -> dict:
     """
     Parses the given argument text
     :param arguments: the argument text
@@ -241,7 +241,7 @@ def split_command_from_target(bot_username: str, command: Optional[str]) -> Tupl
     return command, target
 
 
-def parse_telegram_command(bot_username: str, text: str, expected_args: List) -> Tuple[str, Dict]:
+def parse_telegram_command(bot_username: str, text: str, expected_args: List[Argument | Flag]) -> Tuple[str, Dict]:
     """
     Parses the given message to a command and its arguments
     :param bot_username: the username of the current bot

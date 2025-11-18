@@ -19,7 +19,7 @@
 #  SOFTWARE.
 
 import logging
-from typing import List, Dict
+from typing import List, Dict, Tuple, Any, Optional
 
 from telegram import Bot
 
@@ -51,7 +51,7 @@ def find_duplicates(l: List) -> List | Dict:
     return result
 
 
-def find_first(args: [], type: type):
+def find_first(args: Tuple[Any], type: type):
     """
     Finds the first element in the list of the given type
     :param args: list of elements
@@ -61,11 +61,12 @@ def find_first(args: [], type: type):
     for arg in args:
         if isinstance(arg, type):
             return arg
+    return None
 
 
-def escape_for_markdown(text: str or None) -> str:
+def escape_for_markdown(text: Optional[str]) -> str:
     """
-    Escapes text to use as plain text in a markdown document
+    Escapes text to use as plain text in a Markdown document
     :param text: the original text
     :return: the escaped text
     """

@@ -20,7 +20,7 @@
 
 import functools
 import logging
-from typing import List, Callable
+from typing import List, Callable, Optional
 
 from telegram import Update
 from telegram.ext import ContextTypes, CallbackContext
@@ -227,7 +227,7 @@ def command(name: str | List[str], description: str = None,
     if error_handler is not None:
         error_handlers.insert(0, error_handler)
 
-    def callback_decorator(func: callable):
+    def callback_decorator(func: Callable):
         """
         Callback decorator function
         :param func: the function to wrap
@@ -240,7 +240,7 @@ def command(name: str | List[str], description: str = None,
     return callback_decorator
 
 
-async def filter_command_target(target: str or None, bot_username: str, allowed_targets: bytes):
+async def filter_command_target(target: Optional[str], bot_username: str, allowed_targets: bytes):
     """
     Checks if the command target should be accepted based on given input
     :param target: the target of the command or None
