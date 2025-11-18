@@ -94,7 +94,7 @@ def _create_callback_wrapper(func: Callable, help_message: str,
                         break
 
                 # don't process command
-                return
+                return None
 
             # parse and check command target
             cmd, _ = split_command_from_args(message.text)
@@ -108,7 +108,7 @@ def _create_callback_wrapper(func: Callable, help_message: str,
                     message))
 
                 # don't process command
-                return
+                return None
 
             try:
                 # parse command and arguments
@@ -121,7 +121,7 @@ def _create_callback_wrapper(func: Callable, help_message: str,
                     if await handler.on_validation_error(update, context, ex, help_message):
                         break
 
-                return
+                return None
 
             # convert argument names to python param naming convention (snake-case)
             kw_function_args = dict(map(lambda x: (x[0].lower().replace("-", "_"), x[1]), list(parsed_args.items())))
